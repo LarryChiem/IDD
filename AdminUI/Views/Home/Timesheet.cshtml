@@ -17,7 +17,14 @@
             <label for="client-name">Timesheet ID:</label> @Model.TimesheetID
         </div>
         <div class="column">
-            <label asp-for="Status">Status of Timesheet:</label> @Model.Status
+            @if (String.IsNullOrEmpty(Model.Status) || Model.Status.Equals("Pending", StringComparison.CurrentCultureIgnoreCase))
+            {
+                <label asp-for="Status">Status of Timesheet:</label> <span>Pending</span>
+            }
+            else
+            {
+            <label asp-for="Status">Status of Timesheet:</label> @Model.AdminActivity
+            }
         </div>
     </div>
     <div class="row">

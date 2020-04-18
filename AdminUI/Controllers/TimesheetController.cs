@@ -32,13 +32,14 @@ namespace AdminUI.Controllers
                 .FirstOrDefaultAsync(m => m.TimesheetID == id);
             if (timesheet == null)
                 return NotFound();
-            var lockRow = await _Lcontext.LockTableRow
+            var lockRow= await _Lcontext.LockTableRow
                 .FirstOrDefaultAsync(m => m.TimesheetID == id);
             //Debug.WriteLine(lockRow.User);
             if (lockRow == null || !lockRow.User.Equals(User.Identity.Name, StringComparison.CurrentCultureIgnoreCase))
                 return View("NoPermission");
             timesheet.Status = Status;
             timesheet.RejectionReason = RejectionReason;
+            timesheet.AdminActivity = Status + " by " + lockRow.User + " on " + DateTime.Now;
             if (ModelState.IsValid)
             {
                 try

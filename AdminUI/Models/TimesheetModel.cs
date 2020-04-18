@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Amazon.CognitoSync.Model;
 using Amazon.S3.Model;
 
@@ -41,7 +42,8 @@ namespace AdminUI.Models
         public DateTime Submitted { get; set; }
         public string Status { get; set; }
         public string RejectionReason { get; set; }
-
+        public string AdminActivity { get; set; }
+        [NotMapped]
         public LockTableRow Lock { get; set; }
     }
 

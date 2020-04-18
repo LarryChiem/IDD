@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +7,8 @@ using System.IO;
 using System.Text;
 using System.Diagnostics;
 using System.Net.Http;
+using Amazon.Textract;
+using Amazon.Textract.Model;
 
 namespace Appserver.Controllers
 {
@@ -38,6 +39,7 @@ namespace Appserver.Controllers
                     if (image_types.Contains(file.ContentType))
                     {
                         //Time how long it takes to upload image
+                        process_image(file.OpenReadStream());
                         Stopwatch stopwatch = new Stopwatch();
                         stopwatch.Start();
 
@@ -147,6 +149,15 @@ namespace Appserver.Controllers
             return;
         }
 
+        private void process_image(Stream file)
+        {
+            var handle = new TextractHandler();
+            var response = handle.HandleAsyncJob(file);
+            foreach( var block in response.Blocks)
+            {
+                Console.WriteLine(block.ToString());
+            }
+        }
 
 
         // Takes an IFormFile and sends it to AWS Textract for processing.

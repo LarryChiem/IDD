@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Net.Http;
 using Amazon.Textract;
 using Amazon.Textract.Model;
+using System;
 
 namespace Appserver.Controllers
 {
@@ -25,9 +26,9 @@ namespace Appserver.Controllers
             image_types.Add("image/jpeg");
             image_types.Add("image/png");
 
-            List<String> textract_responses = new List<string>();
-            List<String> skipped_files = new List<string>();
-            List<String> stats = new List<string>();
+            List<string> textract_responses = new List<string>();
+            List<string> skipped_files = new List<string>();
+            List<string> stats = new List<string>();
 
             // Iterate over list of submitted documents
             foreach (var file in files)
@@ -61,7 +62,7 @@ namespace Appserver.Controllers
                         process_pdf_upload(file);
 
                         stopwatch.Stop();
-                        TimeSpan ts = stopwatch.Elapsed;
+                        System.TimeSpan ts = stopwatch.Elapsed;
                         string s = String.Format("{0:00}:{1:00}", ts.Minutes, ts.Seconds);
                         stopwatch.Reset();
                         stats.Add(file.FileName + " :: " + s);
@@ -137,6 +138,12 @@ namespace Appserver.Controllers
             );
         }
 
+        private void process_image(Stream file)
+        {
+            var handle = new TextractHandler();
+            var response = handle.HandleAsyncJob(file);
+        }
+
 
         // Method to handle PDF uploads. Pages from PDF uploads
         // needs to be turned into bytes to send to Textract.
@@ -149,19 +156,8 @@ namespace Appserver.Controllers
             return;
         }
 
-        private void process_image(Stream file)
-        {
-            var handle = new TextractHandler();
-            var response = handle.HandleAsyncJob(file);
-            foreach( var block in response.Blocks)
-            {
-                Console.WriteLine(block.ToString());
-            }
-        }
-
-
         // Takes an IFormFile and sends it to AWS Textract for processing.
-        public async Task<String> pass_to_textract(IFormFile file)
+        public async Task<string> pass_to_textract(IFormFile file)
         {
             // Convert file to bytes
             MemoryStream ms = new MemoryStream();
@@ -182,6 +178,7 @@ namespace Appserver.Controllers
             var response = await client.PostAsync(functionDomain + functionURI, data);
             return response.Content.ReadAsStringAsync().Result.Replace("\"", "");
         }
+
 
     }
 }

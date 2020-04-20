@@ -1,15 +1,16 @@
 ﻿/* The sidebar menu */
+
 .leftnav {
     height: 100%; /* Full-height: remove this if you want "auto" height */
-    width: 180px; /* Set the width of the sidebar */
+    width: 200px; /* Set the width of the sidebar */
     position: fixed; /* Fixed Sidebar (stay in place on scroll) */
-    z-index: 1; /* Stay on top */
-    top: 0; /* Stay at the top */
-    left: 0;
-    background-color: #006a4e; /* Black */
+    z-index: 1;  /*Stay on top */
+    background-color: #006a4e; /* Green */
     overflow-x: hidden; /* Disable horizontal scroll */
-    padding-top: 20px;
-    color: lightgray
+    padding: 25px 10px;
+    color: lightgray;
+    border-radius: 10px;
+    transition: 0.25s;
 }
 
 /* The navigation menu links */
@@ -26,51 +27,45 @@
     color: #f1f1f1;
 }
 
-/* The sidebar menu */
-.rightnav {
-    height: 100%; /* Full-height: remove this if you want "auto" height */
-    width: 180px; /* Set the width of the sidebar */
-    position: fixed; /* Fixed Sidebar (stay in place on scroll) */
-    z-index: 1; /* Stay on top */
-    top: 0; /* Stay at the top */
-    right: 0;
-    background-color: #0294B5; /* Black */
-    overflow-x: hidden; /* Disable horizontal scroll */
-    padding-top: 20px;
-    color: lightgray
-}
-
-/* The navigation menu links */
-.rightnav a {
-    padding: 6px 8px 6px 16px;
-    text-decoration: none;
-    font-size: 16px;
-    color: #0294B5;
-    display: block;
-}
-
-/* When you mouse over the navigation links, change their color */
-.rightnav a:hover {
-    color: #f1f1f1;
-}
-
 /* Style page content */
 .main {
-    margin-left: 160px; /* Same as the width of the sidebar */
+    margin-left: 200px; /* Same as the width of the sidebar */
     padding: 0px 10px;
 }
 
 /* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
-@media screen and (max-height: 450px) {
+@media (max-height: 450px) {
     .leftnav {
         padding-top: 15px;
     }
 
     .leftnav a {
-        font-size: 18px;
+        font-size: 14px;
+    }
+}
+@media (max-width: 1200px) {
+    .leftnav {
+        width: 150px;
+        padding: 25px 5px;
+    }
+    .leftnav a {
+        font-size: 14px;
+    }
+    .main {
+        margin-left: 150px;
     }
 }
 
+@media (max-width: 1000px) {
+    .leftnav {
+        width: 0;
+        padding: 0;
+    }
+
+    .leftnav a { font-size: 14px; }
+
+    .main { margin-left: 0px; }
+}
 /* Colors */
 :root {
     --red: #bf0000;

@@ -30,7 +30,7 @@ namespace AdminUI.Controllers
             _Lcontext = Lcontext;
         }
 
-        public IActionResult Index(string sortOrder, string pName, string cName, string dateFrom, string dateTo, string prime, string id, string providerId)
+        public IActionResult Index(string sortOrder, string pName, string cName, string dateFrom, string dateTo, string prime, string id, string providerId, string status)
         {
             var sheets = GetSheets();
 
@@ -56,7 +56,7 @@ namespace AdminUI.Controllers
             if (!string.IsNullOrEmpty(prime))
             {
                 model.Prime = prime;
-                sheets = sheets.Where(t => t.ClientPrime.ToLower().Contains(prime.ToLower()));
+                sheets = sheets.Where(t => t.ClientPrime.Contains(prime, StringComparison.CurrentCultureIgnoreCase));
             }
             if (!string.IsNullOrEmpty(dateFrom))
             {
@@ -73,57 +73,34 @@ namespace AdminUI.Controllers
                 model.Id = int.Parse(id);
                 sheets = sheets.Where(t => t.TimesheetID == int.Parse(id));
             }
+            
+            if (string.IsNullOrEmpty(status))
+                status = "pending";
+            
+            if(!string.Equals(status,"all",StringComparison.CurrentCultureIgnoreCase))
+                sheets = sheets.Where(t => t.Status.Equals(status,StringComparison.CurrentCultureIgnoreCase));
+            
+            model.Status = status;
 
             //big ol' switch statement determines how to sort the data in the table
-            switch (sortOrder)
-            { 
-                case "id":
-                    sheets = sheets.OrderBy(t => t.TimesheetID);
-                    break;
-                case "id_desc":
-                    sheets = sheets.OrderByDescending(t => t.TimesheetID);
-                    break;
-                case "pname":
-                    sheets = sheets.OrderBy(t => t.ProviderName);
-                    break;
-                case "pname_desc":
-                    sheets = sheets.OrderByDescending(t => t.ProviderName);
-                    break;
-                case "prime":
-                    sheets = sheets.OrderBy(t => t.ClientPrime);
-                    break;
-                case "prime_desc":
-                    sheets = sheets.OrderByDescending(t => t.ClientPrime);
-                    break;
-                case "cname":
-                    sheets = sheets.OrderBy(t => t.ClientName);
-                    break;
-                case "cname_desc":
-                    sheets = sheets.OrderByDescending(t => t.ClientName);
-                    break;
-                case "date":
-                    sheets = sheets.OrderBy(t => t.Submitted);
-                    break;
-                case "date_desc":
-                    sheets = sheets.OrderByDescending(t => t.Submitted);
-                    break;
-                case "hours":
-                    sheets = sheets.OrderBy(t => t.Hours);
-                    break;
-                case "hours_desc":
-                    sheets = sheets.OrderByDescending(t => t.Hours);
-                    break;
-                case "providerid":
-                    sheets = sheets.OrderBy(t => t.ProviderID);
-                    break;
-                case "providerid_desc":
-                    sheets = sheets.OrderByDescending(t => t.ProviderID);
-                    break;
-                default:
-                    sheets = sheets.OrderBy(t => t.TimesheetID);
-                    break;
-            }
-
+            sheets = sortOrder switch
+            {
+                "id" => sheets.OrderBy(t => t.TimesheetID),
+                "id_desc" => sheets.OrderByDescending(t => t.TimesheetID),
+                "pname" => sheets.OrderBy(t => t.ProviderName),
+                "pname_desc" => sheets.OrderByDescending(t => t.ProviderName),
+                "prime" => sheets.OrderBy(t => t.ClientPrime),
+                "prime_desc" => sheets.OrderByDescending(t => t.ClientPrime),
+                "cname" => sheets.OrderBy(t => t.ClientName),
+                "cname_desc" => sheets.OrderByDescending(t => t.ClientName),
+                "date" => sheets.OrderBy(t => t.Submitted),
+                "date_desc" => sheets.OrderByDescending(t => t.Submitted),
+                "hours" => sheets.OrderBy(t => t.Hours),
+                "hours_desc" => sheets.OrderByDescending(t => t.Hours),
+                "providerid" => sheets.OrderBy(t => t.ProviderID),
+                "providerid_desc" => sheets.OrderByDescending(t => t.ProviderID),
+                _ => sheets.OrderBy(t => t.TimesheetID),
+            };
             model.SortOrder = sortOrder;
             model.Sheets = new List<Timesheet>(sheets);
             return View(model);
@@ -182,7 +159,7 @@ namespace AdminUI.Controllers
             return View(timesheet);
         }
 
-        public FileContentResult DownloadCSV(string pName, string cName, string dateFrom, string dateTo, string prime, string id)
+        public FileContentResult DownloadCSV(string pName, string cName, string dateFrom, string dateTo, string prime, string id, string status)
         {
             var sheets = GetSheets();
 
@@ -205,6 +182,12 @@ namespace AdminUI.Controllers
 
             if (!string.IsNullOrEmpty(id))
                 sheets = sheets.Where(t => t.TimesheetID == int.Parse(id));
+
+            if (string.IsNullOrEmpty(status))
+                status = "pending";
+
+            if(!string.Equals(status,"all",StringComparison.CurrentCultureIgnoreCase))
+                sheets = sheets.Where(t => t.Status.Equals(status,StringComparison.CurrentCultureIgnoreCase));
 
             //the following loops through every property in a timesheet, first saving the names of the properties to 
             //act as a header. Then, it loops through every timesheet, adding every individual property of the timesheet

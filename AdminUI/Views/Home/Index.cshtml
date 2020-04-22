@@ -22,9 +22,9 @@
         <div class ="text-center">
             <div class="leftnav">
                 <p>Saved filters</p>
-                @Html.ActionLink("Submitted by Mickey Mouse", "Index", new {pname = "Mickey Mouse"})
-                @Html.ActionLink("Submitted since 4/2/2020", "Index", new {datefrom = "2020-04-02"})
-                @Html.ActionLink("All unprocessed Timesheets", "Index", new {})
+                @Html.ActionLink("Submitted by Mickey Mouse", "Index", new {pname = "Mickey Mouse", status="all"})
+                @Html.ActionLink("Submitted since 4/2/2020", "Index", new {datefrom = "2020-04-02", status = "all"})
+                @Html.ActionLink("All unprocessed Timesheets", "Index", new {status="pending"})
             </div>
         </div>
 }
@@ -52,13 +52,46 @@
                 </div>
                 <div class="col-md-3">
                     <label for="status">Status:</label>
-                    <input type="text" name="status" id="status" value="@Model.Id"/>
+                    <select name="status" id="status">
+                        @if (Model.Status.Equals("all", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            <option value="all" selected>All</option>
+                        }
+                        else
+                        {
+                            <option value="all">All</option>
+                        }
+                        @if (Model.Status.Equals("pending", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            <option value="pending" selected>Pending</option>
+                        }
+                        else
+                        {
+                            <option value="pending">Pending</option>
+                        }
+                        @if (Model.Status.Equals("approved", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            <option value="approved" selected>Approved</option>
+                        }
+                        else
+                        {
+                            <option value="approved">Approved</option>
+                        }
+                        @if (Model.Status.Equals("rejected", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            <option value="rejected" selected>Rejected</option>
+                        }
+                        else
+                        {
+                            <option value="rejected">Rejected</option>
+                        }
+                    </select>
                 </div>
             </div>
             <div class="row text-right">
                 <div class="col-md-3">
                     <label for="pName">Provider ID:</label>
-                    <input type="text" name="providerId" id="providerId" value="@Model.ProviderId">
+                    <input type="select" name="providerId" id="providerId" value="@Model.ProviderId">
                 </div>
                 <div class="col-md-3">
                     <label for="prime">Client Prime:</label>
@@ -83,6 +116,7 @@
                 cname = Model.CName,
                 datefrom = Model.DateFrom,
                 dateto = Model.DateTo,
+                status = Model.Status
             }, new
             {
                 @class = "btn btn-secondary "
@@ -296,13 +330,13 @@
             color = color == "#8FDDE6" ? "#E6EFF3" : "#8FDDE6";
         }
         <tr class="color-div" style="background-color: @color">
-            <td>@Html.ActionLink(@t.TimesheetID.ToString(), "Timesheet", new {ID = @t.TimesheetID})</td>
-            <td>@t.ProviderName</td>
-            <td>@t.ProviderID</td>
-            <td>@t.ClientName</td>
-            <td>@t.ClientPrime</td>
-            <td>@t.Hours</td>
-            <td>@t.Submitted</td>
+            <td><a asp-action="Timesheet" asp-route-id="@t.TimesheetID">@t.TimesheetID</a></td>
+            <td><a asp-action="Timesheet" asp-route-id="@t.TimesheetID">@t.ProviderName</a></td>
+            <td><a asp-action="Timesheet" asp-route-id="@t.TimesheetID">@t.ProviderID</a></td>
+            <td><a asp-action="Timesheet" asp-route-id="@t.TimesheetID">@t.ClientName</a></td>
+            <td><a asp-action="Timesheet" asp-route-id="@t.TimesheetID">@t.ClientPrime</a></td>
+            <td><a asp-action="Timesheet" asp-route-id="@t.TimesheetID">@t.Hours</a></td>
+            <td><a asp-action="Timesheet" asp-route-id="@t.TimesheetID">@t.Submitted</a></td>
         </tr>
     }
     </table>

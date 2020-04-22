@@ -21,5 +21,6 @@ namespace AdminUI.Models
         public string DateFrom;
         public string DateTo;
         public string ProviderId;
+        public string Status;
     }
 }

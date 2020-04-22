@@ -102,6 +102,63 @@ namespace AdminUI.Controllers
                 _ => sheets.OrderBy(t => t.TimesheetID),
             };
             model.SortOrder = sortOrder;
+
+            foreach (var t in sheets)
+            {
+                t.Shifts = new List<Shift>
+                {
+                    new Shift
+                    {
+                        Date = DateTime.Parse("3/11/2020"),
+                        In = DateTime.Parse("11:30 AM"),
+                        Out = DateTime.Parse("7:30 PM"),
+                        Hours = 8.00,
+                        Group = false
+                    },
+                    new Shift
+                    {
+                        Date = DateTime.Parse("3/11/2020"),
+                        In = DateTime.Parse("11:30 AM"),
+                        Out = DateTime.Parse("7:30 PM"),
+                        Hours = 8.00,
+                        Group = false
+                    },
+                    new Shift
+                    {
+                        Date = DateTime.Parse("3/11/2020"),
+                        In = DateTime.Parse("11:30 AM"),
+                        Out = DateTime.Parse("7:30 PM"),
+                        Hours = 8.00,
+                        Group = false
+                    },
+                    new Shift
+                    {
+                        Date = DateTime.Parse("3/11/2020"),
+                        In = DateTime.Parse("11:30 AM"),
+                        Out = DateTime.Parse("7:30 PM"),
+                        Hours = 8.00,
+                        Group = false
+                    },
+                    new Shift
+                    {
+                        Date = DateTime.Parse("3/11/2020"),
+                        In = DateTime.Parse("11:30 AM"),
+                        Out = DateTime.Parse("7:30 PM"),
+                        Hours = 8.00,
+                        Group = false
+                    },
+                    new Shift
+                    {
+                        Date = DateTime.Parse("3/12/2020"),
+                        In = DateTime.Parse("11:30 AM"),
+                        Out = DateTime.Parse("7:30 PM"),
+                        Hours = 8.00,
+                        Group = false
+                    }
+                };
+            }
+
+
             model.Sheets = new List<Timesheet>(sheets);
             return View(model);
         }

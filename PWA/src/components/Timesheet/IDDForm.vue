@@ -129,13 +129,31 @@
 
     <hr />
 
+		<v-container>
+			<v-row>
+				<v-col>
+					<v-btn
+						color="error"
+						class="mr-4"
+						@click="reset"
+					>
+						Reset Form
+					</v-btn>
+				</v-col>
+
+				<v-col>
+					<ConfirmSubmission
+						v-bind:valid="valid"
+						v-bind:formFields="formFields"/>
+				</v-col>
+			</v-row>
+		</v-container>
+
+		<!--
     <v-btn color="success" class="mr-4" :disabled="!valid" @click="submit">
       Submit
     </v-btn>
-
-    <v-btn color="error" class="mr-4" @click="reset">
-      Reset Form
-    </v-btn>
+		-->
   </v-form>
 </template>
 
@@ -144,12 +162,14 @@ import FormTable from "@/components/Timesheet/FormTable";
 import FormField from "@/components/Timesheet/FormField";
 import fieldData from "@/components/Timesheet/IDDFormFields.json";
 import rules from "@/components/Timesheet/FormRules.js";
+import ConfirmSubmission from "@/components/Timesheet/ConfirmSubmission";
 
 export default {
   name: "IDDForm",
   components: {
     FormTable,
     FormField,
+		ConfirmSubmission,
   },
 
   props: {
@@ -187,6 +207,7 @@ export default {
 
       // Hide form validation error messages by default
       valid: true,
+
     };
   },
 

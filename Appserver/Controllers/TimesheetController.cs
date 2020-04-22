@@ -62,6 +62,8 @@ namespace Appserver.Controllers
         public IActionResult Submit(TimesheetForm ?form)
         {
             // Do something with form
+            Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             JsonResponse model = new JsonResponse();
             return Json(model);
         }

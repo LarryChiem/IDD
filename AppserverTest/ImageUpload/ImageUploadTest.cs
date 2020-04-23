@@ -6,6 +6,8 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.AspNetCore.Http;
+using Appserver.Controllers;
 
 namespace ImageUpload.Tests
 {
@@ -122,6 +124,70 @@ namespace ImageUpload.Tests
             var itemexists = blobitem.ExistsAsync();
             await itemexists;
             Assert.IsTrue(itemexists.Result);
+        }
+
+    }
+
+    [TestFixture]
+    public class ImageToTextractTest
+    {
+
+        [Test]
+        public async Task PassValidFile()
+        {
+            //////////////////////////////////////////////////////////////////////////////
+            // Initial Setup
+            //////////////////////////////////////////////////////////////////////////////
+
+            // Get local image file
+            string filePath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + @"/ImageUpload/timesheet_front.jpg";
+
+            // Validate path
+            if (!File.Exists(filePath))
+            {
+                Assert.False(true);
+            }
+
+            ////////////////////////////////////////////////////////////////////////////////
+            //// Function to Test
+            ////////////////////////////////////////////////////////////////////////////////
+
+            // Open file and pass to textract
+            var li = File.ReadAllBytes(filePath);
+            IFormFile file = new FormFile(new MemoryStream(li), 0, li.Length, "testFile", "testimage.jpg");
+            ImageUploadController iuc = new ImageUploadController();
+            var res = await iuc.pass_to_textract(file);
+            Assert.IsNotEmpty(res.ToString());
+        }
+
+
+        [Test]
+        public async Task PassInvalidFile()
+        {
+            //////////////////////////////////////////////////////////////////////////////
+            // Initial Setup
+            //////////////////////////////////////////////////////////////////////////////
+
+            // Get local image file
+            string filePath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + @"/ImageUpload/timesheet_front.jpg";
+
+            // Validate path
+            if (!File.Exists(filePath))
+            {
+                Assert.False(true);
+            }
+
+            ////////////////////////////////////////////////////////////////////////////////
+            //// Function to Test
+            ////////////////////////////////////////////////////////////////////////////////
+
+            // Open file and pass to textract
+            var li = File.ReadAllBytes(filePath);
+            IFormFile file = new FormFile(new MemoryStream(li), 0, 0, "testFile", "testimage.jpg");
+            ImageUploadController iuc = new ImageUploadController();
+            var res = await iuc.pass_to_textract(file);
+            string x = "{response_miss: Something doesn't smell right...}";
+            Assert.AreEqual(res.ToString(), x);
         }
 
     }

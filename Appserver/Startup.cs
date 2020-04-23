@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Net.Http;
 
 namespace Appserver
 {
@@ -54,41 +55,47 @@ namespace Appserver
 
             app.UseEndpoints(endpoints =>
             {
-                // Homescreen route
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/");
+            // Homescreen route
+            endpoints.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/");
 
-                // Image upload route
-                endpoints.MapControllerRoute(
-                    name: "image_upload_route",
-                    pattern: "{controller=Home}/{action=Timesheet}");
+            // Image upload route
+            endpoints.MapControllerRoute(
+                name: "image_upload_route",
+                pattern: "{controller=Home}/{action=Timesheet}");
 
-                // Admin login route
-                endpoints.MapControllerRoute(
-                    name: "admin_login_route",
-                    pattern: "{controller=Admin}/{action=Login}/");
+            // Admin login route
+            endpoints.MapControllerRoute(
+                name: "admin_login_route",
+                pattern: "{controller=Admin}/{action=Login}/");
 
-                // Check if Timesheet Ready
-                endpoints.MapControllerRoute(
-                    name: "timesheet_ready_route",
-                    pattern: "{controller=Timesheet}/{action=Ready}/");
+            // Check if Timesheet Ready
+            endpoints.MapControllerRoute(
+                name: "timesheet_ready_route",
+                pattern: "{controller=Timesheet}/{action=Ready}/");
 
-                // Validate Timesheet
-                endpoints.MapControllerRoute(
-                    name: "timesheet_validate_route",
-                    pattern: "{controller=Timesheet}/{action=Validate}/");
+            // Validate Timesheet
+            endpoints.MapControllerRoute(
+                name: "timesheet_validate_route",
+                pattern: "{controller=Timesheet}/{action=Validate}/");
 
-                // Submit Timesheet
-                endpoints.MapControllerRoute(
-                    name: "timesheet_submit_route",
-                    pattern: "{controller=Timesheet}/{action=Submit}/");
+            // Submit Timesheet
+            endpoints.MapControllerRoute(
+                name: "timesheet_submit_route",
+                pattern: "{controller=Timesheet}/{action=Submit}/");
 
-                // Check Timesheet Received
-                endpoints.MapControllerRoute(
-                    name: "timesheet_received_route",
-                    pattern: "{controller=Timesheet}/{action=Received}/");
-            });
+            // Check Timesheet Received
+            endpoints.MapControllerRoute(
+                name: "timesheet_received_route",
+                pattern: "{controller=Timesheet}/{action=Received}/");
+
+            // Upload Documents as form
+            endpoints.MapControllerRoute(
+                name: "document_upload_form_route",
+                pattern: "{controller=ImageUpload}/{action=DocAsForm}");
+
+        });
         }
     }
 }

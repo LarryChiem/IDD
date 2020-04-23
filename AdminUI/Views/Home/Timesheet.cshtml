@@ -10,61 +10,61 @@
         <div class="alert alert-danger"><h1>Sheet is locked by @Model.Lock.User</h1></div>
     }
 
-    <div class="flex-container column">
-        <h1>eXPRS Plan of Care - Services Delivered Report Form</h1>
-        <div class="row">
-            <div class="column">
-                <label for="client-name">Timesheet ID:</label> @Model.TimesheetID
-            </div>
-            <div class="column">
-                @if (String.IsNullOrEmpty(Model.Status) || Model.Status.Equals("Pending", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    <label asp-for="Status">Status of Timesheet:</label> <span>Pending</span>
-                }
-                else
-                {
-                    <label asp-for="Status">Status of Timesheet:</label> @Model.AdminActivity
-                }
-            </div>
+<div class="flex-container column">
+    <h1>eXPRS Plan of Care - Services Delivered Report Form</h1>
+    <div class="row">
+        <div class="column">
+            <label for="client-name">Timesheet ID:</label> @Model.TimesheetID
         </div>
-        <div class="row">
-            <div class="column">
-                <label for="client-name">Customer Name:</label> @Model.ClientName
-            </div>
-            <div class="column">
-                <label for="prime">Prime:</label> @Model.ClientPrime
-            </div>
+        <div class="column">
+            @if (String.IsNullOrEmpty(Model.Status) || Model.Status.Equals("Pending", StringComparison.CurrentCultureIgnoreCase))
+            {
+                <label asp-for="Status">Status of Timesheet:</label> <span>Pending</span>
+            }
+            else
+            {
+                <label asp-for="Status">Status of Timesheet:</label> @Model.AdminActivity
+            }
         </div>
-        <div class="row">
-            <div class="column">
-                <label for="provider-name">Provider Name:</label> @Model.ProviderName
-            </div>
-            <div class="column">
-                <label for="provider-num">Provider Num:</label> @Model.ProviderID
-            </div>
+    </div>
+    <div class="row">
+        <div class="column">
+            <label for="client-name">Customer Name:</label> @Model.ClientName
         </div>
-        <div class="row">
-            <div class="column">
-                <label for="cm-organization">CM Organization:</label> @Model.CMOrg
-            </div>
-            <div class="column">
-                <label for="sc-pa-name">SC/PA Name:</label> @Model.SCPAName
-            </div>
+        <div class="column">
+            <label for="prime">Prime:</label> @Model.ClientPrime
         </div>
-        <div class="row">
-            <div class="column">
-                <label for="service-authorized">Service Authorized:</label>  @Model.Service
-            </div>
+    </div>
+    <div class="row">
+        <div class="column">
+            <label for="provider-name">Provider Name:</label> @Model.ProviderName
         </div>
-        <div class="row">
-            <div class="column">
-                <label for="form-type">Form Type:</label> @Model.Type
-            </div>
+        <div class="column">
+            <label for="provider-num">Provider Num:</label> @Model.ProviderID
         </div>
-        <div>
-            <table class="table table-striped table-bordered table-hover">
-                <caption>Service Log for Timesheet ID @Model.TimesheetID</caption>
-                <thead>
+    </div>
+    <div class="row">
+        <div class="column">
+            <label for="cm-organization">CM Organization:</label> @Model.CMOrg
+        </div>
+        <div class="column">
+            <label for="sc-pa-name">SC/PA Name:</label> @Model.SCPAName
+        </div>
+    </div>
+    <div class="row">
+        <div class="column">
+            <label for="service-authorized">Service Authorized:</label>  @Model.Service
+        </div>
+    </div>
+    <div class="row">
+        <div class="column">
+            <label for="form-type">Form Type:</label> @Model.Type
+        </div>
+    </div>
+    <div>
+        <table class="table table-striped table-bordered table-hover">
+            <caption>Service Log for Timesheet ID @Model.TimesheetID</caption>
+            <thead>
                 <tr>
                     <th scope="col">Date</th>
                     <th scope="col">Start/Time IN</th>
@@ -72,8 +72,8 @@
                     <th scope="col">Total Hours for Entry</th>
                     <th scope="col">Group? (yes/no)</th>
                 </tr>
-                </thead>
-                <tbody>
+            </thead>
+            <tbody>
                 @foreach (var t in Model.Shifts)
                 {
                     <tr>
@@ -92,73 +92,83 @@
                         }
                     </tr>
                 }
-                </tbody>
-            </table>
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div class="column">
+            <label>Timesheet Total Hours:</label>  @Model.Hours
         </div>
-        <div class="row">
-            <div class="column">
-                <label>Timesheet Total Hours:</label>  @Model.Hours
-            </div>
-        </div>
+    </div>
 
-        <div class="row m-1 border">
-            <div class="column">
-                <label>SERVICE GOAL:</label>  @Model.ServiceGoal
-            </div>
+    <div class="row m-1 border">
+        <div class="column">
+            <label>SERVICE GOAL:</label>  @Model.ServiceGoal
         </div>
-        <div class="row m-1 border">
-            <div class="column">
-                <label>PROGRESS NOTES:</label>  @Model.ProgressNotes
-            </div>
+    </div>
+    <div class="row m-1 border">
+        <div class="column">
+            <label>PROGRESS NOTES:</label>  @Model.ProgressNotes
         </div>
+    </div>
 
-        <div class="row">
-            @if (@Model.ClientSignature)
-            {
-                <div class="alert alert-success">
-                    <strong>Customer Employer or Employer Rep signed on @Model.ClientSigned.Value.ToString("MM-dd-yyyy")</strong>
-                </div>
-            }
-            else
-            {
-                <div class="alert alert-danger">
-                    <strong>Customer Employer or Employer Rep signature missing!</strong>
-                </div>
-            }
-        </div>
-        <div class="row">
-            @if (@Model.ProviderSignature)
-            {
-                <div class="alert alert-success">
-                    <strong>Provider/Employee Signed on @Model.ProviderSigned.Value.ToString("MM-dd-yyyy")</strong>
-                </div>
-            }
-            else
-            {
-                <div class="alert alert-danger">
-                    <strong>Provider/Employee Missing!</strong>
-                </div>
-            }
-        </div>
-        <div class="row">
-            <div class="column">
-                <label>Timesheet Submitted on:</label> @Model.Submitted.ToString("MM-dd-yyyy")
-            </div>
-        </div>
-        <img src="~/images/timesheet-front.png" alt="Sample Front" />
-        <img src="~/images/timesheet-back.png" alt="Sample Front" />
-        @if (permission)
+    <div class="row">
+        @if (@Model.ClientSignature)
         {
-            <div class="container">
-                <form asp-controller="Timesheet" asp-action="Process" class="fixed-bottom">
-                    <div class="row">
-                        <input type="hidden" name="id" value="@Model.TimesheetID"/>
-                        <input onclick="handleRejected" class="btn btn-danger" name="Status" value="Rejected" type="submit">
-                        <input type="text" name="RejectionReason"/>
-                        <input onclick="handleAccepted" class="btn btn-primary" name="Status" value="Approved" type="submit">
-                    </div>
-                </form>
+            <div class="alert alert-success btn-info">
+                <strong>Customer Employer or Employer Rep signed on @Model.ClientSigned.Value.ToString("MM-dd-yyyy")</strong>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger">
+                <strong>Customer Employer or Employer Rep signature missing!</strong>
             </div>
         }
     </div>
+    <div class="row">
+        @if (@Model.ProviderSignature)
+        {
+            <div class="alert alert-success">
+                <strong>Provider/Employee Signed on @Model.ProviderSigned.Value.ToString("MM-dd-yyyy")</strong>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger">
+                <strong>Provider/Employee Missing!</strong>
+            </div>
+        }
+    </div>
+    <div class="row">
+        <div class="column">
+            <label>Timesheet Submitted on:</label> @Model.Submitted.ToString("MM-dd-yyyy")
+        </div>
+    </div>
+    <div class="row">
+        <div class="column">
+            <a target="_blank" href="~/images/timesheet-front.png">
+                <img src="~/images/timesheet-front.png" alt="Sample Front" class="img-thumbnail halfopacity" />
+            </a>
+        </div>
+        <div class="column">
+            <a target="_blank" href="~/images/timesheet-front.png">
+                <img src="~/images/timesheet-back.png" alt="Sample Front" class="img-thumbnail halfopacity" />
+            </a>
+        </div>
+    </div>
+    @if (permission)
+    {
+        <div class="container">
+            <form asp-controller="Timesheet" asp-action="Process" class="fixed-bottom">
+                <div class="row">
+                    <input type="hidden" name="id" value="@Model.TimesheetID" />
+                    <input onclick="handleRejected" class="btn btn-danger" name="Status" value="Rejected" type="submit">
+                    <input type="text" name="RejectionReason" />
+                    <input onclick="handleAccepted" class="btn btn-primary" name="Status" value="Accepted" type="submit">
+                </div>
+            </form>
+        </div>
+    }
+</div>
 </div>

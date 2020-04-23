@@ -219,3 +219,7 @@ label {
 .column {
     flex: 50%;
 }
+
+.halfopacity:hover {
+    opacity: 0.5;
+}

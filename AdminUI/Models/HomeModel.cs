@@ -8,7 +8,10 @@ namespace AdminUI.Models
     public class HomeModel
     {
         public IList<Timesheet> Sheets;
-
+        public int TotalPages;
+        public int TotalSheets;
+        public int PerPage;
+        public int Page;
 
         //keep track of the current sort order
         public string SortOrder;

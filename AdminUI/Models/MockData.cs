@@ -51,7 +51,7 @@ namespace AdminUI.Models
                         ProviderName = "Belle",
                         ProviderID = "B3113",
                         CMOrg = "Gaston's Monster Management",
-                        SCPAName =  "Walt Disney",
+                        SCPAName = "Walt Disney",
                         Service = "SE151 In Home Support Children",
                         Hours = 80.7,
                         ServiceGoal = "Transmogrification",
@@ -61,7 +61,7 @@ namespace AdminUI.Models
                         ProviderSignature = true,
                         ProviderSigned = DateTime.Parse("3/25/20"),
                         Type = "OR526 Attendant Care",
-                        Submitted = DateTime.Parse("4/1/20 1:45PM"),
+                        Submitted = DateTime.Parse("4/2/20 1:45PM"),
                         RejectionReason = "",
                         Status = "Pending"
                     },
@@ -72,7 +72,7 @@ namespace AdminUI.Models
                         ProviderName = "Prince Charming",
                         ProviderID = "H0TT13",
                         CMOrg = "Party City",
-                        SCPAName =  "Evil Stepmother",
+                        SCPAName = "Evil Stepmother",
                         Service = "SE49 In Home Support Adults",
                         Hours = 54.5,
                         ServiceGoal = "Shoe sizing",
@@ -82,7 +82,7 @@ namespace AdminUI.Models
                         ProviderSignature = true,
                         ProviderSigned = DateTime.Parse("3/28/20"),
                         Type = "OR526 Attendant Care",
-                        Submitted = DateTime.Parse("3/29/20 8:06AM"),
+                        Submitted = DateTime.Parse("4/3/20 8:06AM"),
                         RejectionReason = "",
                         Status = "Pending"
                     },
@@ -93,7 +93,7 @@ namespace AdminUI.Models
                         ProviderName = "Elsa",
                         ProviderID = "L3T1TG0",
                         CMOrg = "Arendelle Government",
-                        SCPAName =  "Kristoff",
+                        SCPAName = "Kristoff",
                         Service = "SE49 In Home Support Adults",
                         Hours = 12,
                         ServiceGoal = "To help with her transition to queen",
@@ -102,18 +102,18 @@ namespace AdminUI.Models
                         ProviderSignature = true,
                         ProviderSigned = DateTime.Parse("3/25/20"),
                         Type = "OR526 Attendant Care",
-                        Submitted = DateTime.Parse("4/1/20 5:13PM"),
+                        Submitted = DateTime.Parse("4/4/20 5:13PM"),
                         RejectionReason = "",
                         Status = "Pending"
                     },
                     new Timesheet
-                    { 
+                    {
                         ClientName = "Snow White",
                         ClientPrime = "5L33PY",
                         ProviderName = "Prince Florian",
                         ProviderID = "K155",
                         CMOrg = "Dwarven Housekeeping",
-                        SCPAName =  "Walt Disney",
+                        SCPAName = "Walt Disney",
                         Service = "SE151 In Home Support Children",
                         Hours = 89.2,
                         ServiceGoal = "To wake her up",
@@ -125,8 +125,33 @@ namespace AdminUI.Models
                         Submitted = DateTime.Parse("4/2/20 10:20AM"),
                         RejectionReason = "",
                         Status = "Pending"
-                    }
-                );
+                    });
+                for (var i = 1; i <= 101; i++)
+                {
+                    context.Timesheet.Add(
+                        new Timesheet
+                        {
+                            ClientName = "Dalmation " + i,
+                            ClientPrime = "5P0T5",
+                            ProviderName = "Dalmation Dad",
+                            ProviderID = "T1R3D",
+                            CMOrg = "Disney",
+                            SCPAName = "Walt Disney",
+                            Service = "SE151 In Home Support Children",
+                            Hours = 80.0,
+                            ServiceGoal = "To make sure the kids survive",
+                            ProgressNotes = "Still alive",
+                            ClientSignature = true,
+                            ClientSigned = DateTime.Parse("03/27/2020"),
+                            ProviderSignature = false,
+                            Type = "OR526 Attendant Care",
+                            Submitted = DateTime.Parse("4/1/20 10:20AM"),
+                            RejectionReason = "",
+                            Status = "Pending"
+                        }
+                    );
+                }
+
                 context.SaveChanges();
             }
         }

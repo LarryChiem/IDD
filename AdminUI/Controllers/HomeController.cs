@@ -30,7 +30,7 @@ namespace AdminUI.Controllers
             _Lcontext = Lcontext;
         }
 
-        public IActionResult Index(string sortOrder, string pName, string cName, string dateFrom, string dateTo, string prime, string id, string providerId, string status)
+        public IActionResult Index(string sortOrder = "id", string pName="", string cName="", string dateFrom="", string dateTo="", string prime="", string id="", string providerId="", string status="pending", int page = 1, int perPage = 20)
         {
             var sheets = GetSheets();
 
@@ -74,11 +74,9 @@ namespace AdminUI.Controllers
                 sheets = sheets.Where(t => t.TimesheetID == int.Parse(id));
             }
             
-            if (string.IsNullOrEmpty(status))
-                status = "pending";
-            
             if(!string.Equals(status,"all",StringComparison.CurrentCultureIgnoreCase))
                 sheets = sheets.Where(t => t.Status.Equals(status,StringComparison.CurrentCultureIgnoreCase));
+
             
             model.Status = status;
 
@@ -102,7 +100,11 @@ namespace AdminUI.Controllers
                 _ => sheets.OrderBy(t => t.TimesheetID),
             };
             model.SortOrder = sortOrder;
-
+            model.TotalSheets = sheets.Count();
+            model.TotalPages = sheets.Count() / perPage + (sheets.Count() % perPage == 0 ? 0 : 1);
+            sheets = sheets.Skip((page - 1) * perPage).Take(perPage);
+            model.PerPage = perPage;
+            model.Page = page;
             foreach (var t in sheets)
             {
                 t.Shifts = new List<Shift>
@@ -177,6 +179,8 @@ namespace AdminUI.Controllers
         //should return a Timesheet View
         public async Task<IActionResult> Timesheet(int ID)
         {
+            if (string.IsNullOrEmpty(User.Identity.Name))
+                return View("../Timesheet/NoPermission");
             var timesheet =  _Tcontext.Timesheet.Find(ID);
             timesheet.Shifts = new List<Shift>
             {

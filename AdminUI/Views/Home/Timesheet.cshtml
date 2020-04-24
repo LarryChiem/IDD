@@ -55,6 +55,9 @@
         <div class="column">
             <label for="service-authorized">Service Authorized:</label>  @Model.Service
         </div>
+        <div class="column">
+            <label>Submitted on:</label> @Model.Submitted.ToString("MM-dd-yyyy")
+        </div>
     </div>
     <div class="row">
         <div class="column">
@@ -92,14 +95,15 @@
                         }
                     </tr>
                 }
-            </tbody>
-        </table>
-    </div>
-    <div class="row">
-        <div class="column">
-            <label>Timesheet Total Hours:</label>  @Model.Hours
+                </tbody>
+                <tfoot>
+                    <tr class="table-success font-weight-bold">
+                        <th colspan="3" style="text-align: right;">Total:</th>
+                        <td colspan="2">@Model.Hours Hours</td>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
-    </div>
 
     <div class="row m-1 border">
         <div class="column">
@@ -140,11 +144,20 @@
             </div>
         }
     </div>
-    <div class="row">
-        <div class="column">
-            <label>Timesheet Submitted on:</label> @Model.Submitted.ToString("MM-dd-yyyy")
+    @if (permission)
+    {
+        <div class="fixed-bottom row d-flex justify-content-center" id="bottom-sticky">
+            <form asp-controller="Timesheet" asp-action="Process">
+                <div class="row">
+                    <label>Review Timesheet Action:</label>
+                    <input type="hidden" name="id" value="@Model.TimesheetID"/>
+                    <input onclick="handleAccepted" class="btn btn-primary" name="Status" value="Approved" type="submit">
+                    <input onclick="handleRejected" class="btn btn-danger" name="Status" value="Rejected" type="submit">
+                    <input type="text" name="RejectionReason" placeholder="Rejection reason..."/>
+                </div>
+            </form>
         </div>
-    </div>
+    }
     <div class="row">
         <div class="column">
             <a target="_blank" href="~/images/timesheet-front.png">
@@ -157,18 +170,5 @@
             </a>
         </div>
     </div>
-    @if (permission)
-    {
-        <div class="container">
-            <form asp-controller="Timesheet" asp-action="Process" class="fixed-bottom">
-                <div class="row">
-                    <input type="hidden" name="id" value="@Model.TimesheetID" />
-                    <input onclick="handleRejected" class="btn btn-danger" name="Status" value="Rejected" type="submit">
-                    <input type="text" name="RejectionReason" />
-                    <input onclick="handleAccepted" class="btn btn-primary" name="Status" value="Accepted" type="submit">
-                </div>
-            </form>
-        </div>
-    }
 </div>
 </div>

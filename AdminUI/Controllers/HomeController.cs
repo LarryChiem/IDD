@@ -7,12 +7,6 @@ using AdminUI.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using AdminUI.Models;
-using Amazon.DeviceFarm.Model;
-using Amazon.DirectConnect.Model;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using SQLitePCL;
 
 
 namespace AdminUI.Controllers

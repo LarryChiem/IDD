@@ -5,8 +5,6 @@ using AdminUI.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using AdminUI.Data;
 using AdminUI.Models;
-using Amazon.IdentityManagement.Model;
-using Amazon.Runtime.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.EntityFrameworkCore;

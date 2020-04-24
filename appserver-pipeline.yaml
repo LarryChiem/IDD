@@ -27,11 +27,18 @@ steps:
     msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-
+    
+- task: CmdLine@2
+  inputs:
+    script: |
+      sqllocaldb create MSSQLLocalDB
+      sqllocaldb start MSSQLLocalDB
+      
+      "C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe" start
+      
 - task: DotNetCoreCLI@2
-   displayName: 'Run unit tests - $(buildConfiguration)'
-   inputs:
-     command: 'test'
-     arguments: '--no-build --configuration $(buildConfiguration)'
-     publishTestResults: true
-     projects: '**/*Test/*Test.csproj'
+  displayName: 'Run unit tests - $(buildConfiguration)'
+  inputs:
+    command: 'test'
+    projects: '**/*Test/*Test.csproj'
+    arguments: '--no-build --configuration $(buildConfiguration)'

@@ -13,7 +13,7 @@
     //used for zebra print table
     var color = "#8FDDE6";
 }
-<link rel="manifest" href="~/manifest.json">
+<link rel="manifest" href="~/manifess.json">
 <!-- Note: Avoid using inline styles as much as possible. Instead, use classes or ids & .css files -->
 
 @if (SignInManager.IsSignedIn(User))
@@ -23,7 +23,7 @@
                 <p>Saved filters</p>
                 @Html.ActionLink("Submitted by Mickey Mouse", "Index", new {pname = "Mickey Mouse", status="all"})
                 @Html.ActionLink("Submitted since 4/2/2020", "Index", new {datefrom = "2020-04-02", status = "all"})
-                @Html.ActionLink("All unprocessed Timesheets", "Index", new {status="pending"})
+                @Html.ActionLink("All unprocessed Submissions", "Index", new {status="pending"})
             </div>
         </div>
 }
@@ -62,7 +62,7 @@
             <div class="row text-right">
                 <div class="col-md-3">
                     <label for="pName">Provider ID:</label>
-                    <input type="select" name="providerId" id="providerId" value="@Model.ProviderId">
+                    <input type="select" name="ProviderId" id="ProviderId" value="@Model.ProviderId">
                 </div>
                 <div class="col-md-3">
                     <label for="prime">Client Prime:</label>
@@ -85,7 +85,7 @@
             {
                 id = Model.Id,
                 pname = Model.PName,
-                providerid = Model.ProviderId,
+                ProviderId = Model.ProviderId,
                 prime = Model.Prime,
                 cname = Model.CName,
                 datefrom = Model.DateFrom,
@@ -139,7 +139,7 @@
                     })</th>
                 <th>@Html.ActionLink("Provider ID", "Index", new
                     {
-                        sortOrder = @Model.SortOrder.Equals("providerid", StringComparison.CurrentCultureIgnoreCase) ? "providerid_desc" : "providerid",
+                        sortOrder = @Model.SortOrder.Equals("ProviderId", StringComparison.CurrentCultureIgnoreCase) ? "ProviderId_desc" : "ProviderId",
                         id = Model.Id,
                         pname = Model.PName,
                         prime = Model.Prime,
@@ -209,7 +209,7 @@
             <tr>
                 <td colspan="7">
                     <div class="row justify-content-end">
-                        <div class="col-md-auto text-right">Total entries matching query: @Model.TotalSheets</div>
+                        <div class="col-md-auto text-right">Total entries matching query: @Model.TotalSubmissions</div>
                         <div class="col-md-auto text-right">Page @Model.Page of @Model.TotalPages</div>
                         <div class="col-md-auto">
                             <nav aria-label="Page navigation example">
@@ -326,24 +326,24 @@
             </tr>
             </tfoot>
             <tbody>
-            @foreach (var t in Model.Sheets)
+            @foreach (var t in Model.Timesheets)
             {
                 //I guess this is how you do zebra print tables in CSHTML? n-thchild CSS doesn't work in IE
                 color = color == "#8FDDE6" ? "#E6EFF3" : "#8FDDE6";
                 <tr class="color-div" style="background-color: @color">
-                    <td><a data-toggle="modal" data-target="#@("sheet" + t.TimesheetID)" asp-action="Timesheet" asp-route-id="@t.TimesheetID">@t.TimesheetID</a></td>
-                    <td><a data-toggle="modal" data-target="#@("sheet" + t.TimesheetID)" asp-action="Timesheet" asp-route-id="@t.TimesheetID">@t.ProviderName</a></td>
-                    <td><a data-toggle="modal" data-target="#@("sheet" + t.TimesheetID)" asp-action="Timesheet" asp-route-id="@t.TimesheetID">@t.ProviderID</a></td>
-                    <td><a data-toggle="modal" data-target="#@("sheet" + t.TimesheetID)" asp-action="Timesheet" asp-route-id="@t.TimesheetID">@t.ClientName</a></td>
-                    <td><a data-toggle="modal" data-target="#@("sheet" + t.TimesheetID)" asp-action="Timesheet" asp-route-id="@t.TimesheetID">@t.ClientPrime</a></td>
-                    <td><a data-toggle="modal" data-target="#@("sheet" + t.TimesheetID)" asp-action="Timesheet" asp-route-id="@t.TimesheetID">@t.Hours</a></td>
-                    <td><a data-toggle="modal" data-target="#@("sheet" + t.TimesheetID)" asp-action="Timesheet" asp-route-id="@t.TimesheetID">@t.Submitted</a></td>
+                    <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-action="Timesheet" asp-route-id="@t.Id">@t.Id</a></td>
+                    <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-action="Timesheet" asp-route-id="@t.Id">@t.ProviderName</a></td>
+                    <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-action="Timesheet" asp-route-id="@t.Id">@t.ProviderId</a></td>
+                    <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-action="Timesheet" asp-route-id="@t.Id">@t.ClientName</a></td>
+                    <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-action="Timesheet" asp-route-id="@t.Id">@t.ClientPrime</a></td>
+                    <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-action="Timesheet" asp-route-id="@t.Id">@t.TotalHours</a></td>
+                    <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-action="Timesheet" asp-route-id="@t.Id">@t.Submitted</a></td>
                 </tr>
-                <div class="modal fade" id="@("sheet" + t.TimesheetID)" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal fade" id="@("sheet" + t.Id)" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">@t.ProviderName (@t.ProviderID)</h5>
+                                <h5 class="modal-title" id="exampleModalLabel">@t.ProviderName (@t.ProviderId)</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -352,7 +352,7 @@
                                 <div class="flex-container column">
                                     <div class="row">
                                         <div class="column">
-                                            <label asp-for="Status">Status:</label> @(String.IsNullOrEmpty(t.AdminActivity) ? "Pending" : t.AdminActivity)
+                                            <label asp-for="Status">Status:</label> @(String.IsNullOrEmpty(t.UserActivity) ? "Pending" : t.UserActivity)
                                         </div>
                                     </div>
                                     <div class="row">
@@ -365,10 +365,10 @@
                                     </div>
                                     <div class="row">
                                         <div class="column">
-                                            <label>Total Hours:</label> @t.Hours
+                                            <label>Total Hours:</label> @t.TotalHours
                                         </div>
                                         <div class="column">
-                                            <label>Timesheet Submitted on:</label> @t.Submitted.ToString("MM-dd-yyyy")
+                                            <label>Submission Submitted on:</label> @t.Submitted.ToString("MM-dd-yyyy")
                                         </div>
                                     </div>
                                     <div class="table">
@@ -379,16 +379,16 @@
                                             <div class="col"><b>Hours</b></div>
                                             <div class="col"><b>Group? (yes/no)</b></div>
                                         </div>
-                                        @foreach (var s in t.Shifts)
+                                        @foreach (var e in t.TimeEntries)
                                         {
 
                                             color = color == "#8FDDE6" ? "#E6EFF3" : "#8FDDE6";
                                             <div class="row" style="background-color: @color">
-                                                <div class="col">@s.Date.ToString("d")</div>
-                                                <div class="col">@s.In.ToString("h:mm tt")</div>
-                                                <div class="col">@s.Out.ToString("h:mm tt")</div>
-                                                <div class="col">@s.Hours</div>
-                                                @if (s.Group)
+                                                <div class="col">@e.Date.ToString("d")</div>
+                                                <div class="col">@e.In.ToString("h:mm tt")</div>
+                                                <div class="col">@e.Out.ToString("h:mm tt")</div>
+                                                <div class="col">@e.Hours</div>
+                                                @if (e.Group)
                                                 {
                                                     <div class="col">Yes</div>
                                                 }
@@ -404,9 +404,9 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <form asp-controller="Timesheet" asp-action="Process">
-                                    <a class="btn btn-secondary" asp-action="Timesheet" asp-route-id="@t.TimesheetID">More Details</a>
-                                    <input type="hidden" name="id" value="@t.TimesheetID"/>
+                                <form asp-controller="Submission" asp-action="Process">
+                                    <a class="btn btn-secondary" asp-action="Timesheet" asp-route-id="@t.Id">More Details</a>
+                                    <input type="hidden" name="id" value="@t.Id"/>
                                     <input class="btn btn-primary" name="Status" value="Approved" type="submit">
                                     <input class="btn btn-danger" name="Status" value="Rejected" type="submit">
                                     <input type="text" name="RejectionReason" placeholder="Rejection Reason"/>
@@ -418,10 +418,10 @@
             }
             </tbody>
         </table>
-        @if (Model.Sheets.Count == 0)
+        @if (Model.Timesheets.Count == 0)
         {
             <br/>
-            <p>No Timesheets found matching parameters</p>
+            <p>No Submissions found matching parameters</p>
         }
     </dir>
 

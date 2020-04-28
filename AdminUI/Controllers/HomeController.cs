@@ -7,26 +7,28 @@ using AdminUI.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using AdminUI.Models;
-
+using Common.Models;
+using Microsoft.EntityFrameworkCore;
+using Common.Data;
 
 namespace AdminUI.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly TimesheetContext _Tcontext;
-        private readonly LockTableContext _Lcontext;
+        private readonly SubmissionContext _scontext;
+        private readonly UserContext _ucontext;
 
-        public HomeController(ILogger<HomeController> logger, TimesheetContext Tcontext, LockTableContext Lcontext)
+        public HomeController(ILogger<HomeController> logger, SubmissionContext scontext, UserContext ucontext)
         {
-            _Tcontext = Tcontext;
             _logger = logger;
-            _Lcontext = Lcontext;
+            _scontext = scontext;
+            _ucontext = ucontext;
         }
 
-        public IActionResult Index(string sortOrder = "id", string pName="", string cName="", string dateFrom="", string dateTo="", string prime="", string id="", string providerId="", string status="pending", int page = 1, int perPage = 20)
+        public IActionResult Index(string sortOrder = "id", string pName="", string cName="", string dateFrom="", string dateTo="", string prime="", string id="", string ProviderId="", string status="pending", int page = 1, int perPage = 20)
         {
-            var sheets = GetSheets();
+            var submissions = GetTimesheets();
 
             var model = new HomeModel();
             
@@ -34,128 +36,75 @@ namespace AdminUI.Controllers
             if (!string.IsNullOrEmpty(pName))
             {
                 model.PName = pName;
-                sheets = sheets.Where(t => t.ProviderName.ToLower().Contains(pName.ToLower()));
+                submissions = submissions.Where(t => t.ProviderName.ToLower().Contains(pName.ToLower()));
             }
-            if (!string.IsNullOrEmpty(providerId))
+            if (!string.IsNullOrEmpty(ProviderId))
             {
-                model.ProviderId = providerId;
-                sheets = sheets.Where(t => t.ProviderID.ToLower().Contains(providerId.ToLower()));
+                model.ProviderId = ProviderId;
+                submissions = submissions.Where(t => t.ProviderId.ToLower().Contains(ProviderId.ToLower()));
             }
 
             if (!string.IsNullOrEmpty(cName))
             {
                 model.CName = cName;
-                sheets = sheets.Where(t => t.ClientName.ToLower().Contains(cName.ToLower()));
+                submissions = submissions.Where(t => t.ClientName.ToLower().Contains(cName.ToLower()));
             }
             if (!string.IsNullOrEmpty(prime))
             {
                 model.Prime = prime;
-                sheets = sheets.Where(t => t.ClientPrime.Contains(prime, StringComparison.CurrentCultureIgnoreCase));
+                submissions = submissions.Where(t => t.ClientPrime.Contains(prime, StringComparison.CurrentCultureIgnoreCase));
             }
             if (!string.IsNullOrEmpty(dateFrom))
             {
                 model.DateFrom = dateFrom;
-                sheets = sheets.Where(t => t.Submitted >= DateTime.Parse(dateFrom));
+                submissions = submissions.Where(t => t.Submitted >= DateTime.Parse(dateFrom));
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
                 model.DateTo = dateTo;
-                sheets = sheets.Where(t => t.Submitted <= DateTime.Parse(dateTo));
+                submissions = submissions.Where(t => t.Submitted <= DateTime.Parse(dateTo));
             }
             if (!string.IsNullOrEmpty(id))
             {
                 model.Id = int.Parse(id);
-                sheets = sheets.Where(t => t.TimesheetID == int.Parse(id));
+                submissions = submissions.Where(t => t.Id == int.Parse(id));
             }
             
             if(!string.Equals(status,"all",StringComparison.CurrentCultureIgnoreCase))
-                sheets = sheets.Where(t => t.Status.Equals(status,StringComparison.CurrentCultureIgnoreCase));
+                submissions = submissions.Where(t => t.Status.Equals(status,StringComparison.CurrentCultureIgnoreCase));
 
             
             model.Status = status;
 
             //big ol' switch statement determines how to sort the data in the table
-            sheets = sortOrder switch
+            submissions = sortOrder switch
             {
-                "id" => sheets.OrderBy(t => t.TimesheetID),
-                "id_desc" => sheets.OrderByDescending(t => t.TimesheetID),
-                "pname" => sheets.OrderBy(t => t.ProviderName),
-                "pname_desc" => sheets.OrderByDescending(t => t.ProviderName),
-                "prime" => sheets.OrderBy(t => t.ClientPrime),
-                "prime_desc" => sheets.OrderByDescending(t => t.ClientPrime),
-                "cname" => sheets.OrderBy(t => t.ClientName),
-                "cname_desc" => sheets.OrderByDescending(t => t.ClientName),
-                "date" => sheets.OrderBy(t => t.Submitted),
-                "date_desc" => sheets.OrderByDescending(t => t.Submitted),
-                "hours" => sheets.OrderBy(t => t.Hours),
-                "hours_desc" => sheets.OrderByDescending(t => t.Hours),
-                "providerid" => sheets.OrderBy(t => t.ProviderID),
-                "providerid_desc" => sheets.OrderByDescending(t => t.ProviderID),
-                _ => sheets.OrderBy(t => t.TimesheetID),
+                "id" => submissions.OrderBy(t => t.Id),
+                "id_desc" => submissions.OrderByDescending(t => t.Id),
+                "pname" => submissions.OrderBy(t => t.ProviderName),
+                "pname_desc" => submissions.OrderByDescending(t => t.ProviderName),
+                "prime" => submissions.OrderBy(t => t.ClientPrime),
+                "prime_desc" => submissions.OrderByDescending(t => t.ClientPrime),
+                "cname" => submissions.OrderBy(t => t.ClientName),
+                "cname_desc" => submissions.OrderByDescending(t => t.ClientName),
+                "date" => submissions.OrderBy(t => t.Submitted),
+                "date_desc" => submissions.OrderByDescending(t => t.Submitted),
+                "hours" => submissions.OrderBy(t => t.TotalHours),
+                "hours_desc" => submissions.OrderByDescending(t => t.TotalHours),
+                "ProviderId" => submissions.OrderBy(t => t.ProviderId),
+                "ProviderId_desc" => submissions.OrderByDescending(t => t.ProviderId),
+                _ => submissions.OrderBy(t => t.Id),
             };
             model.SortOrder = sortOrder;
-            model.TotalSheets = sheets.Count();
-            model.TotalPages = sheets.Count() / perPage + (sheets.Count() % perPage == 0 ? 0 : 1);
-            sheets = sheets.Skip((page - 1) * perPage).Take(perPage);
+            model.TotalSubmissions = submissions.Count();
+            model.TotalPages = submissions.Count() / perPage + (submissions.Count() % perPage == 0 ? 0 : 1);
+            submissions = submissions.Skip((page - 1) * perPage).Take(perPage);
             model.PerPage = perPage;
             model.Page = page;
-            foreach (var t in sheets)
-            {
-                t.Shifts = new List<Shift>
-                {
-                    new Shift
-                    {
-                        Date = DateTime.Parse("3/11/2020"),
-                        In = DateTime.Parse("11:30 AM"),
-                        Out = DateTime.Parse("7:30 PM"),
-                        Hours = 8.00,
-                        Group = false
-                    },
-                    new Shift
-                    {
-                        Date = DateTime.Parse("3/11/2020"),
-                        In = DateTime.Parse("11:30 AM"),
-                        Out = DateTime.Parse("7:30 PM"),
-                        Hours = 8.00,
-                        Group = false
-                    },
-                    new Shift
-                    {
-                        Date = DateTime.Parse("3/11/2020"),
-                        In = DateTime.Parse("11:30 AM"),
-                        Out = DateTime.Parse("7:30 PM"),
-                        Hours = 8.00,
-                        Group = false
-                    },
-                    new Shift
-                    {
-                        Date = DateTime.Parse("3/11/2020"),
-                        In = DateTime.Parse("11:30 AM"),
-                        Out = DateTime.Parse("7:30 PM"),
-                        Hours = 8.00,
-                        Group = false
-                    },
-                    new Shift
-                    {
-                        Date = DateTime.Parse("3/11/2020"),
-                        In = DateTime.Parse("11:30 AM"),
-                        Out = DateTime.Parse("7:30 PM"),
-                        Hours = 8.00,
-                        Group = false
-                    },
-                    new Shift
-                    {
-                        Date = DateTime.Parse("3/12/2020"),
-                        In = DateTime.Parse("11:30 AM"),
-                        Out = DateTime.Parse("7:30 PM"),
-                        Hours = 8.00,
-                        Group = false
-                    }
-                };
-            }
 
-
-            model.Sheets = new List<Timesheet>(sheets);
+            foreach (var s in submissions)
+                _scontext.Entry(s).Collection(t => t.TimeEntries).Load();
+            model.Timesheets = new List<Timesheet>(submissions);
             return View(model);
         }
 
@@ -165,91 +114,76 @@ namespace AdminUI.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        private IEnumerable<Timesheet> GetSheets()
+        private IEnumerable<Timesheet> GetTimesheets()
         {
-            return  _Tcontext.Timesheet.AsEnumerable();
+            return _scontext.Timesheets
+                .Include(t => t.TimeEntries)
+                .AsEnumerable();
         }
 
-        //should return a Timesheet View
-        public async Task<IActionResult> Timesheet(int ID)
+        //should return a timesheet View
+        public async Task<IActionResult> Timesheet(int id)
         {
             if (string.IsNullOrEmpty(User.Identity.Name))
-                return View("../Timesheet/NoPermission");
-            var timesheet =  _Tcontext.Timesheet.Find(ID);
-            timesheet.Shifts = new List<Shift>
-            {
-                new Shift
-                {
-                    Date = DateTime.Parse("3/11/2020"),
-                    In = DateTime.Parse("11:30 AM"),
-                    Out = DateTime.Parse("7:30 PM"),
-                    Hours = 8.00,
-                    Group = false
-                },
-                new Shift
-                {
-                    Date = DateTime.Parse("3/12/2020"),
-                    In = DateTime.Parse("11:30 AM"),
-                    Out = DateTime.Parse("7:30 PM"),
-                    Hours = 8.00,
-                    Group = false
-                }
-            };
+                return View("../submission/NoPermission");
+            
+            var submission =  _scontext.Timesheets.Find(id);
                 
-            timesheet.Lock = _Lcontext.LockTableRow.FirstOrDefault(r => r.TimesheetID == ID);
+            _scontext.Entry(submission).Reference(t => t.LockInfo).Load();
+            _scontext.Entry(submission).Collection(t => t.TimeEntries).Load();
 
-            if (timesheet.Lock != null) return View(timesheet);
+            if (submission.LockInfo != null) return View(submission);
 
-            timesheet.Lock = new LockTableRow
+            submission.LockInfo = new Lock
                 {
-                    TimesheetID = ID,
-                    LastInteraction = DateTime.Now,
-                    TimeLocked = DateTime.Now,
+                    LastActivity = DateTime.Now,
                     User = User.Identity.Name
                 };
 
-            _Lcontext.Add(timesheet.Lock);
-            await _Lcontext.SaveChangesAsync();
 
-            return View(timesheet);
+            _scontext.Update(submission);
+            await _scontext.SaveChangesAsync();
+
+            return View(submission);
         }
 
         public FileContentResult DownloadCSV(string pName, string cName, string dateFrom, string dateTo, string prime, string id, string status)
         {
-            var sheets = GetSheets();
+            var submissions = GetTimesheets();
 
-            
-            //filter the timesheets 
+            //filter the timesubmissions 
             if (!string.IsNullOrEmpty(pName))
-                sheets = sheets.Where(t => t.ProviderName.ToLower().Contains(pName.ToLower()));
+                submissions = submissions.Where(t => t.ProviderName.ToLower().Contains(pName.ToLower()));
 
             if (!string.IsNullOrEmpty(cName))
-                sheets = sheets.Where(t => t.ClientName.ToLower().Contains(cName.ToLower()));
+                submissions = submissions.Where(t => t.ClientName.ToLower().Contains(cName.ToLower()));
 
             if (!string.IsNullOrEmpty(dateFrom))
-                sheets = sheets.Where(t => t.Submitted >= DateTime.Parse(dateFrom));
+                submissions = submissions.Where(t => t.Submitted >= DateTime.Parse(dateFrom));
 
             if (!string.IsNullOrEmpty(dateTo))
-                sheets = sheets.Where(t => t.Submitted <= DateTime.Parse(dateTo));
+                submissions = submissions.Where(t => t.Submitted <= DateTime.Parse(dateTo));
 
             if (!string.IsNullOrEmpty(prime))
-                sheets = sheets.Where(t => t.ClientPrime == prime);
+                submissions = submissions.Where(t => t.ClientPrime == prime);
 
             if (!string.IsNullOrEmpty(id))
-                sheets = sheets.Where(t => t.TimesheetID == int.Parse(id));
+                submissions = submissions.Where(t => t.Id == int.Parse(id));
 
             if (string.IsNullOrEmpty(status))
                 status = "pending";
 
             if(!string.Equals(status,"all",StringComparison.CurrentCultureIgnoreCase))
-                sheets = sheets.Where(t => t.Status.Equals(status,StringComparison.CurrentCultureIgnoreCase));
+                submissions = submissions.Where(t => t.Status.Equals(status,StringComparison.CurrentCultureIgnoreCase));
 
-            //the following loops through every property in a timesheet, first saving the names of the properties to 
-            //act as a header. Then, it loops through every timesheet, adding every individual property of the timesheet
+            //the following loops through every property in a submission, first saving the names of the properties to 
+            //act as a header. Then, it loops through every submission, adding every individual property of the submission
             //to the csv, then returning it for download.
-            var properties = typeof(Timesheet).GetProperties();
+            
+            //var properties = typeof(Timesheet).GetProperties();
+            var properties = submissions.GetType().GetGenericArguments()[0].GetProperties();
             var csv = properties.Aggregate("", (current, f) => current + (f.Name + ','));
-            foreach (var s in sheets)
+            foreach (var s in submissions)
             {
                 csv += '\n';
                 foreach (var p in properties)

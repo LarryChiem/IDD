@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+﻿using System.Collections.Generic;
+using Common.Models;
 namespace AdminUI.Models
 {
     public class HomeModel
     {
-        public IList<Timesheet> Sheets;
+        public IList<Timesheet> Timesheets;
         public int TotalPages;
-        public int TotalSheets;
+        public int TotalSubmissions;
         public int PerPage;
         public int Page;
 

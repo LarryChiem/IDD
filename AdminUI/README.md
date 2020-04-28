@@ -8,9 +8,9 @@ In the Package Manager Console, run the following commands:
 
 	EntityFrameworkCore\Update-Database -Context AdminAccountContext
 	
-	EntityFrameworkCore\Update-Database -Context TimesheetContext
+	EntityFrameworkCore\Update-Database -Context SubmissionContext
 	
-	EntityFrameworkCore\Update-Database -Context LockTableContext
+	EntityFrameworkCore\Update-Database -Context UserContext
 
 If you see an error along the lines of "Database xxx already exists, pick a different name",
 then go to view -> Server Object Explorer, find the database in question, right click, then delete.

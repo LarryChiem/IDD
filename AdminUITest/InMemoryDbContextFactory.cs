@@ -1,23 +1,27 @@
 ﻿using AdminUI.Data;
+using Common.Data;
 using Microsoft.EntityFrameworkCore;
 
-
-public class InMemoryDbContextFactory
+namespace AdminUITest
+{
+    public class InMemoryDbContextFactory
     {
-        public TimesheetContext GetTimesheetContext()
+        public SubmissionContext GetSubmissionContext()
         {
-            var options = new DbContextOptionsBuilder<TimesheetContext>()
-                        .UseInMemoryDatabase(databaseName: "InMemoryArticleDatabase")
-                        .Options;
-        var dbContext = new TimesheetContext(options);
+            var options = new DbContextOptionsBuilder<SubmissionContext>()
+                .UseInMemoryDatabase(databaseName: "InMemoryArticleDatabase")
+                .Options;
+            var dbContext = new SubmissionContext(options);
             return dbContext;
         }
-        public LockTableContext GetLockTableContext()
+
+        public UserContext GetUserContext()
         {
-            var options = new DbContextOptionsBuilder<LockTableContext>()
-                        .UseInMemoryDatabase(databaseName: "InMemoryArticleDatabase")
-                        .Options;
-        var dbContext = new LockTableContext(options);
+            var options = new DbContextOptionsBuilder<UserContext>()
+                .UseInMemoryDatabase(databaseName: "InMemoryArticleDatabase")
+                .Options;
+            var dbContext = new UserContext(options);
             return dbContext;
         }
     }
+}

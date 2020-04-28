@@ -1,5 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
+using Appserver.Controllers;
 
 namespace Appserver.Tests
 {

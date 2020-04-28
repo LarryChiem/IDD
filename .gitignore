@@ -375,3 +375,6 @@ yarn-error.log*
 chunk-vendors.*
 precache-manifest.*
 app.*
+
+# Appserver storage directories
+Appserver/uploaded_docs

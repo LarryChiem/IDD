@@ -130,124 +130,124 @@
 </template>
 
 <script>
-import { validationMixin } from "vuelidate";
-import {
-  required,
-  email,
-  minLength,
-  maxLength,
-  between,
-} from "vuelidate/lib/validators";
+  import { validationMixin } from "vuelidate";
+  import {
+    required,
+    email,
+    minLength,
+    maxLength,
+    between,
+  } from "vuelidate/lib/validators";
 
-import Vue from "vue";
-import {
-  MdCard,
-  MdField,
-  MdMenu,
-  MdProgress,
-  MdSnackbar,
-  MdList,
-  MdButton,
-  MdContent,
-  MdLayout,
-} from "vue-material/dist/components";
-import "vue-material/dist/vue-material.min.css";
-import "vue-material/dist/theme/default.css";
+  import Vue from "vue";
+  import {
+    MdCard,
+    MdField,
+    MdMenu,
+    MdProgress,
+    MdSnackbar,
+    MdList,
+    MdButton,
+    MdContent,
+    MdLayout,
+  } from "vue-material/dist/components";
+  import "vue-material/dist/vue-material.min.css";
+  import "vue-material/dist/theme/default.css";
 
-Vue.use(MdCard);
-Vue.use(MdField);
-Vue.use(MdMenu);
-Vue.use(MdProgress);
-Vue.use(MdSnackbar);
-Vue.use(MdList);
-Vue.use(MdButton);
-Vue.use(MdContent);
-Vue.use(MdLayout);
+  Vue.use(MdCard);
+  Vue.use(MdField);
+  Vue.use(MdMenu);
+  Vue.use(MdProgress);
+  Vue.use(MdSnackbar);
+  Vue.use(MdList);
+  Vue.use(MdButton);
+  Vue.use(MdContent);
+  Vue.use(MdLayout);
 
-export default {
-  name: "FormExample",
-  mixins: [validationMixin],
-  data: () => ({
-    form: {
-      firstName: null,
-      lastName: null,
-      gender: null,
-      age: null,
-      email: null,
-    },
-    userSaved: false,
-    sending: false,
-    lastUser: null,
-  }),
-  validations: {
-    form: {
-      firstName: {
-        required,
-        minLength: minLength(3),
+  export default {
+    name: "FormExample",
+    mixins: [validationMixin],
+    data: () => ({
+      form: {
+        firstName: null,
+        lastName: null,
+        gender: null,
+        age: null,
+        email: null,
       },
-      lastName: {
-        required,
-        minLength: minLength(3),
-      },
-      age: {
-        required,
-        maxLength: maxLength(3),
-        between: between(1, 100),
-      },
-      gender: {
-        required,
-      },
-      email: {
-        required,
-        email,
+      userSaved: false,
+      sending: false,
+      lastUser: null,
+    }),
+    validations: {
+      form: {
+        firstName: {
+          required,
+          minLength: minLength(3),
+        },
+        lastName: {
+          required,
+          minLength: minLength(3),
+        },
+        age: {
+          required,
+          maxLength: maxLength(3),
+          between: between(1, 100),
+        },
+        gender: {
+          required,
+        },
+        email: {
+          required,
+          email,
+        },
       },
     },
-  },
-  methods: {
-    getValidationClass(fieldName) {
-      const field = this.$v.form[fieldName];
+    methods: {
+      getValidationClass(fieldName) {
+        const field = this.$v.form[fieldName];
 
-      if (field) {
-        return {
-          "md-invalid": field.$invalid && field.$dirty,
-        };
-      }
-    },
-    clearForm() {
-      this.$v.$reset();
-      this.form.firstName = null;
-      this.form.lastName = null;
-      this.form.age = null;
-      this.form.gender = null;
-      this.form.email = null;
-    },
-    saveUser() {
-      this.sending = true;
+        if (field) {
+          return {
+            "md-invalid": field.$invalid && field.$dirty,
+          };
+        }
+      },
+      clearForm() {
+        this.$v.$reset();
+        this.form.firstName = null;
+        this.form.lastName = null;
+        this.form.age = null;
+        this.form.gender = null;
+        this.form.email = null;
+      },
+      saveUser() {
+        this.sending = true;
 
-      // Instead of this timeout, here you can call your API
-      window.setTimeout(() => {
-        this.lastUser = `${this.form.firstName} ${this.form.lastName}`;
-        this.userSaved = true;
-        this.sending = false;
-        this.clearForm();
-      }, 1500);
-    },
-    validateUser() {
-      this.$v.$touch();
+        // Instead of this timeout, here you can call your API
+        window.setTimeout(() => {
+          this.lastUser = `${this.form.firstName} ${this.form.lastName}`;
+          this.userSaved = true;
+          this.sending = false;
+          this.clearForm();
+        }, 1500);
+      },
+      validateUser() {
+        this.$v.$touch();
 
-      if (!this.$v.$invalid) {
-        this.saveUser();
-      }
+        if (!this.$v.$invalid) {
+          this.saveUser();
+        }
+      },
     },
-  },
-};
+  };
 </script>
 
 <style lang="scss" scoped>
-.md-progress-bar {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-}
+  .md-progress-bar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+  }
 </style>

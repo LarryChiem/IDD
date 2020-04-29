@@ -9,57 +9,64 @@
   "serviceDeliveredOn": [
     {
       "date": "2019-10-05",
-      "startTime": "09:00",
-      "endTime": "20:00",
-      "totalHours": "11:00",
+      "startTime": "09:00 AM",
+      "endTime": "09:01 PM",
+      "totalHours": "13:00",
+      "group": "No"
+    },
+    {
+      "date": "2019-10-05",
+      "startTime": "09:30 AM",
+      "endTime": "10:30 PM",
+      "totalHours": "13:00",
       "group": "Yes"
     },
     {
       "date": "2019-10-06",
-      "startTime": "10:00",
-      "endTime": "20:00",
-      "totalHours": "10:00",
+      "startTime": "10:00 AM",
+      "endTime": "02:00 PM",
+      "totalHours": "04:00",
       "group": "No"
     },
     {
       "date": "2019-10-12",
-      "startTime": "09:00",
-      "endTime": "20:00",
-      "totalHours": "11:00",
+      "startTime": "09:00 AM",
+      "endTime": "10:00 PM",
+      "totalHours": "13:00",
       "group": "No"
     },
     {
       "date": "2019-10-13",
-      "startTime": "10:00",
-      "endTime": "20:00",
-      "totalHours": "10:00",
+      "startTime": "10:00 AM",
+      "endTime": "10:00 PM",
+      "totalHours": "12:00",
       "group": "Yes"
     },
     {
       "date": "2019-10-19",
-      "startTime": "09:35",
-      "endTime": "21:06",
+      "startTime": "09:35 AM",
+      "endTime": "09:06 PM",
       "totalHours": "11:31",
       "group": "No"
     },
     {
       "date": "2019-10-20",
-      "startTime": "10:00",
-      "endTime": "20:00",
+      "startTime": "10:00 AM",
+      "endTime": "08:00 PM",
       "totalHours": "10:00",
       "group": "Yes"
     },
     {
       "date": "2019-10-26",
-      "startTime": "08:58",
-      "endTime": "19:21",
+      "startTime": "08:58 AM",
+      "endTime": "07:21 PM",
       "totalHours": "10:23",
       "group": "No"
     },
     {
       "date": "2019-10-27",
-      "startTime": "10:00",
-      "endTime": "18:00",
+      "startTime": "10:00 AM",
+      "endTime": "06:00 PM",
       "totalHours": "08:00",
       "group": "Yes"
     }

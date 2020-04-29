@@ -24,18 +24,19 @@
 </template>
 
 <script>
-export default {
-  name: "AppFooter",
-  data: function () {
-    return {
-      // A list of links for more info about the company
-      links: {
-        "About Us": "https://multco.us/multnomah-county/about-multnomah-county",
-        Opportunities: "https://multco.us/jobs",
-        Access:
-          "https://multco.us/diversity-equity/ada-policy-notice-and-disability-complaint-process",
-      },
-    };
-  },
-};
+  export default {
+    name: "AppFooter",
+    data: function () {
+      return {
+        // A list of links for more info about the company
+        links: {
+          "About Us":
+            "https://multco.us/multnomah-county/about-multnomah-county",
+          Opportunities: "https://multco.us/jobs",
+          Access:
+            "https://multco.us/diversity-equity/ada-policy-notice-and-disability-complaint-process",
+        },
+      };
+    },
+  };
 </script>

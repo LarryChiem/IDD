@@ -31,35 +31,30 @@
       </v-col>
 
       <v-col v-else-if="variant === 'Fill out a form'">
-        <IDDForm 
-          :parsedFileData="parsedFileData"
-        /> 
+        <IDDForm :parsedFileData="parsedFileData" />
       </v-col>
     </v-row>
   </div>
 </template>
 
 <script>
-import FileUploader from "@/components/Timesheet/FileUploader";
-import IDDForm from "@/components/Timesheet/IDDForm";
+  import FileUploader from "@/components/Timesheet/FileUploader";
+  import IDDForm from "@/components/Timesheet/IDDForm";
 
-// MOCK .json data
-import mock_json from "@/components/Timesheet/OR507_Example.json";
+  // MOCK .json data
+  import mock_json from "@/components/Timesheet/OR507_Example.json";
 
-export default {
-  name: "Timesheet",
-  components: {
-    FileUploader,
-    IDDForm,
-  },
-  data: () => ({
-    // Choices for the select component
-    items: [
-      'Upload an image',
-      'Fill out a form',
-    ],
-    variant: 'default',
-    parsedFileData: mock_json
-  })
-}
+  export default {
+    name: "Timesheet",
+    components: {
+      FileUploader,
+      IDDForm,
+    },
+    data: () => ({
+      // Choices for the select component
+      items: ["Upload an image", "Fill out a form"],
+      variant: "default",
+      parsedFileData: mock_json,
+    }),
+  };
 </script>

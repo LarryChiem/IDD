@@ -4,21 +4,23 @@
     "disabled": false,
     "hint": "Full name",
     "label": "Customer Name",
-    "rules": "nameRules",
+    "rules": ["required", "name"],
     "value": null
   },
   "prime": {
     "counter": 8,
     "disabled": false,
+    "hint": "Alphanumeric input",
     "label": "Prime",
-    "rules": "alphanumericRules",
+    "rules": ["required", "alphanumeric"],
     "value": null
   },
   "submissionDate": {
+    "counter": 7,
     "disabled": false,
     "hint": "YYYY-MM",
     "label": "Pay Period Month and Year",
-    "rules": "monthyearRules",
+    "rules": ["required", "monthYear"],
     "value": null
   },
   "providerName": {
@@ -26,35 +28,39 @@
     "disabled": false,
     "hint": "Full name",
     "label": "Provider Name",
-    "rules": "nameRules",
+    "rules": ["required", "name"],
     "value": null
   },
   "providerNumber": {
     "counter": 6,
     "disabled": false,
+    "hint": "Six digit number found on xyz",
     "label": "Provider Number",
-    "rules": "numericRules",
+    "rules": ["required", "numeric"],
     "value": null
   },
   "SC/PA Name": {
     "counter": 25,
     "disabled": false,
+    "hint": "Name of the SC PA person",
     "label": "SC/PA Name",
-    "rules": "nameRules",
+    "rules": ["required", "name"],
     "value": null
   },
   "CMOrg": {
     "counter": 50,
     "disabled": false,
+    "hint": "Organization name",
     "label": "CM Organization",
-    "rules": "nameRules",
+    "rules": ["required", "name"],
     "value": null
   },
   "service": {
     "counter": 100,
     "disabled": false,
+    "hint": "Service provided",
     "label": "Service",
-    "rules": "nameRules",
+    "rules": ["required", "name"],
     "value": null
   },
   "serviceDeliveredOn": {
@@ -62,12 +68,12 @@
     "value": null
   },
   "totalHours": {
-    "counter": 8,
+    "counter": 5,
     "disabled": false,
-    "hint": "HH:mm AM/PM",
+    "hint": "HH:mm",
     "label": "Total Hours",
-    "rules": "timeRules",
-    "value": ""
+    "rules": ["required", "time"],
+    "value": null
   },
   "serviceGoal": {
     "auto_grow": true,
@@ -75,8 +81,8 @@
     "disabled": false,
     "label": "Service Goal",
     "rows": 1,
-    "rules": "nameRules",
-    "value": ""
+    "rules": ["required", "name"],
+    "value": null
   },
   "progressNotes": {
     "auto_grow": true,
@@ -84,14 +90,14 @@
     "disabled": false,
     "label": "Progress Notes",
     "rows": 5,
-    "rules": "nameRules",
-    "value": ""
+    "rules": ["required", "name"],
+    "value": null
   },
   "employerSignDate": {
     "disabled": false,
     "hint": "YYYY-MM-DD",
     "label": "Date",
-    "rules": "dateRules",
+    "rules": ["required", "date"],
     "value": null
   },
   "employerSignature": {
@@ -103,7 +109,7 @@
   "providerSignDate": {
     "disabled": false,
     "label": "Date",
-    "rules": "dateRules",
+    "rules": ["required", "date"],
     "value": null
   },
   "providerSignature": {
@@ -121,7 +127,7 @@
   "providerInitials": {
     "disabled": false,
     "label": "Provider Initials",
-    "rules": "nameRules",
+    "rules": ["required", "name"],
     "value": null
   }
 }

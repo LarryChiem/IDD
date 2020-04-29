@@ -7,19 +7,23 @@
 </template>
 
 <script>
-import Vue from "vue";
-import { MdDatepicker, MdDialog, MdLayout } from "vue-material/dist/components";
-import "vue-material/dist/vue-material.min.css";
-import "vue-material/dist/theme/default.css";
+  import Vue from "vue";
+  import {
+    MdDatepicker,
+    MdDialog,
+    MdLayout,
+  } from "vue-material/dist/components";
+  import "vue-material/dist/vue-material.min.css";
+  import "vue-material/dist/theme/default.css";
 
-Vue.use(MdDatepicker);
-Vue.use(MdDialog);
-Vue.use(MdLayout);
+  Vue.use(MdDatepicker);
+  Vue.use(MdDialog);
+  Vue.use(MdLayout);
 
-export default {
-  name: "DateExample",
-  data: () => ({
-    selectedDate: null,
-  }),
-};
+  export default {
+    name: "DateExample",
+    data: () => ({
+      selectedDate: null,
+    }),
+  };
 </script>

@@ -40,34 +40,34 @@
 </template>
 
 <script>
-export default {
-  name: "NavigationDrawer",
-  props: {
-    // Display toggle value passed in from the parent component
-    open: {
-      type: Boolean,
-      default: false,
+  export default {
+    name: "NavigationDrawer",
+    props: {
+      // Display toggle value passed in from the parent component
+      open: {
+        type: Boolean,
+        default: false,
+      },
     },
-  },
-  data: function () {
-    return {
-      // Display toggle; if true, display navigation drawer, else hide
-      drawerOpen: this.open,
-    };
-  },
-  // Parent -> Child communication
-  watch: {
-    // Change should come from pressing a button on the AppBar
-    open(newVal) {
-      this.drawerOpen = newVal;
+    data: function () {
+      return {
+        // Display toggle; if true, display navigation drawer, else hide
+        drawerOpen: this.open,
+      };
     },
-  },
-  // Child -> Parent communication
-  methods: {
-    // Change 'isOpen' upon closing the navigation drawer
-    onInput(isOpen) {
-      this.$emit("drawer-change", isOpen);
+    // Parent -> Child communication
+    watch: {
+      // Change should come from pressing a button on the AppBar
+      open(newVal) {
+        this.drawerOpen = newVal;
+      },
     },
-  },
-};
+    // Child -> Parent communication
+    methods: {
+      // Change 'isOpen' upon closing the navigation drawer
+      onInput(isOpen) {
+        this.$emit("drawer-change", isOpen);
+      },
+    },
+  };
 </script>

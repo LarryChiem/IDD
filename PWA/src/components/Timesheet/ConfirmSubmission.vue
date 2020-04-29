@@ -1,41 +1,53 @@
 <template>
   <v-row justify="center">
-    <v-btn color="success" 
-		dark 
-		@click.stop="dialog = true" 
-		@click="validate">
+    <v-btn color="success" dark @click.stop="signalParentValidate">
       Submit
     </v-btn>
 
-    <v-dialog 
-		v-model="dialog" 
-		max-width="300">
-      <div v-if="valid">
+    <v-dialog v-model="displaySubmit">
+      <div v-if="isValid">
         <v-card>
           <div v-if="!loading">
-            <v-card-title 
-						class="headline" 
-						id="confirm"
-              >Are you sure want to submit the form?</v-card-title
-            >
+            <v-card-title class="headline" id="confirm">
+              Are you sure want to submit the form?
+            </v-card-title>
 
             <v-card-text>
               Some text talking about how this submission is final unless
               something is wrong with it.
             </v-card-text>
 
+            <v-card-text v-if="this.totalEdited > 0">
+              <em>
+                There were {{ totalEdited }} edited fields. Provider and Employer must resign the timesheet form.
+              </em>
+               
+              <!-- 
+                If there were any changes to the form, disable 
+                submission until both provider and employer re-sign. 
+              -->
+              <v-container fluid>
+                <v-checkbox color="success" v-model="reSigned" label="Employer accepts all changes to the IDD form." value="Employer"></v-checkbox>
+                <v-checkbox color="success" v-model="reSigned" label="Provider accepts all changes to the IDD form." value="Provider"></v-checkbox>
+              </v-container>
+              
+              <v-card color="red lighten-2" v-if="!reSigned.includes('Employer')">
+                Employer must re-sign form!
+              </v-card>
+              <v-card color="red lighten-2" v-if="!reSigned.includes('Provider')">
+                Provider must re-sign form!
+              </v-card>
+            </v-card-text>
+
             <v-card-actions>
               <v-spacer></v-spacer>
 
-							<!-- Confirm if user is ready to submit -->
-              <v-btn color="red" 
-							text 
-							@click="dialog = false">
+              <!-- Confirm if user is ready to submit -->
+              <v-btn color="red" text @click="displaySubmit = false">
                 Cancel
               </v-btn>
-              <v-btn color="green 
-							darken-1" text
-							@click="submit">
+              <v-btn text color="green darken-1" 
+              :disabled="canSubmit" @click="submit">
                 Submit
               </v-btn>
             </v-card-actions>
@@ -46,10 +58,10 @@
               <!-- Submitting the form -->
               <div class="text-center">
                 <v-progress-circular
-                  :size="50"
-                  color="primary"
                   indeterminate
+                  color="primary"
                   id="progress"
+                  :size="50"
                 ></v-progress-circular>
                 <p class="text--disabled">Submitting form</p>
               </div>
@@ -58,23 +70,18 @@
             <div v-else>
               <!-- Display submission status -->
               <div v-if="submissionStatus">
-                <v-card-title 
-								class="headline 
-								text-center" 
-								id="submited"
-                  >Your form has been submitted!</v-card-title
-                >
+                <v-card-title class="headline text-center" id="submited">
+                  Your form has been submitted!
+                </v-card-title>
 
                 <v-card-text class="text-center" id="submissionError">
                   Some text on what will come next for the employee.
                 </v-card-text>
               </div>
               <div v-else>
-                <v-card-title 
-								class="headline" 
-								id="failure"
-                  >Something has gone wrong</v-card-title
-                >
+                <v-card-title class="headline" id="failure">
+                  Something has gone wrong
+                </v-card-title>
 
                 <v-card-text>
                   Please try again.
@@ -84,22 +91,24 @@
           </div>
         </v-card>
       </div>
-				
-			<!-- The form is not valid -->
-			<div v-else>
-				<v-card>
-					<v-card-title 
-					class="headline 
-					text-danger" 
-					id="invalid">
-						Your form is not valid.</v-card-title
-					>
-	
-					<v-card-text>
-						Please fix the invalid parts of the form and then retry submitting
-						your form.
-					</v-card-text>
-				</v-card>
+
+      <!-- The form is not valid -->
+      <div v-else>
+        <v-card>
+          <v-card-title class="headline text-danger" id="invalid">
+            Your form is not valid.
+          </v-card-title>
+
+          <v-card-text>
+            Please fix the invalid parts of the form and then retry submitting
+            your form.
+            <hr />
+            Errors:
+            <v-card color="red lighten-2" v-for="(error, index) in errors" :key="index">
+              <strong>{{ error }}</strong>
+            </v-card>
+          </v-card-text>
+        </v-card>
       </div>
     </v-dialog>
   </v-row>
@@ -133,17 +142,41 @@
         default: false,
       },
 
+      // Signal that parent form has completed validation
+      validationSignal: {
+        type: Boolean,
+        default: false,
+      },
+
+      // The list of errors from the parent's validation function
+      errors: {
+        type: Array,
+        default: null,
+      },
+
+      // The amount of errors from the parent's validation function
+      numErrors: {
+        type: Number,
+        default: 0,
+      },
+
       //User (edited) information.
       formFields: {
         type: Object,
         default: null,
       },
+
+      // The amount of parsed fields that were edited
+      totalEdited: {
+        type: Number,
+        default: 0,
+      },
     },
 
     data() {
       return {
-        //If the dialog is still up.
-        dialog: false,
+        // Hide or display the submit pop-up
+        displaySubmit: false,
 
         //Log of POST connection.
         loading: false,
@@ -157,16 +190,49 @@
         //Data to be submitted
         submitData: null,
 
+        // All the errors of this form
+        isValid: this.valid,
+        waitingOnParent: false,
+
+        // Provider and employer re-signed the form
+        reSigned: [],
+
         //URL for the AppServer
         url: process.env.VUE_APP_SERVER_URL.concat("Submit"),
       };
     },
 
-    methods: {
-      validate() {
-        if (this.valid) {
-          console.log("Valid form");
+    computed: {
+        canSubmit: function() {
+          return (this.totalEdited > 0) && !(this.reSigned.length === 2) && this.isValid; 
+        },
+    },
+
+    watch: {
+      // The parent form has finished validating all fields on the 
+      // IDD Timesheet. Display errors or submit
+      validationSignal() {
+        var numErrors = this.errors.length;
+        if (numErrors > 0) {
+          this.isValid = false;
+        } else {
+          this.isValid = true;
         }
+
+        if (this.waitingOnParent === true) {
+          this.waitingOnParent = false;
+          this.displaySubmit = true;
+        }
+      },
+    },
+
+    methods: {
+      // Reset all submission values
+      resetValid() {
+        this.reSigned = [];
+        this.loading = false;
+        this.submissionStatus = false;
+        this.returnHome = false;
       },
 
       //Formats the data to be posted
@@ -177,34 +243,55 @@
           submitData[key]["value"] = value["value"];
           submitData[key]["wasEdited"] = !value["disabled"];
         });
+
         submitData["serviceDeliveredOn"]["value"] = [];
-        submitData["serviceDeliveredOn"]["wasEdited"] = false; // TODO
         Object.entries(this.formFields["serviceDeliveredOn"]["value"]).forEach(
           ([key, value]) => {
             key;
             var row = {};
+
             var cols = ["date", "startTime", "endTime", "totalHours", "group"];
             cols.forEach((col) => {
-              var c = {};
-              c["value"] = value[col]; // TODO value[col]['value']
-              c["wasEdited"] = false; // TODO
-              row[col] = c;
+              row[col] = value[col];
             });
+            row["wasEdited"] = !value["disabled"];
+
             submitData["serviceDeliveredOn"]["value"].push(row);
           }
         );
-        this.submitData = submitData;
+
+        return submitData;
+      },
+
+      // Send signal to parent component to validate
+      signalParentValidate() {
+        // Reset the submission values
+        this.resetValid()
+
+        // Set flag to wait on parent
+        this.waitingOnParent = true;
+        
+        // Send signal to parent component to validate input fields
+        this.$emit("click");
       },
 
       //Submits form to AppServer.
       submit() {
-        //After form is validated, post timesheet.
+        // Do not post timesheet if any:
+        //   - The form is invalid
+        //   - There were edits, but employer and provider didn't re-sign
+        if (this.canSubmit) {
+          return false
+        }
+
+        // Else, post timesheet
         this.loading = true;
         var self = this;
-        //Prepare the data to send.
-        this.formatData();
 
-        if (this.valid) {
+        // Finally, prepare the form data and send to the backend
+        this.submitData = this.formatData();
+
+        if (this.errors.length === 0) {
           axios
             .post(this.url, this.submitData, {
               headers: {

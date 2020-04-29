@@ -41,40 +41,40 @@
 </template>
 
 <script>
-/**import FormExample from './FormExample.vue'
+  /**import FormExample from './FormExample.vue'
   import TableExample from './TableExample.vue'
   import DateExample from './DateExample.vue'
   import CameraExample from './CameraExample.vue'
   **/
-import FileUploader from "./FileUploader.vue";
+  import FileUploader from "./FileUploader.vue";
 
-import Vue from "vue";
-import { MdToolbar, MdLayout } from "vue-material/dist/components";
-import "vue-material/dist/vue-material.min.css";
-import "vue-material/dist/theme/default.css";
+  import Vue from "vue";
+  import { MdToolbar, MdLayout } from "vue-material/dist/components";
+  import "vue-material/dist/vue-material.min.css";
+  import "vue-material/dist/theme/default.css";
 
-Vue.use(MdToolbar);
-Vue.use(MdLayout);
+  Vue.use(MdToolbar);
+  Vue.use(MdLayout);
 
-export default {
-  name: "ComponentsExample",
-  components: {
-    /**FormExample,
+  export default {
+    name: "ComponentsExample",
+    components: {
+      /**FormExample,
       TableExample,
       DateExample,
       CameraExample,
       **/
-    FileUploader,
-  },
-};
+      FileUploader,
+    },
+  };
 </script>
 
 <style lang="scss" scoped>
-span {
-  margin: 0.5em 0;
-  display: block;
-}
-.md-toolbar + .md-toolbar {
-  margin-top: 16px;
-}
+  span {
+    margin: 0.5em 0;
+    display: block;
+  }
+  .md-toolbar + .md-toolbar {
+    margin-top: 16px;
+  }
 </style>

@@ -7,7 +7,7 @@
     <v-toolbar-title>
       IDD Timesheet Submission
     </v-toolbar-title>
-    
+
     <v-spacer></v-spacer>
 
     <!-- Link to user help manuals -->
@@ -24,33 +24,33 @@
 </template>
 
 <script>
-export default {
-  name: "AppBar",
-  props: {
-    open: {
-      type: Boolean,
-      default: true,
+  export default {
+    name: "AppBar",
+    props: {
+      open: {
+        type: Boolean,
+        default: true,
+      },
     },
-  },
-  data: function () {
-    return {
-      // Display toggle; if true, display navigation drawer, else hide
-      drawerOpen: this.open,
-    };
-  },
-  // Parent -> Child communication
-  watch: {
-    // Change should come from the NavigationDrawer closing
-    open(newVal) {
-      this.drawerOpen = newVal;
+    data: function () {
+      return {
+        // Display toggle; if true, display navigation drawer, else hide
+        drawerOpen: this.open,
+      };
     },
-  },
-  // Child -> Parent communication
-  methods: {
-    // Change 'isOpen' upon pressing the app-bar-nav-icon
-    onInput() {
-      this.$emit("drawer-change", !this.drawerOpen);
+    // Parent -> Child communication
+    watch: {
+      // Change should come from the NavigationDrawer closing
+      open(newVal) {
+        this.drawerOpen = newVal;
+      },
     },
-  },
-};
+    // Child -> Parent communication
+    methods: {
+      // Change 'isOpen' upon pressing the app-bar-nav-icon
+      onInput() {
+        this.$emit("drawer-change", !this.drawerOpen);
+      },
+    },
+  };
 </script>

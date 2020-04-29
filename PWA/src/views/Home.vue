@@ -19,10 +19,10 @@
 </template>
 
 <script>
-export default {
-  name: "Home",
-  props: {
-    source: String,
-  },
-};
+  export default {
+    name: "Home",
+    props: {
+      source: String,
+    },
+  };
 </script>

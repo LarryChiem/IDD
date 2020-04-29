@@ -7,10 +7,7 @@
     />
 
     <!-- Bar at the top of the webpage -->
-    <AppBar 
-      :open="openNavigationDrawer" 
-      @drawer-change="handleDrawerChange" 
-    />
+    <AppBar :open="openNavigationDrawer" @drawer-change="handleDrawerChange" />
 
     <!-- Main content of the page, controlled by the Vue Router -->
     <v-content>
@@ -26,40 +23,40 @@
 </template>
 
 <script>
-import AppBar from "@/components/AppShell/AppBar";
-import AppFooter from "@/components/AppShell/AppFooter";
-import NavigationDrawer from "@/components/AppShell/NavigationDrawer";
+  import AppBar from "@/components/AppShell/AppBar";
+  import AppFooter from "@/components/AppShell/AppFooter";
+  import NavigationDrawer from "@/components/AppShell/NavigationDrawer";
 
-export default {
-  name: "App",
-  components: {
-    AppBar,
-    AppFooter,
-    NavigationDrawer,
-  },
-  data: () => ({
-    // Stores the value for if the navigation drawer is open or not
-    openNavigationDrawer: false,
-  }),
-  methods: {
-    // Toggle displaying the navigation drawer
-    handleDrawerChange(isOpen) {
-      this.openNavigationDrawer = isOpen;
+  export default {
+    name: "App",
+    components: {
+      AppBar,
+      AppFooter,
+      NavigationDrawer,
     },
-  },
-};
+    data: () => ({
+      // Stores the value for if the navigation drawer is open or not
+      openNavigationDrawer: false,
+    }),
+    methods: {
+      // Toggle displaying the navigation drawer
+      handleDrawerChange(isOpen) {
+        this.openNavigationDrawer = isOpen;
+      },
+    },
+  };
 </script>
 
 <style>
-.fade-enter-active,
-.fade-leave-active {
-  transition-duration: 0.1s;
-  transition-property: opacity;
-  transition-timing-function: ease-out;
-}
+  .fade-enter-active,
+  .fade-leave-active {
+    transition-duration: 0.1s;
+    transition-property: opacity;
+    transition-timing-function: ease-out;
+  }
 
-.fade-enter,
-.fade-leave-active {
-  opacity: 0;
-}
+  .fade-enter,
+  .fade-leave-active {
+    opacity: 0;
+  }
 </style>

@@ -84,5 +84,15 @@ namespace FormSubmit.Tests
 
             Assert.IsTrue(String.Equals(j, k));
         }
+
+
+        [Test]
+        public void DefaultTimesheetStatus()
+        {
+            TimesheetForm form;
+            form = new TimesheetForm();
+
+            Assert.IsTrue(String.Equals(form.review_status, "Pending"));
+        }
     }
 }

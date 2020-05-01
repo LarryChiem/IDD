@@ -30,6 +30,7 @@ public class TimesheetForm: AbstractFormObject{
     public string providerSignDate { get; set; }
     public bool authorization { get; set; }
     public bool approval { get; set; }
+    public string review_status { get; set; } = "Pending";
     public void addTimeRow(string date, string start, string end, float total, int numClient) => 
         this.Times.Add(new TimesheetRowItem(date, start, end, total, numClient));
 }

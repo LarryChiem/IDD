@@ -17,5 +17,6 @@
   "providerSignature": false,
   "providerSignDate": null,
   "authorization": false,
-  "approval": false
+  "approval": false,
+  "review_status": "Pending"
 }

@@ -416,7 +416,7 @@
       // Delete a single row of the table
       deleteItem(item) {
         const index = this.allEntries.indexOf(item);
-        if(confirm("Are you sure you want to delete this item?")) {
+        if (confirm("Are you sure you want to delete this item?")) {
           this.allEntries.splice(index, 1);
           this.validate();
         }
@@ -635,12 +635,12 @@
         var bStart = time_functions.parseTime(b.startTime);
         var timeDiff = time_functions.subtractTime(aStart, bStart);
         var order = 1;
-        
+
         // If a starts after b starts, it appears before b
         if (timeDiff[0] >= 0 || timeDiff[1] >= 0) {
-          order = -1; 
+          order = -1;
         }
-        
+
         // If a and b start or end at the same time, error
         if (a.startTime === b.startTime || a.endTime === b.endTime) {
           cols.forEach((col) => {
@@ -648,7 +648,7 @@
             b["errors"][col].push("Start or end time already exists!");
           });
         }
-        
+
         // Check that times do not overlap
         if (order === -1) {
           //// a starts, then b starts

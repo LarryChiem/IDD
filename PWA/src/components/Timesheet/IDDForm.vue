@@ -255,7 +255,7 @@
 
       // Check if the form fields have valid input
       validateInputs() {
-        this.validate(); 
+        this.validate();
 
         // Change this field to validation signal ConfirmSubmission
         this.validationSignal = !this.validationSignal;
@@ -289,12 +289,12 @@
             Object.entries(entry["errors"]).forEach(([col, errors]) => {
               var colErrors = errors.length;
               if (colErrors > 0) {
-                this.errors.push(
-                  [`ERROR: in row ${
+                this.errors.push([
+                  `ERROR: in row ${
                     index + 1
                   } of the serviceDeliveredOn table, '${col}' has the following errors:`,
-                  errors]
-                );
+                  errors,
+                ]);
               }
             });
           }
@@ -310,7 +310,6 @@
         if (!this.$refs.form.validate()) {
           this.errors.push("ERROR: Invalid input in some form fields!");
         }
-
 
         // Check the validity of the serviceDeliveredOn table
         this.getTableErrors();

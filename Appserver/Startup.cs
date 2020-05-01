@@ -48,7 +48,8 @@ namespace Appserver
 
             app.UseCors(builder =>
               builder.WithOrigins("http://iddpwa.azurewebsites.net"));
-    
+
+
             app.UseRouting();
 
             app.UseAuthorization();

@@ -5,32 +5,25 @@ import sinon from 'sinon'
 
 describe('FileUpload', () => {
 
-	/*checks that DOM isn't rendering html since siles are empty
-	it('should\'t render since files are empty', () => {
-		const propsData = { files: [] }
-		const wrapper = shallowMount(FileUpload, {propsData})
-		expect(wrapper.element).toMatchSnapshot()
-	})
-
-	//checks to see DOM isn't rendering html for bad file.
-	it('shouldn\'t render files since bad file', () => {
-		var file = [{id: 1, name: 'name', type: 'image', size: '100 * 100 * 100'}]
-		const propsData = { files: file }
-		const wrapper = shallowMount(FileUpload,
-			{propsData})
-		expect(wrapper.element).toMatchSnapshot()
-})
-*/
-	//Chekcs if the upload status is not active since no files to upload
+	//Checks if the upload status is not active since no files to upload
 	it('upload status should be zero since no files', () => {
-		const spy = sinon.spy(FileUpload.methods, 'types')
 		const wrapper = mount(FileUpload, {
 			propsData: {
-				uploadFiles: []
+				files: []
 			}
 		})
-		wrapper.vm.types
-		expect(wrapper.vm.uploadStatus).toBe(0)
+		expect(wrapper.vm.files.length).toBe(0)
 })
+
+	//Checks if there is a file, and the "Complete timesheet" button was clicked, the loader opens.
+	/*
+	it('checks loader is called when complete timesheet button is clicked' () => {
+		let mockFile = Object.create(null)
+		wrapper = shallowMount (FileUpload, {
+			propsData: {
+				files: [mockFile]
+			}
+		})
+*/
 
 })

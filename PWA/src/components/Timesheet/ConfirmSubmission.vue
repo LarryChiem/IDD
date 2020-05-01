@@ -19,22 +19,39 @@
 
             <v-card-text v-if="this.totalEdited > 0">
               <em>
-                There were {{ totalEdited }} edited fields. Provider and Employer must resign the timesheet form.
+                There were {{ totalEdited }} edited fields. Provider and
+                Employer must resign the timesheet form.
               </em>
-               
+
               <!-- 
                 If there were any changes to the form, disable 
                 submission until both provider and employer re-sign. 
               -->
               <v-container fluid>
-                <v-checkbox color="success" v-model="reSigned" label="Employer accepts all changes to the IDD form." value="Employer"></v-checkbox>
-                <v-checkbox color="success" v-model="reSigned" label="Provider accepts all changes to the IDD form." value="Provider"></v-checkbox>
+                <v-checkbox
+                  color="success"
+                  v-model="reSigned"
+                  label="Employer accepts all changes to the IDD form."
+                  value="Employer"
+                ></v-checkbox>
+                <v-checkbox
+                  color="success"
+                  v-model="reSigned"
+                  label="Provider accepts all changes to the IDD form."
+                  value="Provider"
+                ></v-checkbox>
               </v-container>
-              
-              <v-card color="red lighten-2" v-if="!reSigned.includes('Employer')">
+
+              <v-card
+                color="red lighten-2"
+                v-if="!reSigned.includes('Employer')"
+              >
                 Employer must re-sign form!
               </v-card>
-              <v-card color="red lighten-2" v-if="!reSigned.includes('Provider')">
+              <v-card
+                color="red lighten-2"
+                v-if="!reSigned.includes('Provider')"
+              >
                 Provider must re-sign form!
               </v-card>
             </v-card-text>
@@ -46,8 +63,12 @@
               <v-btn color="red" text @click="displaySubmit = false">
                 Cancel
               </v-btn>
-              <v-btn text color="green darken-1" 
-              :disabled="canSubmit" @click="submit">
+              <v-btn
+                text
+                color="green darken-1"
+                :disabled="canSubmit"
+                @click="submit"
+              >
                 Submit
               </v-btn>
             </v-card-actions>
@@ -104,7 +125,11 @@
             your form.
             <hr />
             Errors:
-            <v-card color="red lighten-2" v-for="(error, index) in errors" :key="index">
+            <v-card
+              color="red lighten-2"
+              v-for="(error, index) in errors"
+              :key="index"
+            >
               <strong>{{ error }}</strong>
             </v-card>
           </v-card-text>
@@ -203,13 +228,15 @@
     },
 
     computed: {
-        canSubmit: function() {
-          return (this.totalEdited > 0) && !(this.reSigned.length === 2) && this.isValid; 
-        },
+      canSubmit: function () {
+        return (
+          this.totalEdited > 0 && !(this.reSigned.length === 2) && this.isValid
+        );
+      },
     },
 
     watch: {
-      // The parent form has finished validating all fields on the 
+      // The parent form has finished validating all fields on the
       // IDD Timesheet. Display errors or submit
       validationSignal() {
         var numErrors = this.errors.length;
@@ -266,11 +293,11 @@
       // Send signal to parent component to validate
       signalParentValidate() {
         // Reset the submission values
-        this.resetValid()
+        this.resetValid();
 
         // Set flag to wait on parent
         this.waitingOnParent = true;
-        
+
         // Send signal to parent component to validate input fields
         this.$emit("click");
       },
@@ -281,7 +308,7 @@
         //   - The form is invalid
         //   - There were edits, but employer and provider didn't re-sign
         if (this.canSubmit) {
-          return false
+          return false;
         }
 
         // Else, post timesheet

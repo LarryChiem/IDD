@@ -9,7 +9,7 @@
     "dev": "serve -s dist",
     "postinstall": "npm run build",
     "start": "node server.js",
-    "test": "jest"
+    "test": "jest --setupFiles dotenv/config"
   },
   "dependencies": {
     "axios": "^0.19.2",

@@ -97,6 +97,7 @@ namespace AdminUI.Controllers
             };
             model.SortOrder = sortOrder;
             model.TotalSubmissions = submissions.Count();
+
             model.TotalPages = submissions.Count() / perPage + (submissions.Count() % perPage == 0 ? 0 : 1);
             submissions = submissions.Skip((page - 1) * perPage).Take(perPage);
             model.PerPage = perPage;

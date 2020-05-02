@@ -113,20 +113,31 @@
                     <input onclick="handleAccepted" class="btn btn-primary" name="Status" value="Approved" type="submit">
                     <input onclick="handleRejected" class="btn btn-danger" name="Status" value="Rejected" type="submit">
                     <input type="text" name="RejectionReason" placeholder="Rejection reason..."/>
+                    @Html.ActionLink("Download PDF", "GenPDF", "Submission", new { id = Model.Id }, new { @class = "btn btn-info aToInput" })
                 </div>
             </form>
         </div>
     }
     <div class="row">
         <div class="column">
-            <a target="_blank" href="~/images/timesheet-front.png">
-                <img src="~/images/timesheet-front.png" alt="Sample Front" class="img-thumbnail halfopacity" />
-            </a>
+            <div class="container">
+                <a target="_blank" href="~/images/timesheet-front.png">
+                    <img src="~/images/timesheet-front.png" alt="Sample Front" class="img-thumbnail image" />
+                    <div class="overlay">
+                        <div class="textoverlay">Front of Timesheet</div>
+                    </div>
+                </a>
+            </div>
         </div>
         <div class="column">
-            <a target="_blank" href="~/images/timesheet-front.png">
-                <img src="~/images/timesheet-back.png" alt="Sample Front" class="img-thumbnail halfopacity" />
+            <div class="container">
+            <a target="_blank" href="~/images/timesheet-back.png">
+                <img src="~/images/timesheet-back.png" alt="Sample Back" class="img-thumbnail image" />
+                <div class="overlay">
+                    <div class="textoverlay">Back of Timesheet</div>
+                </div>
             </a>
+            </div>
         </div>
     </div>
 </div>

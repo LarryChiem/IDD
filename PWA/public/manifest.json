@@ -1,7 +1,7 @@
 ﻿{
-    "name": "Vue PWA Rapid Prototype",
-    "short_name": "Vue IDD PWA",
-    "description": "A PWA rapid prototype for the IDD Automation time sheet project.",
+    "name": "IDD Timesheet Submission",
+    "short_name": "IDD App",
+    "description": "A progressive web application for Multnomah IDD timesheet submission.",
     "icons": [
         {
             "src": "img/icons/logo_short-192x192.png",

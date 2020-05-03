@@ -44,24 +44,5 @@ describe('ConfirmSubmission', () => {
 
 		})
 
-//Given an valid form, and submit has been clicked, and confirmation, progress should be shown for
-//the post.
-/*
-	it('Should ask if user is sure they want to submit given valid form', () => {
-		const wrapper = mount(ConfirmSubmission, {
-			propsData: {
-				valid: true,
-				formFields: null,
-			},
-		})
-		wrapper.setData({dialog: true})
-		wrapper.setData({loading: true})
-		wrapper.setData({returnHome: true})
-		wrapper.setData({submissionStatus: false})
-		expect(wrapper.find('#failure').exists()).toBe(true)
-
-		})
-*/
-
 	})
 

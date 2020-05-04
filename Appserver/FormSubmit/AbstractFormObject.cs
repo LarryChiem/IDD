@@ -2,7 +2,7 @@ using Appserver.TextractDocument;
 using System;
 
 public abstract class AbstractFormObject{
-    static public AbstractFormObject FromTextract(TextractDocument doc)
+    public static AbstractFormObject FromTextract(TextractDocument doc)
     {
         // Here we'll Determine the type of object (timesheet or mileage form) and then
         // return the correct type.

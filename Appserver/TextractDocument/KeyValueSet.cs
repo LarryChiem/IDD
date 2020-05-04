@@ -6,18 +6,47 @@ using System.Linq;
 
 namespace Appserver.TextractDocument
 {
+    /// <summary>
+    /// The KeyValueSet inherits from Block. It has one of two EntityTypes, either a KEY, or
+    /// a VALUE.
+    /// </summary>
     public class KeyValueSet: Block
     {
+        /*******************************************************************************
+        /// Fields
+        *******************************************************************************/
+        private float Confidence;
+
+        private Geometry _geometry;
+        private int _page;
+        private string _Id;
+        private EntityType _entityType;
+
+        private List<Block> _children = new List<Block>();
+        private Dictionary<string, Block> _childMap = new Dictionary<string, Block>();
+        private List<string> _valueIds = new List<string>();
+        private List<string> _childIds = new List<string>();
+        private List<Block> _values = new List<Block>();
+        private KeyValueSet _value;
+        private Page _parent;
+
+
+        /*******************************************************************************
+        /// Enums 
+        *******************************************************************************/
+        /// <summary>
+        /// For KEY entities the children is the value of the key
+        /// For VALUE entities the children are the value
+        /// </summary>
+
         public enum EntityType
         {
             KEY,
             VALUE
         }
-        /// <summary>
-        /// For KEY entities the children is the value of the key
-        /// For VALUE entities the 
-        /// </summary>
-        /// <param name="block"></param>
+        /*******************************************************************************
+        /// Constructors 
+        *******************************************************************************/
         public KeyValueSet(JToken block)
         {
             _geometry = new Geometry(block["Geometry"]);
@@ -62,8 +91,12 @@ namespace Appserver.TextractDocument
                     break;
             }
         }
-        public override Appserver.TextractDocument.BlockType GetBlockType()
-            => Appserver.TextractDocument.BlockType.KEY_VALUE_SET;
+
+        /*******************************************************************************
+        /// Properties
+        *******************************************************************************/
+        public override BlockType GetBlockType()
+            => BlockType.KEY_VALUE_SET;
         public override Geometry GetGeometry() => _geometry;
         public override string GetId() => _Id;
         public override List<Block> GetRelationships() => _children;
@@ -77,29 +110,16 @@ namespace Appserver.TextractDocument
             return this;
         }
 
-        ////////////////////////
-        /// Properties of a KeyValueSet
-        ////////////////////////
-        ///
-
-        float Confidence;
-
-        private Geometry _geometry;
-        private int _page;
-        private string _Id;
-        private EntityType _entityType;
-
-        private List<Block> _children = new List<Block>();
-        private Dictionary<string, Block> _childMap = new Dictionary<string, Block>();
-        private List<string> _valueIds = new List<string>();
-        private List<string> _childIds = new List<string>();
-        private List<Block> _values = new List<Block>();
-        private KeyValueSet _value;
-        private Page _parent;
+        
         public override void SetPage(Page page)
         {
             _parent = page;
         }
+
+
+        /*******************************************************************************
+        /// Methods
+        *******************************************************************************/
         public override void CreateStructure()
         {
 

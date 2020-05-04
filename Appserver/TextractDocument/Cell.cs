@@ -7,6 +7,27 @@ namespace Appserver.TextractDocument
 {
     public class Cell: Block
     {
+        /*******************************************************************************
+        /// Fields
+        *******************************************************************************/
+        float Confidence;
+        private int RowIndex;
+        private int ColumnIndex;
+        private int RowSpan;
+        private int ColumnSpan;
+
+        private Geometry _geometry;
+        private int _page;
+        private string _Id;
+
+        private List<Block> _children = new List<Block>();
+        private Dictionary<string, Word> _childMap = new Dictionary<string, Word>();
+        private List<string> _childIds = new List<string>();
+
+        private Page _parent;
+        /*******************************************************************************
+        /// Constructors
+        *******************************************************************************/
         public Cell(JToken block)
         {
             _geometry = new Geometry(block["Geometry"]);
@@ -35,6 +56,10 @@ namespace Appserver.TextractDocument
 
             }
         }
+
+        /*******************************************************************************
+        /// Properties
+        *******************************************************************************/
         public override Appserver.TextractDocument.BlockType GetBlockType() 
             => Appserver.TextractDocument.BlockType.CELL;
         public override Geometry GetGeometry() => _geometry;
@@ -44,30 +69,14 @@ namespace Appserver.TextractDocument
         public override float GetConfidence() => Confidence;
         public int GetRow() => RowIndex;
         public int GetCol() => ColumnIndex;
-        ////////////////////////
-        /// Properties of a Cell
-        ////////////////////////
-        ///
 
-        float Confidence;
-        private int RowIndex;
-        private int ColumnIndex;
-        private int RowSpan;
-        private int ColumnSpan;
-
-        private Geometry _geometry;
-        private int _page;
-        private string _Id;
-
-        private List<Block> _children = new List<Block>();
-        private Dictionary<string, Word> _childMap = new Dictionary<string, Word>();
-        private List<string> _childIds = new List<string>();
-
-        private Page _parent;
         public override void SetPage(Page page)
         {
             _parent = page;
         }
+        /*******************************************************************************
+        /// Methods
+        *******************************************************************************/
         public override void CreateStructure()
         {
             foreach (var child in _childIds)
@@ -78,7 +87,7 @@ namespace Appserver.TextractDocument
         }
         public override void PrintSummary()
         {
-            Console.WriteLine(String.Format("[{0}][{1}]: {2}", RowIndex, ColumnIndex, ToString()));
+            Console.WriteLine(string.Format("[{0}][{1}]: {2}", RowIndex, ColumnIndex, ToString()));
         }
 
         public override string ToString()

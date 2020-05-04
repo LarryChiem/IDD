@@ -9,25 +9,9 @@ namespace Appserver.TextractDocument
 {
     public class Page: Block
     {
-        ///////////////////////////////////////////////
-        // Inherited Members
-        ///////////////////////////////////////////////
-        public override Appserver.TextractDocument.BlockType GetBlockType() 
-            => Appserver.TextractDocument.BlockType.PAGE;
-        public override Geometry GetGeometry() => _geometry;
-        public override int GetPage() => _page;
-        public override string GetId() => _Id;
-        public override List<Block> GetRelationships() => _children;
-
-        // We are always confident this is a page
-        public override float GetConfidence() => 1;
-
-        public List<KeyValuePair<KeyValueSet, KeyValueSet>> GetFormItems() => _keyvaluepairs;
-        public List<Table> GetTables() => _tables;
-
-        ///////////////////////////////////////////////
-        /// Properties
-        ///////////////////////////////////////////////
+        /*******************************************************************************
+        /// Fields
+        *******************************************************************************/
         private List<Block> _children = new List<Block>();
         private Dictionary<string, Block> _childMap = new Dictionary<string, Block>();
         private List<Line> _lines = new List<Line>();
@@ -39,6 +23,9 @@ namespace Appserver.TextractDocument
         private int _page;
         private string _Id;
 
+        /*******************************************************************************
+        /// Constructors
+        *******************************************************************************/
         public Page(Geometry geometry, string Id, int page) => (_geometry, _Id, _page) = (geometry, Id, page);
         public Page(JToken block)
         {
@@ -46,7 +33,26 @@ namespace Appserver.TextractDocument
             this._Id = block["Id"].ToString();
             this._page = block["Page"].ToObject<int>();
         }
-        
+
+        /*******************************************************************************
+        /// Properties
+        *******************************************************************************/
+        public override BlockType GetBlockType()
+            => BlockType.PAGE;
+        public override Geometry GetGeometry() => _geometry;
+        public override int GetPage() => _page;
+        public override string GetId() => _Id;
+        public override List<Block> GetRelationships() => _children;
+
+        // We are always confident this is a page
+        public override float GetConfidence() => 1;
+
+        public List<KeyValuePair<KeyValueSet, KeyValueSet>> GetFormItems() => _keyvaluepairs;
+        public List<Table> GetTables() => _tables;
+
+        /*******************************************************************************
+        /// Methods
+        *******************************************************************************/
         public void addBlocks(List<Block> blocks)
         {
             foreach( var b in blocks)
@@ -66,22 +72,22 @@ namespace Appserver.TextractDocument
             {
                 switch( child.GetBlockType())
                 {
-                    case Appserver.TextractDocument.BlockType.LINE:
+                    case BlockType.LINE:
                         _lines.Add((Line)child);
                         child.SetPage(this);
                         child.CreateStructure();
                         break;
-                    case Appserver.TextractDocument.BlockType.TABLE:
+                    case BlockType.TABLE:
                         _tables.Add((Table)child);
                         child.SetPage(this);
                         child.CreateStructure();
                         break;
-                    case Appserver.TextractDocument.BlockType.SELECTION_ELEMENT:
+                    case BlockType.SELECTION_ELEMENT:
                         _selection.Add((SelectionElement)child);
                         child.SetPage(this);
                         child.CreateStructure();
                         break;
-                    case Appserver.TextractDocument.BlockType.KEY_VALUE_SET:
+                    case BlockType.KEY_VALUE_SET:
                         _keyvalue.Add((KeyValueSet)child);
                         child.SetPage(this);
                         child.CreateStructure();

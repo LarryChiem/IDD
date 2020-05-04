@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace Appserver.TextractDocument
 {
+    /*******************************************************************************
+    /// Enums
+    *******************************************************************************/
     public enum BlockType
     {
         PAGE,
@@ -22,13 +25,27 @@ namespace Appserver.TextractDocument
     }
     public class TextractDocument : AbstractTextractObject
     {
+        /*******************************************************************************
+        /// Fields
+        *******************************************************************************/
+        private Dictionary<string, Block> _blockMap = new Dictionary<string, Block>();
+        /*******************************************************************************
+        /// Constructors
+        *******************************************************************************/
+        public TextractDocument()
+        {
+
+        }
+        /*******************************************************************************
+        /// Properties
+        *******************************************************************************/
         public DocumentMetadata DocumentMetadata;
         public string JobStatus;
         public List<Page> Pages = new List<Page>();
         public Page GetPage(int pagenumber)
         {
             var p = Pages[pagenumber];
-            if( p.GetPage() == pagenumber)
+            if (p.GetPage() == pagenumber)
             {
                 return p;
             }
@@ -37,12 +54,10 @@ namespace Appserver.TextractDocument
                 throw new System.ArgumentOutOfRangeException();
             }
         }
-
-        private Dictionary<string, Block> _blockMap = new Dictionary<string, Block>();
-        public TextractDocument()
-        {
-
-        }
+        public int PageCount() => Pages.Count();
+        /*******************************************************************************
+        /// Methods
+        *******************************************************************************/
         public override void FromJson(JToken token)
         {
             // Read in all the blocks
@@ -144,7 +159,6 @@ namespace Appserver.TextractDocument
             ParseJson(JObject.Parse( JsonConvert.SerializeObject(response)));
         }
 
-        public int PageCount() => Pages.Count();
         public void printSummary()
         {
             foreach( var p in Pages)

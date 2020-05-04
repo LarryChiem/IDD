@@ -26,6 +26,9 @@
     <None Update="FormSubmit\TenRowTimesheet.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TextractDocument\textract.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

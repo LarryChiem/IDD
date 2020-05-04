@@ -100,7 +100,7 @@ namespace FormSubmit.Tests
         public void TextractToTimesheetTest()
         {
             // Setup Textract Document
-            var jsonFile = File.OpenText(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "TextractDocument/textract.json"));
+            var jsonFile = File.OpenText( "TextractDocument/textract.json" );
             var document = new Appserver.TextractDocument.TextractDocument();
 
             using (StreamReader reader = jsonFile)

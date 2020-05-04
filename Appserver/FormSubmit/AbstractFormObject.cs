@@ -14,7 +14,7 @@ public abstract class AbstractFormObject{
         Page p;
         try
         {
-            p = doc.GetPage(1);
+            p = doc.GetPage(0);
         }catch( System.ArgumentOutOfRangeException e)
         {
             Console.WriteLine(e.Message);
@@ -24,17 +24,18 @@ public abstract class AbstractFormObject{
         // Assume we got the page
         var formitems = p.GetFormItems();
 
-        t.clientName = formitems[0].Value.ToString();
-        t.providerName = formitems[1].Value.ToString();
-        t.prime = formitems[3].Value.ToString();
-    t.providerName = formitems[4].Value.ToString();
-    t.providerNum = formitems[5].Value.ToString();
-    t.brokerage = formitems[6].Value.ToString();
-    t.scpaName = formitems[7].Value.ToString();
-    t.serviceAuthorized = formitems[8].Value.ToString();
-    t.units = Int32.Parse( formitems[9].Value.ToString() );
-    t.type = formitems[10].Value.ToString();
-    t.frequency = formitems[11].Value.ToString();
+        
+        t.clientName        = formitems[0].Value.ToString(); // Customer Name
+        t.providerName      = formitems[1].Value.ToString(); // Provider Name
+        t.prime             = formitems[2].Value.ToString(); // Prime
+        t.providerNum       = formitems[3].Value.ToString(); // Provider Num
+        t.brokerage         = formitems[4].Value.ToString(); // CM Organization
+        t.scpaName          = formitems[5].Value.ToString(); // SC/PA Name
+        t.serviceAuthorized = formitems[6].Value.ToString(); // Service
+        
+        //t.units = Int32.Parse( formitems[9].Value.ToString() );
+        //t.type = formitems[10].Value.ToString();
+        //t.frequency = formitems[11].Value.ToString();
 
         return t;
     }

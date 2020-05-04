@@ -9,6 +9,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Net.Http;
+using Appserver.Data;
+using Microsoft.EntityFrameworkCore;
+using Common.Data;
 
 namespace Appserver
 {
@@ -28,6 +31,14 @@ namespace Appserver
             services.AddProgressiveWebApp();
             services.AddCors();
             services.AddControllers().AddNewtonsoftJson();
+
+            services.AddDbContext<SubmissionStagingContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("AzureDB"),
+                    b => b.MigrationsAssembly("Appserver")));
+
+            services.AddDbContext<SubmissionContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("AzureDB"),
+                    b => b.MigrationsAssembly("AdminUI")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

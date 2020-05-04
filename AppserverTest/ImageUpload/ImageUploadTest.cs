@@ -2,12 +2,16 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using System.IO;
 using System;
+using System.Collections.Generic;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.AspNetCore.Http;
 using Appserver.Controllers;
+using Appserver.Data;
+using Common.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace ImageUpload.Tests
 {
@@ -126,11 +130,13 @@ namespace ImageUpload.Tests
             Assert.IsTrue(itemexists.Result);
         }
 
+
     }
 
     [TestFixture]
     public class ImageToTextractTest
     {
+        private readonly SubmissionStagingContext context;
 
         [Test]
         public async Task PassValidFile()
@@ -155,7 +161,7 @@ namespace ImageUpload.Tests
             // Open file and pass to textract
             var li = File.ReadAllBytes(filePath);
             IFormFile file = new FormFile(new MemoryStream(li), 0, li.Length, "testFile", "testimage.jpg");
-            ImageUploadController iuc = new ImageUploadController();
+            ImageUploadController iuc = new ImageUploadController(context);
             var res = await iuc.pass_to_textract(file);
             Assert.IsNotEmpty(res.ToString());
         }
@@ -184,7 +190,7 @@ namespace ImageUpload.Tests
             // Open file and pass to textract
             var li = File.ReadAllBytes(filePath);
             IFormFile file = new FormFile(new MemoryStream(li), 0, 0, "testFile", "testimage.jpg");
-            ImageUploadController iuc = new ImageUploadController();
+            ImageUploadController iuc = new ImageUploadController(context);
             var res = await iuc.pass_to_textract(file);
             string x = "{response_miss: Something doesn't smell right...}";
             Assert.AreEqual(res.ToString(), x);

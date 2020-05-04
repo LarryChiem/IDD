@@ -10,11 +10,27 @@ using System.Net.Http;
 using Amazon.Textract;
 using Amazon.Textract.Model;
 using System;
+using System.Configuration;
+using System.Data;
+using Appserver.Data;
+using Appserver.Models;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.Azure;
+using Microsoft.Extensions.Configuration;
 
 namespace Appserver.Controllers
 {
     public class ImageUploadController : Controller
     {
+        private readonly SubmissionStagingContext _context;
+
+        public ImageUploadController(SubmissionStagingContext context)
+        {
+            _context = context;
+        }
+
         // POST: /home/timesheet/
         [HttpPost("ImageUpload")]
         public async Task<IActionResult> PostImage(List<IFormFile> files)
@@ -26,9 +42,10 @@ namespace Appserver.Controllers
             image_types.Add("image/jpeg");
             image_types.Add("image/png");
 
-            List<string> textract_responses = new List<string>();
-            List<string> skipped_files = new List<string>();
-            List<string> stats = new List<string>();
+            var textract_responses = new List<AnalyzeDocumentResponse>();
+            var skipped_files = new List<string>();
+            var stats = new List<string>();
+
 
             // Iterate over list of submitted documents
             foreach (var file in files)
@@ -40,12 +57,10 @@ namespace Appserver.Controllers
                     if (image_types.Contains(file.ContentType))
                     {
                         //Time how long it takes to upload image
-                        process_image(file.OpenReadStream());
                         Stopwatch stopwatch = new Stopwatch();
                         stopwatch.Start();
 
-                        var res = await pass_to_textract(file);
-                        textract_responses.Add(res);
+                        textract_responses.Add(process_image(file.OpenReadStream()));
 
                         stopwatch.Stop();
                         TimeSpan ts = stopwatch.Elapsed;
@@ -82,7 +97,9 @@ namespace Appserver.Controllers
                 file_count = files.Count,
                 textract_stats = stats,
                 azfc_resp = textract_responses,
-                skipped = skipped_files}
+                skipped = skipped_files,
+                id = await UploadToBlob(files, textract_responses)
+            }
             );
         }
 
@@ -93,14 +110,17 @@ namespace Appserver.Controllers
         public async Task<IActionResult> ImageList(IFormCollection file_collection)
         {
             var c = file_collection.Files.Count;
-            List<String> textract_responses = new List<string>();
-            List<String> skipped_files = new List<string>();
-            List<String> stats = new List<string>();
+            var textract_responses = new List<AnalyzeDocumentResponse>();
+            var skipped_files = new List<string>();
+            var stats = new List<string>();
 
             // MIME types for image processing
-            var image_types = new List<string>();
-            image_types.Add("image/jpeg");
-            image_types.Add("image/png");
+            var image_types = new List<string>
+            {
+                "image/jpeg",
+                "image/png"
+            };
+
 
             // Iterate of collection of file and send to Textract
             foreach (var file in file_collection.Files)
@@ -112,8 +132,7 @@ namespace Appserver.Controllers
                     Stopwatch stopwatch = new Stopwatch();
                     stopwatch.Start();
 
-                    var res = await pass_to_textract(file);
-                    textract_responses.Add(res);
+                    textract_responses.Add(process_image(file.OpenReadStream()));
 
                     stopwatch.Stop();
                     TimeSpan ts = stopwatch.Elapsed;
@@ -130,18 +149,57 @@ namespace Appserver.Controllers
                 }
             }
 
+
             return Json(new {
                 file_count = c,
                 azfc_resp = textract_responses,
                 skipped = skipped_files,
-                textract_stats = stats}
+                textract_stats = stats,
+                id = await UploadToBlob(file_collection.Files.ToList(),textract_responses)
+            }
             );
         }
 
-        private void process_image(Stream file)
+        public async Task<int> UploadToBlob(List<IFormFile> files, IEnumerable<AnalyzeDocumentResponse> responses)
         {
-            var handle = new TextractHandler();
-            var response = handle.HandleAsyncJob(file);
+            //TODO: Link this to actual AzureDB storage when not in development
+            // Get Blob Container
+            var container = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("BLOB_CONNECTION"))
+                .CreateCloudBlobClient()
+                .GetContainerReference("submissionfiles");
+            await container.CreateIfNotExistsAsync();
+            await container.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Container });
+
+
+            // Upload images to container and save UriStrings
+            var uriString ="";
+            foreach (var f in files)
+            {
+                if (!string.IsNullOrEmpty(uriString))
+                    uriString += ',';
+                var blockBlob = container.GetBlockBlobReference(f.FileName);
+                uriString += blockBlob.Uri.AbsoluteUri;
+                await using var m = new MemoryStream();
+                f.CopyTo(m);
+                await IDD.ImageUpload.UploadImage64(blockBlob, f.FileName, Convert.ToBase64String(m.ToArray()));
+            }
+
+            // Create a SubmissionStaging to upload to SubmissionStaging table
+            var ss = new SubmissionStaging
+            {
+                ParsedTextractJSON = responses.Aggregate("", (current, r) => current + (System.Text.Json.JsonSerializer.Serialize(r) + ',')),
+                UriString = uriString
+            };
+
+            // Add SubmissionStaging to table and get the Id to add to JSON response return
+            _context.Add(ss);
+            await _context.SaveChangesAsync();
+            return ss.Id;
+        }
+
+        private AnalyzeDocumentResponse process_image(Stream file)
+        {
+            return new TextractHandler().HandleAsyncJob(file);
         }
 
 

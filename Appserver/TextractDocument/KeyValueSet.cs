@@ -30,14 +30,14 @@ namespace Appserver.TextractDocument
 
                 foreach( var r in relationships)
                 {
-                    if (r["Type"].ToString() == "CHILD")
+                    if (r["Type"]["Value"].ToString() == "CHILD")
                     {
                         foreach (var child in r["Ids"].ToList<JToken>())
                         {
                             _childIds.Add(child.ToString());
                         }
                     }
-                    else if( r["Type"].ToString() == "VALUE")
+                    else if( r["Type"]["Value"].ToString() == "VALUE")
                     {
 
                         foreach (var child in r["Ids"].ToList<JToken>())

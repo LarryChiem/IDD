@@ -1,6 +1,9 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Appserver.TextractDocument
 {
@@ -19,6 +22,8 @@ namespace Appserver.TextractDocument
         // We are always confident this is a page
         public override float GetConfidence() => 1;
 
+        public List<KeyValuePair<KeyValueSet, KeyValueSet>> GetFormItems() => _keyvaluepairs;
+
         ///////////////////////////////////////////////
         /// Properties
         ///////////////////////////////////////////////
@@ -28,7 +33,7 @@ namespace Appserver.TextractDocument
         private List<Table> _tables = new List<Table>();
         private List<SelectionElement> _selection = new List<SelectionElement>();
         private List<KeyValueSet> _keyvalue = new List<KeyValueSet>();
-        private Dictionary<KeyValueSet, KeyValueSet> _keyvaluepairs = new Dictionary<KeyValueSet, KeyValueSet>();
+        private List<KeyValuePair<KeyValueSet, KeyValueSet>> _keyvaluepairs = new List<KeyValuePair<KeyValueSet, KeyValueSet>>();
         private readonly Geometry _geometry;
         private int _page;
         private string _Id;
@@ -89,7 +94,7 @@ namespace Appserver.TextractDocument
             {
                 if(kv.GetEntityType() == KeyValueSet.EntityType.KEY)
                 {
-                    _keyvaluepairs.Add(kv, kv.GetValue());
+                    _keyvaluepairs.Add(new KeyValuePair<KeyValueSet,KeyValueSet>(kv, kv.GetValue()));
                 }
             }
         }
@@ -123,6 +128,18 @@ namespace Appserver.TextractDocument
             {
                 kv.Key.PrintSummary();
             }
+        }
+
+        public override string ToString()
+        {
+            string s = String.Format("Page: {0}\n",_page) ;
+
+            foreach( var child in _children)
+            {
+                s += child.ToString();
+            }
+            
+            return s;
         }
     }
 }

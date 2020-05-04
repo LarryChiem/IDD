@@ -15,19 +15,6 @@ namespace Appserver.TextractDocument
             Confidence = block["Confidence"].ToObject<float>();
             _page = block["Page"].ToObject<int>();
             Text = block["Text"].ToString();
-            try
-            {
-                var children = block["Relationships"].ToList<JToken>()[0]["Ids"].ToList<JToken>();
-
-                foreach (var child in children)
-                {
-                    _childIds.Add(child.ToString());
-                }
-            }
-            catch(System.ArgumentNullException e)
-            {
-
-            }
         }
         public override Appserver.TextractDocument.BlockType GetBlockType() 
             => Appserver.TextractDocument.BlockType.WORD;

@@ -19,11 +19,15 @@ namespace Appserver.TextractDocument
             ColumnSpan = block["ColumnSpan"].ToObject<int>();
             try
             {
-                var children = block["Relationships"].ToList<JToken>()[0]["Ids"].ToList<JToken>();
-
-                foreach (var child in children)
+                // Check if there are any relationsips
+                if (block["Relationships"] != null && block["Relationships"].ToList<JToken>().Count > 0)
                 {
-                    _childIds.Add(child.ToString());
+                    var children = block["Relationships"].ToList<JToken>()[0]["Ids"].ToList<JToken>();
+
+                    foreach (var child in children)
+                    {
+                        _childIds.Add(child.ToString());
+                    }
                 }
             }
             catch (System.ArgumentNullException e)

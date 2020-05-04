@@ -24,7 +24,7 @@ namespace Appserver.Controllers
 
 		public AnalyzeDocumentResponse HandleAsyncJob(Stream file)
 		{
-			var job = StartDocumentAnalysis(file, "FORMS");
+			var job = StartDocumentAnalysis(file, new List<string> { "TABLES", "FORMS" });
 			try
 			{
 				job.Wait();
@@ -37,7 +37,7 @@ namespace Appserver.Controllers
 
 			return result;
 		}
-		public async Task<AnalyzeDocumentResponse> StartDocumentAnalysis(Stream file, string featureType)
+		private async Task<AnalyzeDocumentResponse> StartDocumentAnalysis(Stream file, List<string> featureTypes)
 		{
 			var request = new AnalyzeDocumentRequest();
 			var memoryStream = new MemoryStream();
@@ -48,7 +48,7 @@ namespace Appserver.Controllers
 				Bytes = memoryStream
 			};
 
-			request.FeatureTypes = new List<string> { featureType };
+			request.FeatureTypes = featureTypes;
 			var response = await this.textractClient.AnalyzeDocumentAsync(request);
 			return response;
 		}

@@ -23,6 +23,7 @@ namespace Appserver.TextractDocument
         public override float GetConfidence() => 1;
 
         public List<KeyValuePair<KeyValueSet, KeyValueSet>> GetFormItems() => _keyvaluepairs;
+        public List<Table> GetTables() => _tables;
 
         ///////////////////////////////////////////////
         /// Properties

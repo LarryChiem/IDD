@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +36,8 @@ namespace Appserver.TextractDocument
         public override List<Block> GetRelationships() => _children;
         public override int GetPage() => _page;
         public override float GetConfidence() => Confidence;
+        public List<Cell> this[int i] => table[i];
+        public List<List<Cell>> GetTable() => table;
 
         ////////////////////////
         /// Properties of a Table

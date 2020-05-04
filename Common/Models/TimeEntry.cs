@@ -9,7 +9,7 @@ namespace Common.Models
         [DataType(DataType.Date)]
         public DateTime Date { get; set; }
         public bool Group { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = "Pending";
         [DataType(DataType.Time)]
         public DateTime In { get; set; }
         [DataType(DataType.Time)]

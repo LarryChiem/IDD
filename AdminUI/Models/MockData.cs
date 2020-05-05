@@ -31,14 +31,14 @@ namespace AdminUI.Models
                     ClientPrime = "M0U5E",
                     ProviderName = "Mickey Mouse",
                     ProviderId = "B1GM0U53",
-                    TotalHours = 34.3,
+                    TotalHours = 10,
                     FormType = "OR526 Attendant Care",
                     ServiceGoal = "To help her eat cheese",
                     ProgressNotes = "She ate the cheese",
                     Submitted = DateTime.Parse("4/2/20 2:03PM"),
                     RejectionReason = "",
                     Status = "Pending",
-                    UriString = "hi,hello,how are you",
+                    UriString = "~/images/timesheet-front.png,~/images/timesheet-back.png",
                     TimeEntries = new List<TimeEntry>
                     {
                             new TimeEntry{
@@ -96,7 +96,7 @@ namespace AdminUI.Models
                     Submitted = DateTime.Parse("4/2/20 1:45PM"),
                     RejectionReason = "",
                     Status = "Pending",
-                    UriString = "hi,hello,how are you",
+                    UriString = "~/images/timesheet-front.png,~/images/timesheet-back.png",
                     TimeEntries = new List<TimeEntry>
                     {
                             new TimeEntry{
@@ -138,7 +138,7 @@ namespace AdminUI.Models
                     Submitted = DateTime.Parse("4/3/20 8:06AM"),
                     RejectionReason = "",
                     Status = "Pending",
-                    UriString = "hi,hello,how are you",
+                    UriString = "~/images/timesheet-front.png,~/images/timesheet-back.png",
                     TimeEntries = new List<TimeEntry>
                     {
                             new TimeEntry{
@@ -188,7 +188,7 @@ namespace AdminUI.Models
                     Submitted = DateTime.Parse("4/4/20 5:13PM"),
                     RejectionReason = "",
                     Status = "Pending",
-                    UriString = "hi,hello,how are you",
+                    UriString = "~/images/timesheet-front.png,~/images/timesheet-back.png",
                     TimeEntries = new List<TimeEntry>
                     {
                             new TimeEntry{
@@ -238,7 +238,7 @@ namespace AdminUI.Models
                     Submitted = DateTime.Parse("4/2/20 10:20AM"),
                     RejectionReason = "",
                     Status = "Pending",
-                    UriString = "hi,hello,how are you",
+                    UriString = "~/images/timesheet-front.png,~/images/timesheet-back.png",
                     TimeEntries = new List<TimeEntry>
                     {
                             new TimeEntry{
@@ -275,7 +275,7 @@ namespace AdminUI.Models
                         Submitted = DateTime.Parse("4/1/20 10:20AM"),
                         RejectionReason = "",
                         Status = "Pending",
-                        UriString = "hi,hello,how are you",
+                        UriString = "~/images/timesheet-front.png,~/images/timesheet-back.png",
                         TimeEntries = new List<TimeEntry>
                         {
                                 new TimeEntry

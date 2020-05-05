@@ -13,7 +13,7 @@ In the Package Manager Console, run the following commands:
 	EntityFrameworkCore\Update-Database -Context UserContext
 
 If you see an error along the lines of "Database xxx already exists, pick a different name",
-then go to view -> Server Object Explorer, find the database in question, right click, then delete.
+then go to view -> SQL Server Object Explorer -> (localdb)\MSSQL.... -> Databases -> Right Click AzureDB -> Delete.
 Now re-run the command and it should work.
 
 ## How to run

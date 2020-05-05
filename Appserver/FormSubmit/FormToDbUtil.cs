@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using Common.Models;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Collections;
 
 namespace IDD
 {
@@ -16,23 +17,16 @@ namespace IDD
         // back the number of records inserted.
         public int TimesheetEntriesToDB(Timesheet ts, int tsid)
         {
-            string conn_str = "YourConnString";
-
+            string conn_str = Environment.GetEnvironmentVariable("test-db-conn-str");
             int totalInserts = 0;
             // Create connection for each entry
             // TODO bulk insert option? executemany?
             // FIXME add try/catch
             foreach (TimeEntry te in ts.TimeEntries)
             {
-                string query = "INSERT INTO [dbo].[TimeEntry] ";
-                query += "([Date],[Group],[Status],[In],[Out],[Hours],[TimesheetId]) VALUES('";
-                query += te.Date.ToString() + "', ";
-                query +=  "1, '";
-                query += te.Status + "', '";
-                query += te.In.ToString() + "', '";
-                query += te.Out.ToString() + "', ";
-                query += te.Hours + ", ";
-                query += tsid + ") SELECT SCOPE_IDENTITY();";
+
+                string query = "INSERT INTO [dbo].[TimeEntry] ([Date],[Group],[Status],[In],[Out],[Hours],[TimesheetId]) ";
+                query += "VALUES(@date, @group, @status, @in, @out, @hours, @timesheetid) SELECT SCOPE_IDENTITY();";
 
                 SqlConnection conn = new SqlConnection(conn_str);
                 SqlCommand command = null;
@@ -40,6 +34,27 @@ namespace IDD
 
                 System.Console.WriteLine("ENTRY SQL: " + query);
                 command = new SqlCommand(query, conn);
+                command.Parameters.Add("@date", System.Data.SqlDbType.DateTime2);
+                command.Parameters["@date"].Value = te.Date;
+
+                command.Parameters.Add("@group", System.Data.SqlDbType.Bit);
+                command.Parameters["@group"].Value = 1;
+
+                command.Parameters.Add("@status", System.Data.SqlDbType.NVarChar, 25);
+                command.Parameters["@status"].Value = te.Status;
+
+                command.Parameters.Add("@in", System.Data.SqlDbType.DateTime2);
+                command.Parameters["@in"].Value = te.In;
+
+                command.Parameters.Add("@out", System.Data.SqlDbType.DateTime2);
+                command.Parameters["@out"].Value = te.Out;
+
+                command.Parameters.Add("@hours", System.Data.SqlDbType.Float);
+                command.Parameters["@hours"].Value = te.Hours;
+
+                command.Parameters.Add("@timesheetid", System.Data.SqlDbType.Int);
+                command.Parameters["@timesheetid"].Value = tsid;
+
                 conn.Open();
 
                 reader = command.ExecuteReader();
@@ -65,32 +80,65 @@ namespace IDD
         {
             decimal insertId = 0;
 
-            string query = "INSERT into Submissions (";
-            query += "submitted, formtype, providername, providerid, clientname, ";
-            query += "clientprime, servicegoal, progressnotes, status, useractivity, ";
-            query += "rejectionreason, lockinfoid, uristring, discriminator, totalmiles, totalhours) ";
-            query += "VALUES( '" + ts.Submitted.ToString() + "', '";
-            query += ts.FormType + "', '";
-            query += ts.ProviderName + "', '";
-            query += ts.ProviderId + "', '";
-            query += ts.ClientName + "', '";
-            query += ts.ClientPrime + "', '";
-            query += ts.ServiceGoal + "', '";
-            query += ts.ProgressNotes + "', '";
-            query += ts.Status + "', '";
-            query += ts.UserActivity + "', '";
-            query += ts.RejectionReason + "', ";
-            query += "NULL, '";
-            query += ts.UriString + "', '";
-            query +=  "Timesheet', ";
-            query += "0, ";
-            query += ts.TotalHours + ") SELECT SCOPE_IDENTITY();";
+            string query = "INSERT INTO [dbo].[Submissions] ([Submitted],[FormType],[ProviderName]";
+            query += ",[ProviderId],[ClientName],[ClientPrime],[ServiceGoal],[ProgressNotes],[Status]";
+            query += ",[UserActivity],[RejectionReason],[LockInfoId],[UriString],[Discriminator],[TotalMiles],[TotalHours]) ";
+            query += "VALUES(@submitted, @formtype, @providername, @providerid, @clientname, @clientprime, @servicegoal,";
+            query += "@progressnotes, @status, @useractivity, @rejectionreason, @lockinfoid, @uristring, @discriminator,";
+            query += "@totalmiles, @totalhours) SELECT SCOPE_IDENTITY();";
 
-            string conn_str = "YourConnString";
-
+            string conn_str = Environment.GetEnvironmentVariable("test-db-conn-str");
             using (SqlConnection conn = new SqlConnection(conn_str))
             {
                 SqlCommand command = new SqlCommand(query, conn);
+                command.Parameters.Add("@submitted", System.Data.SqlDbType.DateTime2);
+                command.Parameters["@submitted"].Value = ts.Submitted;
+
+                command.Parameters.Add("@formtype", System.Data.SqlDbType.NVarChar, 50);
+                command.Parameters["@formtype"].Value = ts.FormType;
+
+                command.Parameters.Add("@providername", System.Data.SqlDbType.NVarChar, 50);
+                command.Parameters["@providername"].Value = ts.ProviderName;
+
+                command.Parameters.Add("@providerid", System.Data.SqlDbType.NVarChar, 50);
+                command.Parameters["@providerid"].Value = ts.ProviderId;
+
+                command.Parameters.Add("@clientname", System.Data.SqlDbType.NVarChar, 50);
+                command.Parameters["@clientname"].Value = ts.ClientName;
+
+                command.Parameters.Add("@clientprime", System.Data.SqlDbType.NVarChar, 50);
+                command.Parameters["@clientprime"].Value = ts.ClientPrime;
+
+                command.Parameters.Add("@servicegoal", System.Data.SqlDbType.NVarChar, 100);
+                command.Parameters["@servicegoal"].Value = ts.ServiceGoal;
+
+                command.Parameters.Add("@progressnotes", System.Data.SqlDbType.NVarChar, 500);
+                command.Parameters["@progressnotes"].Value = ts.ProgressNotes;
+
+                command.Parameters.Add("@status", System.Data.SqlDbType.NVarChar, 50);
+                command.Parameters["@status"].Value = ts.Status;
+
+                command.Parameters.Add("@useractivity", System.Data.SqlDbType.NVarChar, 100);
+                command.Parameters["@useractivity"].Value = ts.UserActivity;
+
+                command.Parameters.Add("@rejectionreason", System.Data.SqlDbType.NVarChar, 250);
+                command.Parameters["@rejectionreason"].Value = ts.RejectionReason;
+
+                command.Parameters.Add("@lockinfoid", System.Data.SqlDbType.Int);
+                command.Parameters["@lockinfoid"].Value = DBNull.Value;
+
+                command.Parameters.Add("@uristring", System.Data.SqlDbType.NVarChar, 500);
+                command.Parameters["@uristring"].Value = ts.UriString;
+
+                command.Parameters.Add("@discriminator", System.Data.SqlDbType.NVarChar, 50);
+                command.Parameters["@discriminator"].Value = "Timesheet";
+
+                command.Parameters.Add("@totalmiles", System.Data.SqlDbType.Float);
+                command.Parameters["@totalmiles"].Value = 0;
+
+                command.Parameters.Add("@totalhours", System.Data.SqlDbType.Float);
+                command.Parameters["@totalhours"].Value = ts.TotalHours;
+
                 conn.Open();
 
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -119,10 +167,10 @@ namespace IDD
             tsheet.ServiceGoal = tsf.serviceGoal;
             tsheet.ProgressNotes = tsf.progressNotes;
             tsheet.FormType = tsf.serviceAuthorized;
-            tsheet.RejectionReason = null; //
+            tsheet.RejectionReason = "none"; //
             tsheet.Submitted = DateTime.Now; //
             tsheet.LockInfo = null;
-            tsheet.UserActivity = null; //
+            tsheet.UserActivity = "none"; //
             tsheet.UriString = "somehandle, someotherhandle"; //
 
             return tsheet;

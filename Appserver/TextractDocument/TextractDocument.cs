@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace Appserver.TextractDocument
 {
+    /*******************************************************************************
+    /// Enums
+    *******************************************************************************/
     public enum BlockType
     {
         PAGE,
@@ -22,15 +25,39 @@ namespace Appserver.TextractDocument
     }
     public class TextractDocument : AbstractTextractObject
     {
-        public DocumentMetadata DocumentMetadata;
-        public string JobStatus;
-        public List<Page> Pages = new List<Page>();
-
+        /*******************************************************************************
+        /// Fields
+        *******************************************************************************/
         private Dictionary<string, Block> _blockMap = new Dictionary<string, Block>();
+        /*******************************************************************************
+        /// Constructors
+        *******************************************************************************/
         public TextractDocument()
         {
 
         }
+        /*******************************************************************************
+        /// Properties
+        *******************************************************************************/
+        public DocumentMetadata DocumentMetadata;
+        public string JobStatus;
+        public List<Page> Pages = new List<Page>();
+        public Page GetPage(int pagenumber)
+        {
+            var p = Pages[pagenumber];
+            if (p.GetPage() == pagenumber)
+            {
+                return p;
+            }
+            else
+            {
+                throw new System.ArgumentOutOfRangeException();
+            }
+        }
+        public int PageCount() => Pages.Count();
+        /*******************************************************************************
+        /// Methods
+        *******************************************************************************/
         public override void FromJson(JToken token)
         {
             // Read in all the blocks
@@ -48,11 +75,29 @@ namespace Appserver.TextractDocument
             JToken blocks;
             try
             {
+                Console.WriteLine("Starting Try Block");
+                if (token["AnalyzeDocumentModelVersion"] != null)
+                {
+                    this.JobStatus = token["AnalyzeDocumentModelVersion"].ToString() == "1.0" ? "SUCCEEDED" : "FAILED";
+                }
+                else if (token["JobStatus"] == null)
+                {
+                    this.JobStatus = token["JobStatus"].ToString();
+                }
+                if(this.JobStatus != "SUCCEEDED")
+                {
+                    Console.WriteLine("Textract Failed");
+                    return;
+                }
+                else
+                {
+                    Console.WriteLine("Textract Succeeded");
+                }
+
                 this.DocumentMetadata = new DocumentMetadata
                 {
                     Pages = token["DocumentMetadata"]["Pages"].ToObject<int>()
                 };
-                this.JobStatus = token["JobStatus"].ToString();
 
                 blocks = token["Blocks"];
             }
@@ -66,7 +111,7 @@ namespace Appserver.TextractDocument
             foreach( var b in blocks.Children())
             {
                 Block block = null;
-                switch (b["BlockType"].ToString())
+                switch (b["BlockType"]["Value"].ToString())
                 {
                     case "PAGE":
                         block = new Page(b);
@@ -109,18 +154,27 @@ namespace Appserver.TextractDocument
             }
         }
 
-        public void FromTextractResponse( Amazon.Textract.Model.GetDocumentAnalysisResponse response)
+        public void FromTextractResponse( Amazon.Textract.Model.AnalyzeDocumentResponse response)
         {
-            ParseJson(System.Text.Json.JsonSerializer.Serialize(response));
+            ParseJson(JObject.Parse( JsonConvert.SerializeObject(response)));
         }
 
-        public int PageCount() => Pages.Count();
         public void printSummary()
         {
             foreach( var p in Pages)
             {
                 p.PrintSummary();
             }
+        }
+
+        public override string ToString()
+        {
+            string response = String.Format("Page Count: {0}\n",Pages.Count);
+            foreach( var p in Pages)
+            {
+                response += p.ToString();
+            }
+            return response;
         }
     }
 }

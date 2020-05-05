@@ -28,7 +28,7 @@ namespace AppserverTest.TextractDocument
                 document.FromJson((JObject)JToken.ReadFrom(new JsonTextReader(reader)));
             }
             document.printSummary();
-            Assert.IsTrue(document.PageCount() == 4);
+            Assert.IsTrue(document.PageCount() == 1);
         }
 
         [TearDown]

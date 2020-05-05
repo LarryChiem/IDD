@@ -2,9 +2,13 @@
 
 namespace Appserver.TextractDocument
 {
+    /// <summary>
+    ///  The Block base class is what other members of the Textract Document inherit from.
+    ///  All common properties are listed here.
+    /// </summary>
     public abstract class Block
     {
-        public abstract Appserver.TextractDocument.BlockType GetBlockType();
+        public abstract BlockType GetBlockType();
         public abstract Geometry GetGeometry();
         public abstract string GetId();
         public abstract List<Block> GetRelationships();

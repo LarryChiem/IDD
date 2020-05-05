@@ -3,12 +3,20 @@ using System.Linq;
 
 namespace Appserver.TextractDocument
 {
+    /// <summary>
+    /// The Geometry is the section of the document which the block belongs to and holds the
+    /// coordinates of the bounding box. The Bounding box holds the top left coordinate and
+    /// for convenience also the width and height of the box.
+    /// 
+    /// Coordinates found here are in normalized form, so is the bounding box.
+    /// </summary>
+    /// 
     public class Geometry
     {
+        /// Constructors
         public Geometry(JToken block)
         {
             box = new BoundingBox(block["BoundingBox"]);
-            //polygon = new Polygon(block["Pologyon"]);
             var poly = block["Polygon"].ToList();
 
             polygon = new Polygon {
@@ -19,6 +27,8 @@ namespace Appserver.TextractDocument
             };
 
         }
+
+        /// Properties
         public BoundingBox box;
         public Polygon polygon;
     }

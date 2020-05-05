@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,39 +8,10 @@ using System.Threading.Tasks;
 namespace Appserver.TextractDocument
 {
     public class Table : Block
-    { 
-        public Table(JToken block)
-        {
-            _geometry = new Geometry(block["Geometry"]);
-            _Id = block["Id"].ToString();
-            Confidence = block["Confidence"].ToObject<float>();
-            _page = block["Page"].ToObject<int>();
-            try
-            {
-                var children = block["Relationships"].ToList<JToken>()[0]["Ids"].ToList<JToken>();
-
-                foreach (var child in children)
-                {
-                    _childIds.Add(child.ToString());
-                }
-            }
-            catch (System.ArgumentNullException e)
-            {
-
-            }
-        }
-        public override Appserver.TextractDocument.BlockType GetBlockType() 
-            => Appserver.TextractDocument.BlockType.TABLE;
-        public override Geometry GetGeometry() => _geometry;
-        public override string GetId() => _Id;
-        public override List<Block> GetRelationships() => _children;
-        public override int GetPage() => _page;
-        public override float GetConfidence() => Confidence;
-
-        ////////////////////////
-        /// Properties of a Table
-        ////////////////////////
-        ///
+    {
+        /*******************************************************************************
+        /// Fields
+        *******************************************************************************/
 
         /// This confidence is how confident it is that this is a table, not of the
         /// contents of the table
@@ -64,10 +36,51 @@ namespace Appserver.TextractDocument
         private int _columncount = 0;
         // The parent is used for lookup of children during structure creation
         private Page _parent;
+
+        /*******************************************************************************
+        /// Constructors
+        *******************************************************************************/
+        public Table(JToken block)
+        {
+            _geometry = new Geometry(block["Geometry"]);
+            _Id = block["Id"].ToString();
+            Confidence = block["Confidence"].ToObject<float>();
+            _page = block["Page"].ToObject<int>();
+            try
+            {
+                var children = block["Relationships"].ToList<JToken>()[0]["Ids"].ToList<JToken>();
+
+                foreach (var child in children)
+                {
+                    _childIds.Add(child.ToString());
+                }
+            }
+            catch (System.ArgumentNullException e)
+            {
+
+            }
+        }
+
+        /*******************************************************************************
+        /// Properties
+        *******************************************************************************/
+        public override BlockType GetBlockType() 
+            => BlockType.TABLE;
+        public override Geometry GetGeometry() => _geometry;
+        public override string GetId() => _Id;
+        public override List<Block> GetRelationships() => _children;
+        public override int GetPage() => _page;
+        public override float GetConfidence() => Confidence;
+        public List<Cell> this[int i] => table[i];
+        public List<List<Cell>> GetTable() => table;
         public override void SetPage(Page page)
         {
             _parent = page;
         }
+
+        /*******************************************************************************
+        /// Methods
+        *******************************************************************************/
         /// <summary>
         /// The structure in Textract is by row. We want to create the rows then stack them
         /// in a list.

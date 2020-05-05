@@ -1,16 +1,44 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Appserver.TextractDocument
 {
     public class Page: Block
     {
-        ///////////////////////////////////////////////
-        // Inherited Members
-        ///////////////////////////////////////////////
-        public override Appserver.TextractDocument.BlockType GetBlockType() 
-            => Appserver.TextractDocument.BlockType.PAGE;
+        /*******************************************************************************
+        /// Fields
+        *******************************************************************************/
+        private List<Block> _children = new List<Block>();
+        private Dictionary<string, Block> _childMap = new Dictionary<string, Block>();
+        private List<Line> _lines = new List<Line>();
+        private List<Table> _tables = new List<Table>();
+        private List<SelectionElement> _selection = new List<SelectionElement>();
+        private List<KeyValueSet> _keyvalue = new List<KeyValueSet>();
+        private List<KeyValuePair<KeyValueSet, KeyValueSet>> _keyvaluepairs = new List<KeyValuePair<KeyValueSet, KeyValueSet>>();
+        private readonly Geometry _geometry;
+        private int _page;
+        private string _Id;
+
+        /*******************************************************************************
+        /// Constructors
+        *******************************************************************************/
+        public Page(Geometry geometry, string Id, int page) => (_geometry, _Id, _page) = (geometry, Id, page);
+        public Page(JToken block)
+        {
+            this._geometry = new Geometry(block["Geometry"]);
+            this._Id = block["Id"].ToString();
+            this._page = block["Page"].ToObject<int>();
+        }
+
+        /*******************************************************************************
+        /// Properties
+        *******************************************************************************/
+        public override BlockType GetBlockType()
+            => BlockType.PAGE;
         public override Geometry GetGeometry() => _geometry;
         public override int GetPage() => _page;
         public override string GetId() => _Id;
@@ -19,28 +47,12 @@ namespace Appserver.TextractDocument
         // We are always confident this is a page
         public override float GetConfidence() => 1;
 
-        ///////////////////////////////////////////////
-        /// Properties
-        ///////////////////////////////////////////////
-        private List<Block> _children = new List<Block>();
-        private Dictionary<string, Block> _childMap = new Dictionary<string, Block>();
-        private List<Line> _lines = new List<Line>();
-        private List<Table> _tables = new List<Table>();
-        private List<SelectionElement> _selection = new List<SelectionElement>();
-        private List<KeyValueSet> _keyvalue = new List<KeyValueSet>();
-        private Dictionary<KeyValueSet, KeyValueSet> _keyvaluepairs = new Dictionary<KeyValueSet, KeyValueSet>();
-        private readonly Geometry _geometry;
-        private int _page;
-        private string _Id;
+        public List<KeyValuePair<KeyValueSet, KeyValueSet>> GetFormItems() => _keyvaluepairs;
+        public List<Table> GetTables() => _tables;
 
-        public Page(Geometry geometry, string Id, int page) => (_geometry, _Id, _page) = (geometry, Id, page);
-        public Page(JToken block)
-        {
-            this._geometry = new Geometry(block["Geometry"]);
-            this._Id = block["Id"].ToString();
-            this._page = block["Page"].ToObject<int>();
-        }
-        
+        /*******************************************************************************
+        /// Methods
+        *******************************************************************************/
         public void addBlocks(List<Block> blocks)
         {
             foreach( var b in blocks)
@@ -60,22 +72,22 @@ namespace Appserver.TextractDocument
             {
                 switch( child.GetBlockType())
                 {
-                    case Appserver.TextractDocument.BlockType.LINE:
+                    case BlockType.LINE:
                         _lines.Add((Line)child);
                         child.SetPage(this);
                         child.CreateStructure();
                         break;
-                    case Appserver.TextractDocument.BlockType.TABLE:
+                    case BlockType.TABLE:
                         _tables.Add((Table)child);
                         child.SetPage(this);
                         child.CreateStructure();
                         break;
-                    case Appserver.TextractDocument.BlockType.SELECTION_ELEMENT:
+                    case BlockType.SELECTION_ELEMENT:
                         _selection.Add((SelectionElement)child);
                         child.SetPage(this);
                         child.CreateStructure();
                         break;
-                    case Appserver.TextractDocument.BlockType.KEY_VALUE_SET:
+                    case BlockType.KEY_VALUE_SET:
                         _keyvalue.Add((KeyValueSet)child);
                         child.SetPage(this);
                         child.CreateStructure();
@@ -89,7 +101,7 @@ namespace Appserver.TextractDocument
             {
                 if(kv.GetEntityType() == KeyValueSet.EntityType.KEY)
                 {
-                    _keyvaluepairs.Add(kv, kv.GetValue());
+                    _keyvaluepairs.Add(new KeyValuePair<KeyValueSet,KeyValueSet>(kv, kv.GetValue()));
                 }
             }
         }
@@ -123,6 +135,18 @@ namespace Appserver.TextractDocument
             {
                 kv.Key.PrintSummary();
             }
+        }
+
+        public override string ToString()
+        {
+            string s = String.Format("Page: {0}\n",_page) ;
+
+            foreach( var child in _children)
+            {
+                s += child.ToString();
+            }
+            
+            return s;
         }
     }
 }

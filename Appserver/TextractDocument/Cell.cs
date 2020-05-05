@@ -7,44 +7,9 @@ namespace Appserver.TextractDocument
 {
     public class Cell: Block
     {
-        public Cell(JToken block)
-        {
-            _geometry = new Geometry(block["Geometry"]);
-            _Id = block["Id"].ToString();
-            Confidence = block["Confidence"].ToObject<float>();
-            _page = block["Page"].ToObject<int>();
-            RowIndex = block["RowIndex"].ToObject<int>();
-            ColumnIndex = block["ColumnIndex"].ToObject<int>();
-            RowSpan = block["RowSpan"].ToObject<int>();
-            ColumnSpan = block["ColumnSpan"].ToObject<int>();
-            try
-            {
-                var children = block["Relationships"].ToList<JToken>()[0]["Ids"].ToList<JToken>();
-
-                foreach (var child in children)
-                {
-                    _childIds.Add(child.ToString());
-                }
-            }
-            catch (System.ArgumentNullException e)
-            {
-
-            }
-        }
-        public override Appserver.TextractDocument.BlockType GetBlockType() 
-            => Appserver.TextractDocument.BlockType.CELL;
-        public override Geometry GetGeometry() => _geometry;
-        public override string GetId() => _Id;
-        public override List<Block> GetRelationships() => _children;
-        public override int GetPage() => _page;
-        public override float GetConfidence() => Confidence;
-        public int GetRow() => RowIndex;
-        public int GetCol() => ColumnIndex;
-        ////////////////////////
-        /// Properties of a Cell
-        ////////////////////////
-        ///
-
+        /*******************************************************************************
+        /// Fields
+        *******************************************************************************/
         float Confidence;
         private int RowIndex;
         private int ColumnIndex;
@@ -60,10 +25,58 @@ namespace Appserver.TextractDocument
         private List<string> _childIds = new List<string>();
 
         private Page _parent;
+        /*******************************************************************************
+        /// Constructors
+        *******************************************************************************/
+        public Cell(JToken block)
+        {
+            _geometry = new Geometry(block["Geometry"]);
+            _Id = block["Id"].ToString();
+            Confidence = block["Confidence"].ToObject<float>();
+            _page = block["Page"].ToObject<int>();
+            RowIndex = block["RowIndex"].ToObject<int>();
+            ColumnIndex = block["ColumnIndex"].ToObject<int>();
+            RowSpan = block["RowSpan"].ToObject<int>();
+            ColumnSpan = block["ColumnSpan"].ToObject<int>();
+            try
+            {
+                // Check if there are any relationsips
+                if (block["Relationships"] != null && block["Relationships"].ToList<JToken>().Count > 0)
+                {
+                    var children = block["Relationships"].ToList<JToken>()[0]["Ids"].ToList<JToken>();
+
+                    foreach (var child in children)
+                    {
+                        _childIds.Add(child.ToString());
+                    }
+                }
+            }
+            catch (System.ArgumentNullException e)
+            {
+
+            }
+        }
+
+        /*******************************************************************************
+        /// Properties
+        *******************************************************************************/
+        public override Appserver.TextractDocument.BlockType GetBlockType() 
+            => Appserver.TextractDocument.BlockType.CELL;
+        public override Geometry GetGeometry() => _geometry;
+        public override string GetId() => _Id;
+        public override List<Block> GetRelationships() => _children;
+        public override int GetPage() => _page;
+        public override float GetConfidence() => Confidence;
+        public int GetRow() => RowIndex;
+        public int GetCol() => ColumnIndex;
+
         public override void SetPage(Page page)
         {
             _parent = page;
         }
+        /*******************************************************************************
+        /// Methods
+        *******************************************************************************/
         public override void CreateStructure()
         {
             foreach (var child in _childIds)
@@ -74,7 +87,7 @@ namespace Appserver.TextractDocument
         }
         public override void PrintSummary()
         {
-            Console.WriteLine(String.Format("[{0}][{1}]: {2}", RowIndex, ColumnIndex, ToString()));
+            Console.WriteLine(string.Format("[{0}][{1}]: {2}", RowIndex, ColumnIndex, ToString()));
         }
 
         public override string ToString()

@@ -8,6 +8,26 @@ namespace Appserver.TextractDocument
 {
     public class SelectionElement: Block
     {
+        /*******************************************************************************
+        /// Fields
+        *******************************************************************************/
+        private float Confidence;
+        private bool SelectionStatus;
+
+
+        private Geometry _geometry;
+        private int _page;
+        private string _Id;
+
+        private List<Block> _children = new List<Block>();
+        private Dictionary<string, Block> _childMap = new Dictionary<string, Block>();
+        private List<string> _childIds = new List<string>();
+
+        private Page _parent;
+
+        /*******************************************************************************
+        /// Constructors
+        *******************************************************************************/
         public SelectionElement(JToken block)
         {
             _geometry = new Geometry(block["Geometry"]);
@@ -36,39 +56,28 @@ namespace Appserver.TextractDocument
             }
             catch (System.ArgumentNullException e)
             {
-
+                // suppress error
+                return;
             }
         }
-        public override Appserver.TextractDocument.BlockType GetBlockType()
-            => Appserver.TextractDocument.BlockType.SELECTION_ELEMENT;
+        /*******************************************************************************
+        /// Properties
+        *******************************************************************************/
+        public override BlockType GetBlockType()
+            => BlockType.SELECTION_ELEMENT;
         public override Geometry GetGeometry() => _geometry;
         public override string GetId() => _Id;
         public override List<Block> GetRelationships() => _children;
         public override int GetPage() => _page;
         public override float GetConfidence() => Confidence;
-
-        ////////////////////////
-        /// Properties of a Word
-        ////////////////////////
-        ///
-
-        private float Confidence;
-        private bool SelectionStatus;
-
-
-        private Geometry _geometry;
-        private int _page;
-        private string _Id;
-
-        private List<Block> _children = new List<Block>();
-        private Dictionary<string, Block> _childMap = new Dictionary<string, Block>();
-        private List<string> _childIds = new List<string>();
-
-        private Page _parent;
         public override void SetPage(Page page)
         {
             _parent = page;
         }
+
+        /*******************************************************************************
+        /// Methods
+        *******************************************************************************/
         public override void CreateStructure()
         {
         }

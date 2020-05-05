@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace FormSubmit.Tests
 {
@@ -93,6 +94,22 @@ namespace FormSubmit.Tests
             form = new TimesheetForm();
 
             Assert.IsTrue(String.Equals(form.review_status, "Pending"));
+        }
+
+        [Test]
+        public void TextractToTimesheetTest()
+        {
+            // Setup Textract Document
+            var jsonFile = File.OpenText( "TextractDocument/textract.json" );
+            var document = new Appserver.TextractDocument.TextractDocument();
+
+            using (StreamReader reader = jsonFile)
+            {
+                document.FromJson((JObject)JToken.ReadFrom(new JsonTextReader(reader)));
+            }
+
+            var obj = AbstractFormObject.FromTextract(document);
+            Console.WriteLine(JsonConvert.SerializeObject(obj, Formatting.Indented).Replace("\r", "") + "\n");
         }
     }
 }

@@ -7,6 +7,34 @@ namespace Appserver.TextractDocument
 {
     public class Line: Block
     {
+        /*******************************************************************************
+        /// Fields
+        *******************************************************************************/
+        private float Confidence;
+        private string Text;
+
+        private Geometry _geometry;
+        private int _page;
+        private string _Id;
+
+        // Here the children represent individual words listed in document order
+        private List<Block> _children = new List<Block>();
+
+        // Quick lookup of children by id
+        private Dictionary<string, Block> _childMap = new Dictionary<string, Block>();
+
+        // List of child ids used in building the structure once everything has been parsed
+        private List<string> _childIds = new List<string>();
+
+        private Page _parent;
+        /*******************************************************************************
+        /// Constructors 
+        *******************************************************************************/
+        /// <summary>
+        /// The Line constructor is constructed from a JToken object that is from an AWS
+        /// Textract Response
+        /// </summary>
+        /// <param name="block"></param>
         public Line(JToken block)
         {
             _geometry = new Geometry(block["Geometry"]);
@@ -28,47 +56,31 @@ namespace Appserver.TextractDocument
 
             }
         }
-        public override Appserver.TextractDocument.BlockType GetBlockType() 
-            => Appserver.TextractDocument.BlockType.LINE;
+
+        /*******************************************************************************
+        /// Properties
+        *******************************************************************************/
+        public override BlockType GetBlockType() 
+            => BlockType.LINE;
         public override Geometry GetGeometry() => _geometry;
         public override string GetId() => _Id;
         public override List<Block> GetRelationships() => _children;
         public override int GetPage() => _page;
         public override float GetConfidence() => Confidence;
 
-        ////////////////////////
-        /// Properties of a Line
-        ////////////////////////
-        ///
-
-        private float Confidence;
-        private string Text;
-
-        private Geometry _geometry;
-        private int _page;
-        private string _Id;
-
-        // Here the children represent individual words listed in document order
-        private List<Block> _children = new List<Block>();
-
-        // Quick lookup of children by id
-        private Dictionary<string, Block> _childMap = new Dictionary<string, Block>();
-
-        // List of child ids used in building the structure once everything has been parsed
-        private List<string> _childIds = new List<string>();
-
-
-        private Page _parent;
         public override void SetPage(Page page)
         {
             _parent = page;
         }
 
+        /*******************************************************************************
+        /// Methods
+        *******************************************************************************/
         public override void CreateStructure()
         {
             if( _parent == null)
             {
-                throw new System.ArgumentException("No Parent");
+                throw new ArgumentException("No Parent");
             }
             foreach( var child in _childIds)
             {
@@ -79,12 +91,12 @@ namespace Appserver.TextractDocument
         }
         public override void PrintSummary()
         {
-            Console.WriteLine(String.Format("Line-id: {0}", _Id));
+            Console.WriteLine(string.Format("Line-id: {0}", _Id));
             foreach (var child in _childMap.Values)
             {
-                Console.WriteLine(String.Format("Child-type: {0}", child.GetBlockType()));
+                Console.WriteLine(string.Format("Child-type: {0}", child.GetBlockType()));
             }
-            Console.WriteLine(String.Format("Child count: {0}", _childMap.Count));
+            Console.WriteLine(string.Format("Child count: {0}", _childMap.Count));
         }
 
         // Just returning the text, no need to reconstruct from children

@@ -379,25 +379,19 @@
                                             <div class="col"><b>Hours</b></div>
                                             <div class="col"><b>Group? (yes/no)</b></div>
                                         </div>
-                                        @foreach (var e in t.TimeEntries)
-                                        {
-
-                                            color = color == "#8FDDE6" ? "#E6EFF3" : "#8FDDE6";
-                                            <div class="row" style="background-color: @color">
-                                                <div class="col">@e.Date.ToString("d")</div>
-                                                <div class="col">@e.In.ToString("h:mm tt")</div>
-                                                <div class="col">@e.Out.ToString("h:mm tt")</div>
-                                                <div class="col">@e.Hours</div>
-                                                @if (e.Group)
-                                                {
-                                                    <div class="col">Yes</div>
-                                                }
-                                                else
-                                                {
-                                                    <div class="col">No</div>
-
-                                                }
-                                            </div>
+                                        @{
+                                            var modalColor = "#8FDDE6";
+                                            foreach (var e in t.TimeEntries)
+                                            {
+                                                modalColor = modalColor == "#8FDDE6" ? "#E6EFF3" : "#8FDDE6";
+                                                <div class="row" style="background-color: @modalColor">
+                                                    <div class="col">@e.Date.ToString("d")</div>
+                                                    <div class="col">@e.In.ToString("h:mm tt")</div>
+                                                    <div class="col">@e.Out.ToString("h:mm tt")</div>
+                                                    <div class="col">@e.Hours</div>
+                                                    <div class="col">@(e.Group ? "Yes" : "No")</div>
+                                                </div>
+                                            }
                                         }
 
                                     </div>

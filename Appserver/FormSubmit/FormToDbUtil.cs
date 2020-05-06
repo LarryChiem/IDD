@@ -13,9 +13,18 @@ namespace IDD
 {
     public class FormToDbUtil
     {
-        public FormToDbUtil(){}
+        private SubmissionContext _scontext;
 
-        private readonly SubmissionContext _scontext;
+        public FormToDbUtil(SubmissionContext context)
+        {
+            _scontext = context;
+        }
+
+        //private readonly SubmissionContext _scontext;
+
+        //public FormToDbUtil(){}
+
+
         // Use EF core to send data to DB
         public int TimesheetEFtoDB(Timesheet ts)
         {
@@ -23,13 +32,15 @@ namespace IDD
 
             //SubmissionContext _scontext;
             //var options = new DbContextOptionsBuilder<SubmissionContext>()
-            //    .UseSqlServer(@"YourConnString")
+            //    .UseSqlServer(@"Your conn String")
             //    .Options;
 
             //var dbContext = new SubmissionContext(options);
-           // _scontext = dbContext;
+            //_scontext = dbContext;
+
             _scontext.Add(ts);
             _scontext.SaveChanges();
+
             return ts.Id;
         }
 

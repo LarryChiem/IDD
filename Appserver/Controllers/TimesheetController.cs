@@ -37,24 +37,10 @@ namespace Appserver.Controllers
 
         [Produces("application/json")]
         [Route("Timesheet/ReadyTest")]
-        public IActionResult ReadyTest()
+        [HttpGet]
+        public IActionResult ReadyTest(int id)
         {
-            // get the response from db
-            int id = 2;
-            var stage = _context.Stagings.FirstOrDefault(m => m.Id == id);
-
-            if( stage == null)
-            {
-                return Json(new JsonResponse("not ready"));
-            }
-            var textractform = new TextractDocument.TextractDocument();
-            
-            textractform.FromJson(JObject.Parse(stage.ParsedTextractJSON.Trim(',')));
-
-            var ts = (TimesheetForm)AbstractFormObject.FromTextract(textractform);
-
-            ts.id = id;
-            return Json(ts);
+            return Ready(id);
         }
         [Produces("application/json")]
         [HttpGet]

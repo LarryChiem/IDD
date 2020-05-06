@@ -56,30 +56,22 @@ namespace Appserver.Controllers
             return Json(ts);
         }
         [Produces("application/json")]
-        public IActionResult Ready()
+        [HttpGet]
+        public IActionResult Ready(int id)
         {
-            TimesheetForm model = new TimesheetForm();
-            model.prime = "A1234";
-            model.providerName = "Donald Duck";
-            model.providerNum = "N6543";
-            model.providerSignature = true;
-            model.providerSignDate = DateTime.Now.ToString();
-            model.progressNotes = "Looking good for a retired hero.\nNeeds a new hobby.";
-            model.scpaName = "SCPA";
-            model.serviceAuthorized = "Feeding";
-            model.serviceGoal = "Feed fish";
-            model.authorization = true;
-            model.type = "House call";
-            model.brokerage = "Daffy";
-            model.approval = true;
-            model.clientName = "Darkwing Duck";
-            model.employerSignature = true;
-            model.employerSignDate = DateTime.Now.ToString();
-            model.frequency = "Daily";
-            model.addTimeRow("2020-04-02", "09:00", "10:00", 1.0f, 1);
-            model.addTimeRow("2020-04-03", "09:00", "10:00", 1.0f, 1);
-            model.addTimeRow("2020-04-04", "09:00", "10:00", 1.0f, 1);
-            return Json(model);
+            var stage = _context.Stagings.FirstOrDefault(m => m.Id == id);
+
+            if (stage == null)
+            {
+                return Json(new JsonResponse("not ready"));
+            }
+            var textractform = new TextractDocument.TextractDocument();
+
+            textractform.FromJson(JObject.Parse(stage.ParsedTextractJSON.Trim(',')));
+
+            var ts = AbstractFormObject.FromTextract(textractform);
+
+            return Json(ts);
         }
 
         private class JsonResponse

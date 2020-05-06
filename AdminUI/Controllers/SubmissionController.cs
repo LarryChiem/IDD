@@ -203,12 +203,12 @@ namespace AdminUI.Controllers
             
             _scontext.Entry(submission).Reference(t => t.LockInfo).Load();
             
-            if (submission.LockInfo == null || !submission.LockInfo.User.Equals(User.Identity.Name, StringComparison.CurrentCultureIgnoreCase))
+            if (submission.LockInfo != null && !submission.LockInfo.User.Equals(User.Identity.Name, StringComparison.CurrentCultureIgnoreCase))
                 return View("NoPermission");
             
             submission.Status = Status;
             submission.RejectionReason = RejectionReason;
-            submission.UserActivity = Status + " by " + submission.LockInfo.User + " on " + DateTime.Now;
+            submission.UserActivity = Status + " by " + User.Identity.Name + " on " + DateTime.Now;
             submission.LockInfo = null;
             
             if (ModelState.IsValid)

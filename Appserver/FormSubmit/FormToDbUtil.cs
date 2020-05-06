@@ -5,34 +5,34 @@ using Common.Data;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Collections;
-using Common.Data;
 using Microsoft.EntityFrameworkCore.SqlServer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace IDD
 {
     public class FormToDbUtil
     {
-        public FormToDbUtil() { }
+        public FormToDbUtil(){}
 
-
+        private readonly SubmissionContext _scontext;
         // Use EF core to send data to DB
         public int TimesheetEFtoDB(Timesheet ts)
         {
+            //string conn_str = Environment.GetEnvironmentVariable("test-db-conn-str");
 
-            SubmissionContext _scontext;
-            var options = new DbContextOptionsBuilder<SubmissionContext>()
-                .UseSqlServer(@"YourConnString")
-                .Options;
+            //SubmissionContext _scontext;
+            //var options = new DbContextOptionsBuilder<SubmissionContext>()
+            //    .UseSqlServer(@"YourConnString")
+            //    .Options;
 
-            var dbContext = new SubmissionContext(options);
-            _scontext = dbContext;
+            //var dbContext = new SubmissionContext(options);
+           // _scontext = dbContext;
             _scontext.Add(ts);
             _scontext.SaveChanges();
             return ts.Id;
         }
 
-    
 
         // Given a timesheet and a timesheetid referencing an existing timesheet
         // submission in the DB, insert the TimeEntry(s) in the TimeSheet. Get

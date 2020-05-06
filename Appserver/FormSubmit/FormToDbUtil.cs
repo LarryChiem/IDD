@@ -20,27 +20,12 @@ namespace IDD
             _scontext = context;
         }
 
-        //private readonly SubmissionContext _scontext;
-
-        //public FormToDbUtil(){}
-
 
         // Use EF core to send data to DB
         public int TimesheetEFtoDB(Timesheet ts)
         {
-            //string conn_str = Environment.GetEnvironmentVariable("test-db-conn-str");
-
-            //SubmissionContext _scontext;
-            //var options = new DbContextOptionsBuilder<SubmissionContext>()
-            //    .UseSqlServer(@"Your conn String")
-            //    .Options;
-
-            //var dbContext = new SubmissionContext(options);
-            //_scontext = dbContext;
-
             _scontext.Add(ts);
             _scontext.SaveChanges();
-
             return ts.Id;
         }
 

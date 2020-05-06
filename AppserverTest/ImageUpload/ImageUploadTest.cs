@@ -137,6 +137,7 @@ namespace ImageUpload.Tests
     public class ImageToTextractTest
     {
         private readonly SubmissionStagingContext context;
+        private readonly SubmissionContext scontext;
 
         [Test]
         public async Task PassValidFile()
@@ -161,7 +162,7 @@ namespace ImageUpload.Tests
             // Open file and pass to textract
             var li = File.ReadAllBytes(filePath);
             IFormFile file = new FormFile(new MemoryStream(li), 0, li.Length, "testFile", "testimage.jpg");
-            ImageUploadController iuc = new ImageUploadController(context);
+            ImageUploadController iuc = new ImageUploadController(context, scontext);
             var res = await iuc.pass_to_textract(file);
             Assert.IsNotEmpty(res.ToString());
         }
@@ -190,7 +191,7 @@ namespace ImageUpload.Tests
             // Open file and pass to textract
             var li = File.ReadAllBytes(filePath);
             IFormFile file = new FormFile(new MemoryStream(li), 0, 0, "testFile", "testimage.jpg");
-            ImageUploadController iuc = new ImageUploadController(context);
+            ImageUploadController iuc = new ImageUploadController(context ,scontext);
             var res = await iuc.pass_to_textract(file);
             string x = "{response_miss: Something doesn't smell right...}";
             Assert.AreEqual(res.ToString(), x);

@@ -31,9 +31,10 @@ namespace Appserver.Controllers
         private readonly SubmissionContext _scontext;
 
 
-        public ImageUploadController(SubmissionStagingContext context)
+        public ImageUploadController(SubmissionStagingContext context, SubmissionContext scontext)
         {
             _context = context;
+            _scontext = scontext;
         }
 
 
@@ -63,10 +64,7 @@ namespace Appserver.Controllers
             model.addTimeRow("2020-04-04", "09:00", "10:00", 1.0f, 1);
 
             TimesheetController tsc = new TimesheetController();
-            //TimesheetForm tsf = (TimesheetForm)tsc.Ready();
-
             var dbutil = new FormToDbUtil(_scontext);
-            //var dbutil = new FormToDbUtil();
 
             Timesheet ts = dbutil.PopulateTimesheet(model);
             dbutil.PopulateTimesheetEntries(model, ts);

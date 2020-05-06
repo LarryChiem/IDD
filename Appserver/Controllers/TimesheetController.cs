@@ -5,44 +5,71 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Appserver.Data;
 using Appserver.Models;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
+using Appserver.TextractDocument;
+using Newtonsoft.Json.Linq;
 
 namespace Appserver.Controllers
 {
     public class TimesheetController : Controller
     {
-        [Produces("application/json")]
-        public IActionResult Ready()
+        /*******************************************************************************
+        /// Fields
+        *******************************************************************************/
+        private readonly SubmissionStagingContext _context;
+
+        /*******************************************************************************
+        /// Constructor
+        *******************************************************************************/
+        public TimesheetController(SubmissionStagingContext context)
         {
-            TimesheetForm model = new TimesheetForm();
-            model.prime = "A1234";
-            model.providerName = "Donald Duck";
-            model.providerNum = "N6543";
-            model.providerSignature = true;
-            model.providerSignDate = DateTime.Now.ToString();
-            model.progressNotes = "Looking good for a retired hero.\nNeeds a new hobby.";
-            model.scpaName = "SCPA";
-            model.serviceAuthorized = "Feeding";
-            model.serviceGoal = "Feed fish";
-            model.authorization = true;
-            model.type = "House call";
-            model.brokerage = "Daffy";
-            model.approval = true;
-            model.clientName = "Darkwing Duck";
-            model.employerSignature = true;
-            model.employerSignDate = DateTime.Now.ToString();
-            model.frequency = "Daily";
-            model.addTimeRow("2020-04-02", "09:00", "10:00", 1.0f, 1);
-            model.addTimeRow("2020-04-03", "09:00", "10:00", 1.0f, 1);
-            model.addTimeRow("2020-04-04", "09:00", "10:00", 1.0f, 1);
-            return Json(model);
+            _context = context;
+        }
+
+
+        /*******************************************************************************
+        /// Methods
+        *******************************************************************************/
+
+        [Produces("application/json")]
+        [Route("Timesheet/ReadyTest")]
+        [HttpGet]
+        public IActionResult ReadyTest(int id)
+        {
+            return Ready(id);
+        }
+        [Produces("application/json")]
+        [HttpGet]
+        public IActionResult Ready(int id)
+        {
+            var stage = _context.Stagings.FirstOrDefault(m => m.Id == id);
+
+            if (stage == null)
+            {
+                return Json(new JsonResponse("not ready"));
+            }
+            var textractform = new TextractDocument.TextractDocument();
+
+            textractform.FromJson(JObject.Parse(stage.ParsedTextractJSON.Trim(',')));
+
+            var ts = (TimesheetForm)AbstractFormObject.FromTextract(textractform);
+
+            ts.id = id;
+
+            return Json(ts);
         }
 
         private class JsonResponse
         {
-            public string response = "ok";
+            public JsonResponse(string res = "ok")
+            {
+                response = res;
+            }
+            public string response;
         }
 
         [Route("Timesheet/Validate")]

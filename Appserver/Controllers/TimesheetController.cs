@@ -51,8 +51,9 @@ namespace Appserver.Controllers
             
             textractform.FromJson(JObject.Parse(stage.ParsedTextractJSON.Trim(',')));
 
-            var ts = AbstractFormObject.FromTextract(textractform);
-            
+            var ts = (TimesheetForm)AbstractFormObject.FromTextract(textractform);
+
+            ts.id = id;
             return Json(ts);
         }
         [Produces("application/json")]
@@ -69,7 +70,9 @@ namespace Appserver.Controllers
 
             textractform.FromJson(JObject.Parse(stage.ParsedTextractJSON.Trim(',')));
 
-            var ts = AbstractFormObject.FromTextract(textractform);
+            var ts = (TimesheetForm)AbstractFormObject.FromTextract(textractform);
+
+            ts.id = id;
 
             return Json(ts);
         }

@@ -5,14 +5,56 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Appserver.Data;
 using Appserver.Models;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
+using Appserver.TextractDocument;
+using Newtonsoft.Json.Linq;
 
 namespace Appserver.Controllers
 {
     public class TimesheetController : Controller
     {
+        /*******************************************************************************
+        /// Fields
+        *******************************************************************************/
+        private readonly SubmissionStagingContext _context;
+
+        /*******************************************************************************
+        /// Constructor
+        *******************************************************************************/
+        public TimesheetController(SubmissionStagingContext context)
+        {
+            _context = context;
+        }
+
+
+        /*******************************************************************************
+        /// Methods
+        *******************************************************************************/
+
+        [Produces("application/json")]
+        [Route("Timesheet/ReadyTest")]
+        public IActionResult ReadyTest()
+        {
+            // get the response from db
+            int id = 2;
+            var stage = _context.Stagings.FirstOrDefault(m => m.Id == id);
+
+            if( stage == null)
+            {
+                return Json(new JsonResponse("not ready"));
+            }
+            var textractform = new TextractDocument.TextractDocument();
+            
+            textractform.FromJson(JObject.Parse(stage.ParsedTextractJSON.Trim(',')));
+
+            var ts = AbstractFormObject.FromTextract(textractform);
+            
+            return Json(ts);
+        }
         [Produces("application/json")]
         public IActionResult Ready()
         {
@@ -42,7 +84,11 @@ namespace Appserver.Controllers
 
         private class JsonResponse
         {
-            public string response = "ok";
+            public JsonResponse(string res = "ok")
+            {
+                response = res;
+            }
+            public string response;
         }
 
         [Route("Timesheet/Validate")]

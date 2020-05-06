@@ -63,7 +63,6 @@ namespace Appserver.Controllers
             model.addTimeRow("2020-04-03", "09:00", "10:00", 1.0f, 1);
             model.addTimeRow("2020-04-04", "09:00", "10:00", 1.0f, 1);
 
-            TimesheetController tsc = new TimesheetController();
             var dbutil = new FormToDbUtil(_scontext);
 
             Timesheet ts = dbutil.PopulateTimesheet(model);

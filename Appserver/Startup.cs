@@ -87,8 +87,13 @@ namespace Appserver
                 name: "timesheet_ready_route",
                 pattern: "{controller=Timesheet}/{action=Ready}/");
 
-            // Validate Timesheet
+            // Check if Timesheet Ready
             endpoints.MapControllerRoute(
+                name: "test_timesheet_ready_route",
+                pattern: "{controller=Timesheet}/{action=ReadyTest}/");
+
+                // Validate Timesheet
+                endpoints.MapControllerRoute(
                 name: "timesheet_validate_route",
                 pattern: "{controller=Timesheet}/{action=Validate}/");
 

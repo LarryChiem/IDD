@@ -22,6 +22,7 @@ using Microsoft.Extensions.Configuration;
 using IDD;
 using Common.Models;
 using Common.Data;
+using Microsoft.Azure.Documents.SystemFunctions;
 
 namespace Appserver.Controllers
 {
@@ -64,7 +65,7 @@ namespace Appserver.Controllers
             model.addTimeRow("2020-04-04", "09:00", "10:00", 1.0f, 1);
 
             TimesheetController tsc = new TimesheetController();
-            var dbutil = new FormToDbUtil(_scontext);
+            var dbutil = new FormToDbUtil(_scontext, _context);
 
             Timesheet ts = dbutil.PopulateTimesheet(model);
             dbutil.PopulateTimesheetEntries(model, ts);
@@ -136,8 +137,8 @@ namespace Appserver.Controllers
 
             return Json(new {
                 file_count = files.Count,
-                textract_stats = stats,
-                azfc_resp = textract_responses,
+                //textract_stats = stats,
+                //azfc_resp = textract_responses,
                 skipped = skipped_files,
                 id = await UploadToBlob(files, textract_responses)
             }
@@ -193,9 +194,9 @@ namespace Appserver.Controllers
 
             return Json(new {
                 file_count = c,
-                azfc_resp = textract_responses,
+                //azfc_resp = textract_responses,
                 skipped = skipped_files,
-                textract_stats = stats,
+                //textract_stats = stats,
                 id = await UploadToBlob(file_collection.Files.ToList(),textract_responses)
             }
             );
@@ -203,7 +204,6 @@ namespace Appserver.Controllers
 
         public async Task<int> UploadToBlob(List<IFormFile> files, IEnumerable<AnalyzeDocumentResponse> responses)
         {
-            //TODO: Link this to actual AzureDB storage when not in development
             // Get Blob Container
             var container = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("BLOB_CONNECTION"))
                 .CreateCloudBlobClient()
@@ -218,11 +218,9 @@ namespace Appserver.Controllers
             {
                 if (!string.IsNullOrEmpty(uriString))
                     uriString += ',';
-                var blockBlob = container.GetBlockBlobReference(f.FileName);
+                var blockBlob = container.GetBlockBlobReference(DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fffffff") + "_" + f.FileName);
                 uriString += blockBlob.Uri.AbsoluteUri;
-                await using var m = new MemoryStream();
-                f.CopyTo(m);
-                await IDD.ImageUpload.UploadImage64(blockBlob, f.FileName, Convert.ToBase64String(m.ToArray()));
+                await blockBlob.UploadFromStreamAsync(f.OpenReadStream());
             }
 
             // Create a SubmissionStaging to upload to SubmissionStaging table

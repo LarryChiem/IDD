@@ -5,6 +5,7 @@ using Common.Data;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Collections;
+using Appserver.Data;
 using Microsoft.EntityFrameworkCore.SqlServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,10 +15,12 @@ namespace IDD
     public class FormToDbUtil
     {
         private SubmissionContext _scontext;
+        private SubmissionStagingContext _sscontext;
 
-        public FormToDbUtil(SubmissionContext context)
+        public FormToDbUtil(SubmissionContext context, SubmissionStagingContext sscontext)
         {
             _scontext = context;
+            _sscontext = sscontext;
         }
 
 
@@ -26,6 +29,8 @@ namespace IDD
         {
             _scontext.Add(ts);
             _scontext.SaveChanges();
+            _sscontext.Remove(ts.Id);
+            _sscontext.SaveChanges();
             return ts.Id;
         }
 
@@ -102,11 +107,13 @@ namespace IDD
             tsheet.ServiceGoal = tsf.serviceGoal;
             tsheet.ProgressNotes = tsf.progressNotes;
             tsheet.FormType = tsf.serviceAuthorized;
-            tsheet.RejectionReason = "none"; //
+            tsheet.RejectionReason = ""; //
             tsheet.Submitted = DateTime.Now; //
             tsheet.LockInfo = null;
-            tsheet.UserActivity = "none"; //
-            tsheet.UriString = "https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/OR507_19-11-1.png, https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/OR507_19-11-1.png"; //
+            tsheet.UserActivity = ""; //
+            
+            tsheet.UriString = _sscontext.Stagings.Find(tsf.id).UriString;
+            //tsheet.UriString = "https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/OR507_19-11-1.png, https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/OR507_19-11-1.png"; //
 
             return tsheet;
         }

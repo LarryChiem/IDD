@@ -7,6 +7,7 @@ public class TimesheetForm: AbstractFormObject{
     public TimesheetForm(){
     }
 
+    public int id { get; set; }
     public string clientName {get; set;}
     public string prime { get; set; }
     public string providerName { get; set; }

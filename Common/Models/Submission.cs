@@ -16,7 +16,7 @@ namespace Common.Models
         public string ClientPrime { get; set; }
         public string ServiceGoal { get; set; }
         public string ProgressNotes { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = "Pending";
         public string UserActivity { get; set; }
         public string RejectionReason { get; set; }
         public Lock LockInfo { get; set; }

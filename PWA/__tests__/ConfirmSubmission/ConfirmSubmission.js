@@ -4,7 +4,7 @@ import ConfirmSubmission from '../../src/components/Timesheet/ConfirmSubmission.
 describe('ConfirmSubmission', () => {
 
 	//Given a valid form, the user should not get an error.
-	it('Should not load card saying invalid form', () => {
+	it('Should not load message saying invalid form', () => {
 
 		const wrapper = mount(ConfirmSubmission, {
 			propsData: {
@@ -17,7 +17,7 @@ describe('ConfirmSubmission', () => {
 	})
 
 	//Given invalid form, it should notify the user.
-	it('Should load card saying invalid form', () => {
+	it('Should load message saying invalid form', () => {
 
 		const wrapper = mount(ConfirmSubmission, {
 			propsData: {

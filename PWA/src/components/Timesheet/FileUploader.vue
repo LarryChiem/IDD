@@ -228,7 +228,7 @@
         urlPost: process.env.VUE_APP_SERVER_URL.concat("ImageUpload/DocAsForm"), //Post AppServer
       };
     },
-    //Watches for the user to press submit.
+    //Watches for the user to press submit. BAD!
     watch: {
       loader() {
         const l = this.loader;

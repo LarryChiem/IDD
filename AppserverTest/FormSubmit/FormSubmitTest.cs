@@ -4,18 +4,15 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using Newtonsoft.Json;
-<<<<<<< HEAD
 using Newtonsoft.Json.Linq;
-
-=======
 using System;
 using System.Reflection;
-using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using Common.Models;
 using IDD;
+using Microsoft.EntityFrameworkCore;
 
->>>>>>> 4886e89ca6803a332e01ac5cb666df0ac66396be
+
 namespace FormSubmit.Tests
 {
     [TestFixture]
@@ -94,6 +91,51 @@ namespace FormSubmit.Tests
             string j = JsonConvert.SerializeObject(obj, Formatting.Indented).Replace("\r", "") + "\n";
 
             Assert.IsTrue(String.Equals(j, k));
+        }
+
+        [Test]
+        public void TimesheetEFtoDB()
+        {
+            // Create initial timesheetform with some data
+            TimesheetForm obj = new TimesheetForm();
+            obj.clientName = "Donald Duck";
+            obj.prime = "123456";
+            obj.providerName = "Daughy Duck";
+            obj.providerNum = "654321";
+            obj.brokerage = "Not sure";
+            obj.scpaName = "SC/PA";
+            obj.serviceAuthorized = "All";
+            obj.units = 20;
+            obj.type = "Feeding";
+            obj.frequency = "Daily";
+
+            obj.addTimeRow("2020-03-20", "9:00", "10:00", 1, 2);
+            obj.addTimeRow("2020-03-21", "9:00", "10:00", 1, 2);
+            obj.addTimeRow("2020-03-22", "9:00", "10:00", 1, 2);
+            obj.addTimeRow("2020-03-23", "9:00", "10:00", 1, 2);
+            obj.addTimeRow("2020-03-24", "9:00", "10:00", 1, 2);
+            obj.addTimeRow("2020-03-25", "9:00", "10:00", 1, 2);
+            obj.addTimeRow("2020-03-26", "9:00", "10:00", 1, 2);
+            obj.addTimeRow("2020-03-27", "9:00", "10:00", 1, 2);
+            obj.addTimeRow("2020-03-28", "9:00", "10:00", 1, 2);
+            obj.addTimeRow("2020-03-29", "9:00", "10:00", 1, 2);
+
+            obj.serviceGoal = "Feed them";
+            obj.progressNotes = "Eating more fish";
+            obj.employerSignature = true;
+            obj.employerSignDate = "2020-04-01";
+            obj.authorization = true;
+            obj.approval = true;
+            obj.providerSignature = true;
+            obj.providerSignDate = "2020-04-01";
+
+            // Convert timesheetform into timesheet
+            var dbutil = new FormToDbUtil();
+            Timesheet ts = dbutil.PopulateTimesheet(obj);
+            dbutil.PopulateTimesheetEntries(obj, ts);
+
+            var res = dbutil.TimesheetEFtoDB(ts);
+            Assert.IsNotNull(res);
         }
 
         [Test]
@@ -202,7 +244,6 @@ namespace FormSubmit.Tests
             Assert.IsTrue(String.Equals(form.review_status, "Pending"));
         }
 
-<<<<<<< HEAD
         [Test]
         public void TextractToTimesheetTest()
         {
@@ -218,7 +259,5 @@ namespace FormSubmit.Tests
             var obj = AbstractFormObject.FromTextract(document);
             Console.WriteLine(JsonConvert.SerializeObject(obj, Formatting.Indented).Replace("\r", "") + "\n");
         }
-=======
->>>>>>> 4886e89ca6803a332e01ac5cb666df0ac66396be
     }
 }

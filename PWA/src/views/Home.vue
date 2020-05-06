@@ -74,7 +74,7 @@
     data: () => ({
       cards: [
         {title: 'Upload Timesheet', src:'@/assets/card_portland.png', link:'/timesheet', icon:'add_circle', iconColor:'success'}, 
-        {title: 'About', src:'@/assets/card_portland.png', link:'/timesheet', icon:'info', iconColor:'warning'}, 
+        {title: 'About', src:'@/assets/card_portland.png', link:'/about', icon:'info', iconColor:'warning'}, 
       ],
     }),
   };

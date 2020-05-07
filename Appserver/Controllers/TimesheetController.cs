@@ -60,8 +60,15 @@ namespace Appserver.Controllers
             var textractform = new TextractDocument.TextractDocument();
 
             textractform.FromJson(JObject.Parse(stage.ParsedTextractJSON.Trim(',')));
-
-            var ts = (TimesheetForm)AbstractFormObject.FromTextract(textractform);
+            TimesheetForm ts;
+            try
+            {
+                ts = (TimesheetForm)AbstractFormObject.FromTextract(textractform);
+            }
+            catch (Exception)
+            {
+                return Json(new JsonResponse("invalid"));
+            }
 
             ts.id = id;
 

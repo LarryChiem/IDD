@@ -4,6 +4,8 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Amazon.Runtime.Internal;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Appserver.TextractDocument
 {
@@ -104,6 +106,41 @@ namespace Appserver.TextractDocument
                     _keyvaluepairs.Add(new KeyValuePair<KeyValueSet,KeyValueSet>(kv, kv.GetValue()));
                 }
             }
+
+            _keyvaluepairs = Sort(_keyvaluepairs);
+        }
+
+        private List<KeyValuePair<KeyValueSet, KeyValueSet>> Sort(List<KeyValuePair<KeyValueSet, KeyValueSet>> kvps)
+        {
+            // The height threshold for determining if two blocks are on the same line. 0.01 = 1% of the page height
+            const double threshold = 0.01;
+
+            // This is an Insertion Sort sorting by the Top values. If two blocks have very similar Top values,
+            // then they're probably on the same line. We then sort by Left values for Left -> Right sort.
+            // This will end up with a list sorted as if you were reading it out of a page.
+            var ret = new List<KeyValuePair<KeyValueSet, KeyValueSet>>();
+            foreach (var kvp in kvps)
+            {
+                int i;
+                for (i = 0; i < ret.Count; ++i)
+                {
+                    // If two blocks are close enough (as determined by threshold), then they're probably on the same line
+                    if (Math.Abs(kvp.Key.GetGeometry().box.Top - ret[i].Key.GetGeometry().box.Top) < threshold)
+                    {
+                        // Then break only if the one in question is to the left of the comparison block
+                        if (kvp.Key.GetGeometry().box.Left < ret[i].Key.GetGeometry().box.Left)
+                            break;
+                    }
+                    // Else if the insertion block is above the comparison block, then break
+                    else if (kvp.Key.GetGeometry().box.Top < ret[i].Key.GetGeometry().box.Top)
+                        break;
+
+                }
+                //Insert the insertion block at the calculated index
+                ret.Insert(i, kvp);
+            }
+
+            return ret;
         }
 
         public override void SetPage(Page page)

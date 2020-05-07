@@ -9,6 +9,7 @@ namespace Appserver.TextractDocument
     /// for convenience also the width and height of the box.
     /// 
     /// Coordinates found here are in normalized form, so is the bounding box.
+    /// 0,0 is the upper left corner of the Page
     /// </summary>
     /// 
     public class Geometry

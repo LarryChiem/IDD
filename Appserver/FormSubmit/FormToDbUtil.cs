@@ -226,7 +226,8 @@ namespace IDD
 
         public bool PWABoolConverter(string val)
         {
-            if(val == "true" || val == "Yes")
+            val = val.ToLower();
+            if(val == "true" || val == "yes")
             {
                 return true;
             }

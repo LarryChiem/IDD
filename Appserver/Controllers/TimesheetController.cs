@@ -98,9 +98,9 @@ namespace Appserver.Controllers
             Timesheet ts = dbutil.PopulateTimesheet(tsf);
             dbutil.PopulateTimesheetEntries(tsf, ts);
 
-            var staging = _context;
-            staging.Add(ts);
-            staging.SaveChanges();
+            var submission = _subcontext;
+            submission.Add(ts);
+            submission.SaveChanges();
 
             // Do something with form
             Response.Headers.Add("Access-Control-Allow-Origin", "*");

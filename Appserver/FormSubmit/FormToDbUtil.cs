@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Newtonsoft.Json.Linq;
 using Common.Models;
 using Common.Data;
@@ -94,89 +94,6 @@ namespace IDD
             return totalInserts;
         }
 
-        // Submit the timesheet portion first to get the insert ID back.
-        // TODO this could be improved by making 'timesheet' a variable in
-        // the query portion, change the name of the method to something more
-        // general, and it can acommodate multiple form types....?
-        // FIXME add try/catch
-        public string TimesheetToDB(Timesheet ts)
-        {
-            decimal insertId = 0;
-
-            string query = "INSERT INTO [dbo].[Submissions] ([Submitted],[FormType],[ProviderName]";
-            query += ",[ProviderId],[ClientName],[ClientPrime],[ServiceGoal],[ProgressNotes],[Status]";
-            query += ",[UserActivity],[RejectionReason],[LockInfoId],[UriString],[Discriminator],[TotalMiles],[TotalHours]) ";
-            query += "VALUES(@submitted, @formtype, @providername, @providerid, @clientname, @clientprime, @servicegoal,";
-            query += "@progressnotes, @status, @useractivity, @rejectionreason, @lockinfoid, @uristring, @discriminator,";
-            query += "@totalmiles, @totalhours) SELECT SCOPE_IDENTITY();";
-
-            string conn_str = Environment.GetEnvironmentVariable("test-db-conn-str");
-            using (SqlConnection conn = new SqlConnection(conn_str))
-            {
-                SqlCommand command = new SqlCommand(query, conn);
-                command.Parameters.Add("@submitted", System.Data.SqlDbType.DateTime2);
-                command.Parameters["@submitted"].Value = ts.Submitted;
-
-                command.Parameters.Add("@formtype", System.Data.SqlDbType.NVarChar, 50);
-                command.Parameters["@formtype"].Value = ts.FormType;
-
-                command.Parameters.Add("@providername", System.Data.SqlDbType.NVarChar, 50);
-                command.Parameters["@providername"].Value = ts.ProviderName;
-
-                command.Parameters.Add("@providerid", System.Data.SqlDbType.NVarChar, 50);
-                command.Parameters["@providerid"].Value = ts.ProviderId;
-
-                command.Parameters.Add("@clientname", System.Data.SqlDbType.NVarChar, 50);
-                command.Parameters["@clientname"].Value = ts.ClientName;
-
-                command.Parameters.Add("@clientprime", System.Data.SqlDbType.NVarChar, 50);
-                command.Parameters["@clientprime"].Value = ts.ClientPrime;
-
-                command.Parameters.Add("@servicegoal", System.Data.SqlDbType.NVarChar, 100);
-                command.Parameters["@servicegoal"].Value = ts.ServiceGoal;
-
-                command.Parameters.Add("@progressnotes", System.Data.SqlDbType.NVarChar, 500);
-                command.Parameters["@progressnotes"].Value = ts.ProgressNotes;
-
-                command.Parameters.Add("@status", System.Data.SqlDbType.NVarChar, 50);
-                command.Parameters["@status"].Value = ts.Status;
-
-                command.Parameters.Add("@useractivity", System.Data.SqlDbType.NVarChar, 100);
-                command.Parameters["@useractivity"].Value = ts.UserActivity;
-
-                command.Parameters.Add("@rejectionreason", System.Data.SqlDbType.NVarChar, 250);
-                command.Parameters["@rejectionreason"].Value = ts.RejectionReason;
-
-                command.Parameters.Add("@lockinfoid", System.Data.SqlDbType.Int);
-                command.Parameters["@lockinfoid"].Value = DBNull.Value;
-
-                command.Parameters.Add("@uristring", System.Data.SqlDbType.NVarChar, 500);
-                command.Parameters["@uristring"].Value = ts.UriString;
-
-                command.Parameters.Add("@discriminator", System.Data.SqlDbType.NVarChar, 50);
-                command.Parameters["@discriminator"].Value = "Timesheet";
-
-                command.Parameters.Add("@totalmiles", System.Data.SqlDbType.Float);
-                command.Parameters["@totalmiles"].Value = 0;
-
-                command.Parameters.Add("@totalhours", System.Data.SqlDbType.Float);
-                command.Parameters["@totalhours"].Value = ts.TotalHours;
-
-                conn.Open();
-
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        insertId = reader.GetDecimal(0);
-                    }
-                    reader.Close();
-                }
-            }
-
-            return insertId.ToString();
-        }
-
         // Give a timesheetform obj, get back a partially populated timesheet obj.
         // TODO fix UriString, confirm vals for // marks
         public Timesheet PopulateTimesheet(TimesheetForm tsf, Timesheet tsheet=null)
@@ -200,6 +117,36 @@ namespace IDD
             return tsheet;
         }
 
+        // PWA to TimesheetForm converter
+        public TimesheetForm PWAtoTimesheetFormConverter(PWAsubmission pwasub)
+        {
+            TimesheetForm tsf = new TimesheetForm();
+            List<TimesheetRowItem> tsl = new List<TimesheetRowItem>();
+            tsf.clientName = pwasub.customerName.value;
+            tsf.prime = pwasub.prime.value;
+            tsf.providerName = pwasub.providerName.value;
+            tsf.providerNum = pwasub.providerNumber.value;
+            tsf.brokerage = pwasub.cmorg.value;
+            tsf.scpaName = pwasub.scpa_name.value;
+            tsf.serviceAuthorized = pwasub.service.value;
+            tsf.serviceGoal = pwasub.serviceGoal.value;
+            tsf.progressNotes = pwasub.progressNotes.value;
+            tsf.employerSignature = PWABoolConverter(pwasub.employerSignature.value);
+            tsf.employerSignDate = pwasub.employerSignDate.value;
+            tsf.providerSignature = PWABoolConverter(pwasub.providerSignature.value);
+            tsf.providerSignDate = pwasub.providerSignDate.value;
+            tsf.authorization = PWABoolConverter(pwasub.authorization.value);
+
+            foreach(PWAserviceDeliveredListVals lsv in pwasub.serviceDeliveredOn.value)
+            {
+                string s = lsv.totalHours.Replace(':', '.');
+                float f = float.Parse(s);
+                tsf.addTimeRow(lsv.date, lsv.startTime, lsv.endTime, f, 2);
+            }
+
+            return tsf;
+        }
+
         // Convert the timesheet form row items into timesheet time entries. Makes
         // certain assumptions about start times, end times, and group. 
         public void PopulateTimesheetEntries(TimesheetForm tsf, Timesheet tsheet)
@@ -219,12 +166,30 @@ namespace IDD
 
                 // Assume starttime is AM, pad with leading zero if necessary
                 string sdf = TimeFormatterPadding(tsri.starttime);
-                string sd = tsri.date + " " + sdf + " AM";
+                string sd;
+                if (!sdf.Contains("AM"))
+                {
+                    sd = tsri.date + " " + sdf + " AM";
+                }
+                else
+                {
+                    sd = tsri.date + " " + sdf;
+
+                }
                 x.In = DateTime.ParseExact(sd, "yyyy-MM-dd HH:mm tt", null);
 
                 // Assume endtime is PM, convert to 24hr.
                 string edf = TimeFormatter24(tsri.endtime);
-                string ed = tsri.date + " " + edf + " PM";
+                string ed;
+                if (!sdf.Contains("AM"))
+                {
+                    ed = tsri.date + " " + edf + " PM";
+                }
+                else
+                {
+                    ed = tsri.date + " " + edf;
+
+                }
                 x.Out = DateTime.ParseExact(ed, "yyyy-MM-dd HH:mm tt", null);
 
                 tl.Add(x);
@@ -256,6 +221,17 @@ namespace IDD
                 return x + ":" + ts[1];
             }
             return t;
+        }
+
+        public bool PWABoolConverter(string val)
+        {
+            val = val.ToLower();
+            if(val == "true" || val == "yes")
+            {
+                return true;
+            }
+
+            return false;
         }
 
     }

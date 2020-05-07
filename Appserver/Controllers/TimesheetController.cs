@@ -12,6 +12,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using Appserver.TextractDocument;
 using Newtonsoft.Json.Linq;
+using Common.Models;
+using IDD;
+using Common.Data;
 
 namespace Appserver.Controllers
 {
@@ -21,6 +24,7 @@ namespace Appserver.Controllers
         /// Fields
         *******************************************************************************/
         private readonly SubmissionStagingContext _context;
+        private readonly SubmissionContext _subcontext;
 
         /*******************************************************************************
         /// Constructor
@@ -83,16 +87,25 @@ namespace Appserver.Controllers
             return Json(model);
         }
 
-        [Route("Timesheet/Validate")]
+        [Route("Timesheet/Submit")]
         [HttpPost("Submit")]
         [Produces("application/json")]
-        public IActionResult Submit(TimesheetForm ?form)
+        public IActionResult Submit([FromBody] PWAsubmission submittedform)
         {
+           
+            var dbutil = new FormToDbUtil(_subcontext, _context);
+            TimesheetForm tsf = dbutil.PWAtoTimesheetFormConverter(submittedform);
+            Timesheet ts = dbutil.PopulateTimesheet(tsf);
+            dbutil.PopulateTimesheetEntries(tsf, ts);
+
+            var submission = _subcontext;
+            submission.Add(ts);
+            submission.SaveChanges();
+
             // Do something with form
             Response.Headers.Add("Access-Control-Allow-Origin", "*");
             Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-            JsonResponse model = new JsonResponse();
-            return Json(model);
+            return Json(new {response="ok"});
         }
 
         [Produces("application/json")]

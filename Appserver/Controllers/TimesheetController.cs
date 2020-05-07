@@ -29,9 +29,10 @@ namespace Appserver.Controllers
         /*******************************************************************************
         /// Constructor
         *******************************************************************************/
-        public TimesheetController(SubmissionStagingContext context)
+        public TimesheetController(SubmissionStagingContext context, SubmissionContext subcontext)
         {
             _context = context;
+            _subcontext = subcontext;
         }
 
 
@@ -85,6 +86,40 @@ namespace Appserver.Controllers
 
             JsonResponse model = new JsonResponse();
             return Json(model);
+        }
+
+
+        [Route("Timesheet/SubmitTest")]
+        [HttpGet]
+        [Produces("application/json")]
+        public IActionResult Submit(int id)
+        {
+            var stage = _context.Stagings.FirstOrDefault(m => m.Id == id);
+
+            if (stage == null)
+            {
+                return Json(new JsonResponse("not ready"));
+            }
+            var textractform = new TextractDocument.TextractDocument();
+
+            textractform.FromJson(JObject.Parse(stage.ParsedTextractJSON.Trim(',')));
+
+            var tsf = (TimesheetForm)AbstractFormObject.FromTextract(textractform);
+
+            tsf.id = id;
+
+            var dbutil = new FormToDbUtil(_subcontext, _context);
+            Timesheet ts = dbutil.PopulateTimesheet(tsf);
+            dbutil.PopulateTimesheetEntries(tsf, ts);
+
+            var submission = _subcontext;
+            submission.Add(ts);
+            submission.SaveChanges();
+            
+            // Do something with form
+            Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            return Json(new { response = "ok" });
         }
 
         [Route("Timesheet/Submit")]

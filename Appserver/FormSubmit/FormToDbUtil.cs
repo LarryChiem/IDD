@@ -157,7 +157,14 @@ namespace IDD
             foreach (TimesheetRowItem tsri in tsf.Times)
             {
                 var x = new TimeEntry();
-                x.Date = Convert.ToDateTime(tsri.date);
+                try
+                {
+                    x.Date = Convert.ToDateTime(tsri.date);
+                }
+                catch (FormatException)
+                {
+                    x.Date = DateTime.Now;
+                }
                 x.Hours = tsri.totalHours;
                 totalHours += x.Hours;
 
@@ -176,7 +183,14 @@ namespace IDD
                     sd = tsri.date + " " + sdf;
 
                 }
-                x.In = DateTime.ParseExact(sd, "yyyy-MM-dd HH:mm tt", null);
+                try
+                {
+                    x.In = DateTime.ParseExact(sd, "yyyy-MM-dd HH:mm tt", null);
+                }
+                catch ( FormatException) 
+                {
+                    x.In = DateTime.Now;
+                }
 
                 // Assume endtime is PM, convert to 24hr.
                 string edf = TimeFormatter24(tsri.endtime);
@@ -190,7 +204,14 @@ namespace IDD
                     ed = tsri.date + " " + edf;
 
                 }
-                x.Out = DateTime.ParseExact(ed, "yyyy-MM-dd HH:mm tt", null);
+                try
+                {
+                    x.Out = DateTime.ParseExact(ed, "yyyy-MM-dd HH:mm tt", null);
+                }
+                catch (FormatException)
+                {
+                    x.Out = DateTime.Now;
+                }
 
                 tl.Add(x);
             }
@@ -205,9 +226,20 @@ namespace IDD
         public string TimeFormatter24(string t)
         {
             var ts = t.Split(':');
-            int hours = Convert.ToInt32(ts[0]);
+            int hours;
+            try
+            {
+                hours = Convert.ToInt32(ts[0]);
+            }
+            catch (FormatException)
+            {
+                hours = 0;
+            }
             hours = hours + 12;
-            return Convert.ToString(hours) + ":" + ts[1];
+            if( ts.Length < 2)
+                return Convert.ToString(hours) + ":" + "00";
+            else
+                return Convert.ToString(hours) + ":" + ts[1];
         }
 
         // Add leading zero if needed.
@@ -215,6 +247,10 @@ namespace IDD
         public string TimeFormatterPadding(string t)
         {
             var ts = t.Split(':');
+            if( ts.Length < 2)
+            {
+                return "00:00";
+            }
             if(ts[0].Length < 2)
             {
                 string x = "0" + ts[0];

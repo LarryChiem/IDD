@@ -22,7 +22,7 @@ public class TimesheetForm: AbstractFormObject{
     [JsonProperty("timesheet")]
     [JsonConverter(typeof(TimesheetRowConverter))]
     internal List<TimesheetRowItem> Times { get => times; set => times = value; }
-
+    public string totalHours { get; set; }
     public string serviceGoal { get; set; }
     public string progressNotes { get; set; }
     public bool employerSignature { get; set; }
@@ -32,6 +32,6 @@ public class TimesheetForm: AbstractFormObject{
     public bool authorization { get; set; }
     public bool approval { get; set; }
     public string review_status { get; set; } = "Pending";
-    public void addTimeRow(string date, string start, string end, float total, int numClient) => 
-        this.Times.Add(new TimesheetRowItem(date, start, end, total, numClient));
+    public void addTimeRow(string date, string start, string end, string total, string group) => 
+        this.Times.Add(new TimesheetRowItem(date, start, end, total, group));
 }

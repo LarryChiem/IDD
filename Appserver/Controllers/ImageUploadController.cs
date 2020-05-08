@@ -60,9 +60,9 @@ namespace Appserver.Controllers
             model.employerSignature = true;
             model.employerSignDate = DateTime.Now.ToString();
             model.frequency = "Daily";
-            model.addTimeRow("2020-04-02", "09:00", "10:00", 1.0f, 1);
-            model.addTimeRow("2020-04-03", "09:00", "10:00", 1.0f, 1);
-            model.addTimeRow("2020-04-04", "09:00", "10:00", 1.0f, 1);
+            model.addTimeRow("2020-04-02", "09:00", "10:00", "1.0", "true");
+            model.addTimeRow("2020-04-03", "09:00", "10:00", "1.0", "true");
+            model.addTimeRow("2020-04-04", "09:00", "10:00", "1.0", "true");
 
             var dbutil = new FormToDbUtil(_scontext, _context);
 

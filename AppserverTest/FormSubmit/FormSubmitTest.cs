@@ -19,10 +19,6 @@ namespace FormSubmit.Tests
     [TestFixture]
     public class FormSubmitTest
     {
-
-        private readonly SubmissionContext _scontext;
-        private SubmissionStagingContext _sscontext;
-
         [Test]
         public void EmptyTimesheet()
         {
@@ -71,17 +67,18 @@ namespace FormSubmit.Tests
             obj.type = "Feeding";
             obj.frequency = "Daily";
 
-            obj.addTimeRow("2020-03-20", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-21", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-22", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-23", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-24", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-25", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-26", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-27", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-28", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-29", "9:00", "10:00", 1, 2);
+            obj.addTimeRow("2020-03-20", "9:00", "10:00", "1", "true");
+            obj.addTimeRow("2020-03-21", "9:00", "10:00", "1", "true");
+            obj.addTimeRow("2020-03-22", "9:00", "10:00", "1", "true");
+            obj.addTimeRow("2020-03-23", "9:00", "10:00", "1", "true");
+            obj.addTimeRow("2020-03-24", "9:00", "10:00", "1", "true");
+            obj.addTimeRow("2020-03-25", "9:00", "10:00", "1", "true");
+            obj.addTimeRow("2020-03-26", "9:00", "10:00", "1", "true");
+            obj.addTimeRow("2020-03-27", "9:00", "10:00", "1", "true");
+            obj.addTimeRow("2020-03-28", "9:00", "10:00", "1", "true");
+            obj.addTimeRow("2020-03-29", "9:00", "10:00", "1", "true");
 
+            obj.totalHours = "10";
             obj.serviceGoal = "Feed them";
             obj.progressNotes = "Eating more fish";
             obj.employerSignature = true;
@@ -97,98 +94,6 @@ namespace FormSubmit.Tests
 
             Assert.IsTrue(String.Equals(j, k));
         }
-
-        [Test]
-        public void TimesheetEFtoDB()
-        {
-            // Create initial timesheetform with some data
-            TimesheetForm obj = new TimesheetForm();
-            obj.clientName = "Donald Duck";
-            obj.prime = "123456";
-            obj.providerName = "Daughy Duck";
-            obj.providerNum = "654321";
-            obj.brokerage = "Not sure";
-            obj.scpaName = "SC/PA";
-            obj.serviceAuthorized = "All";
-            obj.units = 20;
-            obj.type = "Feeding";
-            obj.frequency = "Daily";
-
-            obj.addTimeRow("2020-03-20", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-21", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-22", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-23", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-24", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-25", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-26", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-27", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-28", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-29", "9:00", "10:00", 1, 2);
-
-            obj.serviceGoal = "Feed them";
-            obj.progressNotes = "Eating more fish";
-            obj.employerSignature = true;
-            obj.employerSignDate = "2020-04-01";
-            obj.authorization = true;
-            obj.approval = true;
-            obj.providerSignature = true;
-            obj.providerSignDate = "2020-04-01";
-
-            // Convert timesheetform into timesheet
-            var dbutil = new FormToDbUtil(_scontext, _sscontext);
-            Timesheet ts = dbutil.PopulateTimesheet(obj);
-            dbutil.PopulateTimesheetEntries(obj, ts);
-
-            var res = dbutil.TimesheetEFtoDB(ts);
-            Assert.IsNotNull(res);
-        }
-
-
-        [Test]
-        public void TimesheetEntryPopulationTest()
-        {
-            // Create initial timesheetform with some data
-            TimesheetForm obj = new TimesheetForm();
-            obj.clientName = "Donald Duck";
-            obj.prime = "123456";
-            obj.providerName = "Daughy Duck";
-            obj.providerNum = "654321";
-            obj.brokerage = "Not sure";
-            obj.scpaName = "SC/PA";
-            obj.serviceAuthorized = "All";
-            obj.units = 20;
-            obj.type = "Feeding";
-            obj.frequency = "Daily";
-
-            obj.addTimeRow("2020-03-20", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-21", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-22", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-23", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-24", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-25", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-26", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-27", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-28", "9:00", "10:00", 1, 2);
-            obj.addTimeRow("2020-03-29", "9:00", "10:00", 1, 2);
-
-            obj.serviceGoal = "Feed them";
-            obj.progressNotes = "Eating more fish";
-            obj.employerSignature = true;
-            obj.employerSignDate = "2020-04-01";
-            obj.authorization = true;
-            obj.approval = true;
-            obj.providerSignature = true;
-            obj.providerSignDate = "2020-04-01";
-
-            // Convert timesheetform into timesheet
-            var dbutil = new FormToDbUtil(_scontext, _sscontext);
-            Timesheet ts = dbutil.PopulateTimesheet(obj);
-
-            // Populate TimeEntries
-            dbutil.PopulateTimesheetEntries(obj, ts);
-            Assert.AreEqual(10, ts.TimeEntries.Count);
-        }
-
 
         [Test]
         public void DefaultTimesheetStatus()

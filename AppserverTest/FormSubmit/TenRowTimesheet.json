@@ -1,4 +1,5 @@
 {
+  "id": 0,
   "clientName": "Donald Duck",
   "prime": "123456",
   "providerName": "Daughy Duck",
@@ -14,73 +15,74 @@
       "date": "2020-03-20",
       "starttime": "9:00",
       "endtime": "10:00",
-      "totalHours": 1.0,
-      "numClient": 2
+      "totalHours": "1",
+      "group": "true"
     },
     {
       "date": "2020-03-21",
       "starttime": "9:00",
       "endtime": "10:00",
-      "totalHours": 1.0,
-      "numClient": 2
+      "totalHours": "1",
+      "group": "true"
     },
     {
       "date": "2020-03-22",
       "starttime": "9:00",
       "endtime": "10:00",
-      "totalHours": 1.0,
-      "numClient": 2
+      "totalHours": "1",
+      "group": "true"
     },
     {
       "date": "2020-03-23",
       "starttime": "9:00",
       "endtime": "10:00",
-      "totalHours": 1.0,
-      "numClient": 2
+      "totalHours": "1",
+      "group": "true"
     },
     {
       "date": "2020-03-24",
       "starttime": "9:00",
       "endtime": "10:00",
-      "totalHours": 1.0,
-      "numClient": 2
+      "totalHours": "1",
+      "group": "true"
     },
     {
       "date": "2020-03-25",
       "starttime": "9:00",
       "endtime": "10:00",
-      "totalHours": 1.0,
-      "numClient": 2
+      "totalHours": "1",
+      "group": "true"
     },
     {
       "date": "2020-03-26",
       "starttime": "9:00",
       "endtime": "10:00",
-      "totalHours": 1.0,
-      "numClient": 2
+      "totalHours": "1",
+      "group": "true"
     },
     {
       "date": "2020-03-27",
       "starttime": "9:00",
       "endtime": "10:00",
-      "totalHours": 1.0,
-      "numClient": 2
+      "totalHours": "1",
+      "group": "true"
     },
     {
       "date": "2020-03-28",
       "starttime": "9:00",
       "endtime": "10:00",
-      "totalHours": 1.0,
-      "numClient": 2
+      "totalHours": "1",
+      "group": "true"
     },
     {
       "date": "2020-03-29",
       "starttime": "9:00",
       "endtime": "10:00",
-      "totalHours": 1.0,
-      "numClient": 2
+      "totalHours": "1",
+      "group": "true"
     }
   ],
+  "totalHours": "10",
   "serviceGoal": "Feed them",
   "progressNotes": "Eating more fish",
   "employerSignature": true,

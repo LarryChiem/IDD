@@ -1,5 +1,6 @@
 using Appserver.TextractDocument;
 using System;
+using System.Linq;
 
 public abstract class AbstractFormObject{
     public static AbstractFormObject FromTextract(TextractDocument doc)
@@ -45,6 +46,12 @@ public abstract class AbstractFormObject{
         var table = tables[0].GetTable();
         // Remove first row
         table.RemoveAt(0);
+
+        // Grab last row for total
+        var lastrow = table.Last();
+        // Now remove it
+        table.RemoveAt(table.Count - 1);
+
         foreach( var row in table)
         {
             t.addTimeRow(row[0].ToString(), row[1].ToString(), row[2].ToString(), ConvertHours(row[3].ToString()), ConvertInt(row[4].ToString()));
@@ -53,6 +60,16 @@ public abstract class AbstractFormObject{
         //t.type = formitems[10].Value.ToString();
         //t.frequency = formitems[11].Value.ToString();
 
+        if (lastrow.Count > 3)
+        {
+            try
+            {
+                t.totalHours = lastrow[2].ToString();
+            }catch(FormatException)
+            {
+                t.totalHours = "0";
+            }
+        }
         return t;
     }
     public static DateTime ConvertDate( string s )

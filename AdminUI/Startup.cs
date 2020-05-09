@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using AdminUI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
@@ -35,14 +34,7 @@ namespace AdminUI
             services.AddDbContext<SubmissionContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("AzureDB"), 
                     b => b.MigrationsAssembly("AdminUI")));
-            services.AddDbContext<AdminAccountContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("AzureDB"),
-                    b => b.MigrationsAssembly("AdminUI")));
-            services.AddDbContext<UserContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("AzureDB"),
-                    b => b.MigrationsAssembly("AdminUI")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<AdminAccountContext>();
+
             services.AddRazorPages();
         }
 

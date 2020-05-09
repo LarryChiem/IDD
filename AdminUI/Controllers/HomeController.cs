@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using AdminUI.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using AdminUI.Models;
@@ -17,13 +16,11 @@ namespace AdminUI.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly SubmissionContext _scontext;
-        private readonly UserContext _ucontext;
 
-        public HomeController(ILogger<HomeController> logger, SubmissionContext scontext, UserContext ucontext)
+        public HomeController(ILogger<HomeController> logger, SubmissionContext scontext)
         {
             _logger = logger;
             _scontext = scontext;
-            _ucontext = ucontext;
         }
 
         public IActionResult Index(string sortOrder = "id", string pName="", string cName="", string dateFrom="", string dateTo="", string prime="", string id="", string ProviderId="", string status="pending", int page = 1, int perPage = 20)

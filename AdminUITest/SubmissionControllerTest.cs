@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using AdminUI.Controllers;
 using Microsoft.AspNetCore.Mvc;
-using AdminUI.Data;
 using AdminUI.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;

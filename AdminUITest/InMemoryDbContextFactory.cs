@@ -1,5 +1,4 @@
-﻿using AdminUI.Data;
-using Common.Data;
+﻿using Common.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdminUITest
@@ -15,13 +14,5 @@ namespace AdminUITest
             return dbContext;
         }
 
-        public UserContext GetUserContext()
-        {
-            var options = new DbContextOptionsBuilder<UserContext>()
-                .UseInMemoryDatabase(databaseName: "InMemoryArticleDatabase")
-                .Options;
-            var dbContext = new UserContext(options);
-            return dbContext;
-        }
     }
 }

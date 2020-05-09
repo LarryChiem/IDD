@@ -6,15 +6,15 @@ Open AdminUI.sln in Visual Studio
 
 In the Package Manager Console, run the following commands:
 
-	EntityFrameworkCore\Update-Database -Context AdminAccountContext
+```
+	Update-Database -Context AdminUIUserContext
 	
-	EntityFrameworkCore\Update-Database -Context SubmissionContext
-	
-	EntityFrameworkCore\Update-Database -Context UserContext
+	Update-Database -Context SubmissionContext
+```
 
 If you see an error along the lines of "Database xxx already exists, pick a different name",
 then go to view -> SQL Server Object Explorer -> (localdb)\MSSQL.... -> Databases -> Right Click AzureDB -> Delete.
-Now re-run the command and it should work.
+Now re-run the commands and it should work.
 
 ## How to run
 
@@ -25,7 +25,6 @@ Compile with IISExpress
 This is a Web App that connects to an Azure DB that stores timesheets fron Multnomah County caretakers.
 The app loads the timesheets from the database and displays them in a table sortable by each element.
 The admin/user can then access each timesheet and process them by either approving or rejecting them.
-
 
 # Unit Tests
 

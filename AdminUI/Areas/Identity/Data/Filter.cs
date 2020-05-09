@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Common.Models
+namespace AdminUI.Areas.Identity.Data
 {
     public class Filter
     {

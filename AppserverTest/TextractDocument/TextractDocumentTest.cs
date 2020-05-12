@@ -15,10 +15,15 @@ namespace AppserverTest.TextractDocument
     class TextractDocumentTest {
 
         private StreamReader jsonFile;
+        private StreamReader jsonFile_front;
+        private StreamReader jsonFile_back;
+
         [SetUp]
         public void loadFile()
         {
-            jsonFile = File.OpenText(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "TextractDocument/textract.json"));
+            jsonFile = File.OpenText("TextractDocument/textract.json");
+            jsonFile_front = File.OpenText("TextractDocument/OR507_526_front.json");
+            jsonFile_back = File.OpenText("TextractDocument/OR507_526_back.json");
         }
         [Test]
         public void TextractFromJsonTest()
@@ -68,6 +73,28 @@ namespace AppserverTest.TextractDocument
 
             // Return true if everything checks out
             return true;
+        }
+
+        [Test]
+        public void mergeTextract()
+        {
+            var frontDoc = new Appserver.TextractDocument.TextractDocument();
+            var backDoc = new Appserver.TextractDocument.TextractDocument();
+
+            using (StreamReader reader = jsonFile_front)
+            {
+                frontDoc.FromJson((JObject)JToken.ReadFrom(new JsonTextReader(reader)));
+            }
+            using (StreamReader reader = jsonFile_back)
+            {
+                backDoc.FromJson((JObject)JToken.ReadFrom(new JsonTextReader(reader)));
+            }
+            Assert.IsTrue(frontDoc.PageCount() == 1);
+            Assert.IsTrue(backDoc.PageCount() == 1);
+            // Now merge them together, the page count should now be 2
+            frontDoc.AddPages(backDoc);
+            Assert.IsTrue(frontDoc.PageCount() == 2);
+            Assert.IsTrue(frontDoc.GetPage(1).GetPage() == 1); // Pages enumerate from 0
         }
 
         [TearDown]

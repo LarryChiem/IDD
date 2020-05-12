@@ -76,81 +76,7 @@ namespace Appserver.Controllers
         [HttpPost("ImageUpload")]
         public async Task<IActionResult> PostImage(List<IFormFile> files)
         {
-            Response.Headers.Add("Allow", "POST");
-
-            // MIME types for image processing
-            var image_types = new List<string>();
-            image_types.Add("image/jpeg");
-            image_types.Add("image/png");
-
-            var textract_responses = new List<AnalyzeDocumentResponse>();
-            var skipped_files = new List<string>();
-            var stats = new List<string>();
-
-
-            // Iterate over list of submitted documents
-            foreach (var file in files)
-            {
-                // Is the file non-empty?
-                if(file.Length > 0)
-                {
-                    // Process image file upload
-                    if (image_types.Contains(file.ContentType))
-                    {
-                        //Time how long it takes to upload image
-                        Stopwatch stopwatch = new Stopwatch();
-                        stopwatch.Start();
-
-                        textract_responses.Add(process_image(file.OpenReadStream()));
-
-                        stopwatch.Stop();
-                        TimeSpan ts = stopwatch.Elapsed;
-                        string s = String.Format("{0:00}:{1:00}", ts.Minutes, ts.Seconds);
-                        stopwatch.Reset();
-                        stats.Add(file.FileName + " :: " + s);
-                    }
-                    // Process PDF upload
-                    else if ("application/pdf".Equals(file.ContentType))
-                    {
-                        //Time how long it takes to upload pdf
-                        Stopwatch stopwatch = new Stopwatch();
-                        stopwatch.Start();
-                        process_pdf_upload(file);
-
-                        stopwatch.Stop();
-                        System.TimeSpan ts = stopwatch.Elapsed;
-                        string s = String.Format("{0:00}:{1:00}", ts.Minutes, ts.Seconds);
-                        stopwatch.Reset();
-                        stats.Add(file.FileName + " :: " + s);
-                    }
-                    // Skip unhandled MIME types
-                    else
-                    {
-                        skipped_files.Add(
-                            "File name " + file.Name +
-                            " has incompatible type " + file.ContentType
-                            );
-                    }
-                }
-            }
-
-            return Json(new {
-                file_count = files.Count,
-                //textract_stats = stats,
-                //azfc_resp = textract_responses,
-                skipped = skipped_files,
-                id = await UploadToBlob(files, textract_responses)
-            }
-            );
-        }
-
-
-        // Controller to accept images POSTed as bytes in the body
-        [Route("ImageUpload/DocAsForm")]
-        [HttpPost("ImageList")]
-        public async Task<IActionResult> ImageList(IFormCollection file_collection)
-        {
-            var c = file_collection.Files.Count;
+            var c = files.Count;
             var textract_responses = new List<AnalyzeDocumentResponse>();
             var skipped_files = new List<string>();
             var stats = new List<string>();
@@ -164,7 +90,7 @@ namespace Appserver.Controllers
 
 
             // Iterate of collection of file and send to Textract
-            foreach (var file in file_collection.Files)
+            foreach (var file in files)
             {
                 // Only process image types Textract can handle
                 if (image_types.Contains(file.ContentType) && file.Length > 0)
@@ -190,18 +116,28 @@ namespace Appserver.Controllers
                 }
             }
 
-
-            return Json(new {
+            
+            return Json(new
+            {
                 file_count = c,
                 //azfc_resp = textract_responses,
                 skipped = skipped_files,
                 //textract_stats = stats,
-                id = await UploadToBlob(file_collection.Files.ToList(),textract_responses)
+                id = await saveSubmissisionStage(await UploadToBlob(files), textract_responses)
             }
             );
         }
 
-        public async Task<int> UploadToBlob(List<IFormFile> files, IEnumerable<AnalyzeDocumentResponse> responses)
+
+        // Controller to accept images POSTed as bytes in the body
+        [Route("ImageUpload/DocAsForm")]
+        [HttpPost("ImageList")]
+        public async Task<IActionResult> ImageList(IFormCollection file_collection)
+        {
+            return await PostImage(file_collection.Files.ToList());
+        }
+
+        private async Task<string> UploadToBlob(List<IFormFile> files)
         {
             // Get Blob Container
             var container = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("BLOB_CONNECTION"))
@@ -222,10 +158,15 @@ namespace Appserver.Controllers
                 await blockBlob.UploadFromStreamAsync(f.OpenReadStream());
             }
 
+            return uriString;
+        }
+
+        private async Task<int> saveSubmissisionStage(string uriString, List<AnalyzeDocumentResponse> responses)
+        {
             // Create a SubmissionStaging to upload to SubmissionStaging table
             var ss = new SubmissionStaging
             {
-                ParsedTextractJSON = responses.Aggregate("", (current, r) => current + (System.Text.Json.JsonSerializer.Serialize(r) + ',')),
+                ParsedTextractJSON = System.Text.Json.JsonSerializer.Serialize(responses),
                 UriString = uriString
             };
 

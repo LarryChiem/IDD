@@ -43,6 +43,7 @@ namespace Appserver.TextractDocument
             => BlockType.PAGE;
         public override Geometry GetGeometry() => _geometry;
         public override int GetPage() => _page;
+        public int SetPage(int page_number) => (_page) = (page_number);
         public override string GetId() => _Id;
         public override List<Block> GetRelationships() => _children;
 

@@ -57,9 +57,15 @@ namespace Appserver.Controllers
             {
                 return Json(new JsonResponse("not ready"));
             }
+
             var textractform = new TextractDocument.TextractDocument();
 
-            textractform.FromJson(JObject.Parse(stage.ParsedTextractJSON.Trim(',')));
+            foreach( var a in JArray.Parse(stage.ParsedTextractJSON))
+            {
+                var childform = new TextractDocument.TextractDocument();
+                childform.FromJson(a);
+                textractform.AddPages(childform);
+            }
             TimesheetForm ts;
             try
             {
@@ -109,8 +115,12 @@ namespace Appserver.Controllers
             }
             var textractform = new TextractDocument.TextractDocument();
 
-            textractform.FromJson(JObject.Parse(stage.ParsedTextractJSON.Trim(',')));
-
+            foreach (var a in JArray.Parse(stage.ParsedTextractJSON))
+            {
+                var childform = new TextractDocument.TextractDocument();
+                childform.FromJson(a);
+                textractform.AddPages(childform);
+            }
             var tsf = (TimesheetForm)AbstractFormObject.FromTextract(textractform);
 
             tsf.id = id;

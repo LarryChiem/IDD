@@ -12,34 +12,62 @@ using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
 using System.IO;
 using Common.Models;
+using Microsoft.AspNetCore.Authorization;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Tables;
+using SQLitePCL;
 
 namespace AdminUI.Controllers
 {
+    [Authorize]
     public class SubmissionController : Controller
     {
         private readonly ILogger<SubmissionController> _logger;
-        private readonly SubmissionContext _scontext;
+        private readonly SubmissionContext _context;
 
 
-        public SubmissionController(ILogger<SubmissionController> logger, SubmissionContext scontext)
+        public SubmissionController(ILogger<SubmissionController> logger, SubmissionContext context)
         {
             _logger = logger;
-            _scontext = scontext;
+            _context = context;
         }
 
+        //should return a timesheet View
+        public async Task<IActionResult> Index(int id)
+        {
+            if (string.IsNullOrEmpty(User.Identity.Name))
+                return View("../submission/NoPermission");
+            
+            var submission =  _context.Timesheets.Find(id);
+                
+            _context.Entry(submission).Reference(t => t.LockInfo).Load();
+            _context.Entry(submission).Collection(t => t.TimeEntries).Load();
+
+            if (submission.LockInfo != null) return View("Timesheet",submission);
+
+            submission.LockInfo = new Lock
+                {
+                    LastActivity = DateTime.Now,
+                    User = User.Identity.Name
+                };
+
+
+            _context.Update(submission);
+            await _context.SaveChangesAsync();
+
+            return View("Timesheet",submission);
+        }
         public async Task<IActionResult> GenPDF(int id)
         {
             //find the timesheet code
-            var ts = await _scontext.Timesheets
+            var ts = await _context.Timesheets
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (ts == null)
                 return NotFound();
 
             //Load the timesheet's entries
-            _scontext.Entry(ts).Collection(t => t.TimeEntries).Load();
+            _context.Entry(ts).Collection(t => t.TimeEntries).Load();
 
             //http://www.pdfsharp.net/wiki/Unicode-sample.ashx
             string pdfString = "eXPRS Plan of Care - Services Delivered Report Form\n\n" +
@@ -195,12 +223,12 @@ namespace AdminUI.Controllers
         [HttpPost]
         public async Task<IActionResult> Process(int id, string Status, string RejectionReason)
         {
-            var submission = _scontext.Submissions.Find(id);
+            var submission = _context.Submissions.Find(id);
 
             if (submission == null)
                 return NotFound();
             
-            _scontext.Entry(submission).Reference(t => t.LockInfo).Load();
+            _context.Entry(submission).Reference(t => t.LockInfo).Load();
             
             if (submission.LockInfo == null || !submission.LockInfo.User.Equals(User.Identity.Name, StringComparison.CurrentCultureIgnoreCase))
                 return View("NoPermission");
@@ -214,13 +242,13 @@ namespace AdminUI.Controllers
             {
                 try
                 {
-                    _scontext.Update(submission);
-                    await _scontext.SaveChangesAsync();
+                    _context.Update(submission);
+                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
 
-                    if (!_scontext.Submissions.Any(e => e.Id == id))
+                    if (!_context.Submissions.Any(e => e.Id == id))
                     {
                         return NotFound();
                     }
@@ -232,5 +260,6 @@ namespace AdminUI.Controllers
             }
             return RedirectToAction("Index","Home");
         }
+
     }
 }

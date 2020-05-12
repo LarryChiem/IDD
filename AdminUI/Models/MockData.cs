@@ -3,21 +3,24 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+using AdminUI.Areas.Identity.Data;
+using AdminUI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Common.Models;
 using Common.Data;
+using Microsoft.AspNetCore.Http;
 
+//TODO: Delete this file when releasing
 namespace AdminUI.Models
 {
     public static class MockData
     {
-        public static void Initialize(IServiceProvider serviceProvider)
+        public static void InitializeSubmissionDB(IServiceProvider serviceProvider)
         {
             using var context = new SubmissionContext(
                 serviceProvider.GetRequiredService<
                     DbContextOptions<SubmissionContext>>());
-            // Look for any movies.
             if (context.Submissions.Any())
             {
                 return;   // DB has been seeded
@@ -330,5 +333,6 @@ namespace AdminUI.Models
 
             context.SaveChanges();
         }
+
     }
 }

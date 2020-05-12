@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AdminUI.Areas.Identity.Data;
+using AdminUI.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -39,8 +41,10 @@ namespace AdminUI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<AdminUIUser> userManager, RoleManager<IdentityRole> roleManager)
         {
+            SeedData(roleManager, userManager);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -69,6 +73,59 @@ namespace AdminUI
                 endpoints.MapRazorPages();
 
             });
+        }
+
+        private async void SeedData(RoleManager<IdentityRole> roleManager, UserManager<AdminUIUser> userManager)
+        {
+            await SeedRoles(roleManager);
+            await SeedUsers(userManager);
+
+        }
+        private async Task SeedUsers(UserManager<AdminUIUser> userManager)
+        {
+            var user = await userManager.FindByNameAsync("Admin@AdminUI.com");
+            if (user == null)
+            {
+                user = new AdminUIUser
+                {
+                    UserName = "Admin",
+                    Email = "Admin@AdminUI.com",
+                    Name = "Administrator",
+                    EmailConfirmed = true
+                };
+
+                var result = await userManager.CreateAsync(user, "password");
+                if (result.Succeeded)
+                    await userManager.AddToRoleAsync(user, "Administrator");
+            }
+
+            user = await userManager.FindByNameAsync("Employee");
+            if (user == null)
+            {
+                user = new AdminUIUser
+                {
+                    UserName = "Employee",
+                    Email = "Employee@AdminUI.com",
+                    Name = "Employee",
+                    EmailConfirmed = true
+                };
+
+                var result = await userManager.CreateAsync(user, "password");
+
+                if (result.Succeeded)
+                    await userManager.AddToRoleAsync(user, "Employee");
+            }
+        }
+
+        private async Task SeedRoles(RoleManager<IdentityRole> roleManager)
+        {
+            var result = await roleManager.RoleExistsAsync("Employee");
+            if (!result)
+                await roleManager.CreateAsync(new IdentityRole{ Name = "Employee"});
+
+            result = await roleManager.RoleExistsAsync("Administrator");
+            if (!result)
+                await roleManager.CreateAsync(new IdentityRole{ Name = "Administrator"});
         }
     }
 }

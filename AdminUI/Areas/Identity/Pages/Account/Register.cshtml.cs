@@ -48,6 +48,10 @@ namespace AdminUI.Areas.Identity.Pages.Account
         {
             [Required]
             [DataType(DataType.Text)]
+            [Display(Name = "Username")]
+            public string UserName { get; set; }
+            [Required]
+            [DataType(DataType.Text)]
             [Display(Name = "Full name")]
             public string Name { get; set; }
 
@@ -87,13 +91,15 @@ namespace AdminUI.Areas.Identity.Pages.Account
                 var user = new AdminUIUser
                 {
                     Name = Input.Name,
-                    Role = Input.Role,
-                    UserName = Input.Email, 
+                    UserName = Input.UserName, 
                     Email = Input.Email
                 };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
+
+                    await _userManager.AddToRoleAsync(user, Input.Role);
+
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

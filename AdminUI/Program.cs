@@ -23,7 +23,8 @@ namespace AdminUI
 
                 try
                 {
-                    MockData.Initialize(services);
+                    MockData.InitializeSubmissionDB(services);
+                    //but not this
                 }
                 catch (Exception ex)
                 {
@@ -32,7 +33,10 @@ namespace AdminUI
                 }
             }
 
+
             host.Run();
+            //TODO: When releasing, delete everything from Main except the following line
+            //CreateHostBuilder(args).Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

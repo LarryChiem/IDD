@@ -9,9 +9,11 @@ using AdminUI.Models;
 using Common.Models;
 using Microsoft.EntityFrameworkCore;
 using Common.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AdminUI.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -119,31 +121,6 @@ namespace AdminUI.Controllers
                 .AsEnumerable();
         }
 
-        //should return a timesheet View
-        public async Task<IActionResult> Timesheet(int id)
-        {
-            if (string.IsNullOrEmpty(User.Identity.Name))
-                return View("../submission/NoPermission");
-            
-            var submission =  _scontext.Timesheets.Find(id);
-                
-            _scontext.Entry(submission).Reference(t => t.LockInfo).Load();
-            _scontext.Entry(submission).Collection(t => t.TimeEntries).Load();
-
-            if (submission.LockInfo != null) return View(submission);
-
-            submission.LockInfo = new Lock
-                {
-                    LastActivity = DateTime.Now,
-                    User = User.Identity.Name
-                };
-
-
-            _scontext.Update(submission);
-            await _scontext.SaveChangesAsync();
-
-            return View(submission);
-        }
 
         public FileContentResult DownloadCSV(string pName, string cName, string dateFrom, string dateTo, string prime, string id, string status)
         {

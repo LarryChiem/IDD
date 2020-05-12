@@ -8,7 +8,6 @@ In the Package Manager Console, run the following commands:
 
 ```
 	Update-Database -Context AdminUIUserContext
-	
 	Update-Database -Context SubmissionContext
 ```
 
@@ -25,6 +24,13 @@ Compile with IISExpress
 This is a Web App that connects to an Azure DB that stores timesheets fron Multnomah County caretakers.
 The app loads the timesheets from the database and displays them in a table sortable by each element.
 The admin/user can then access each timesheet and process them by either approving or rejecting them.
+
+By default, two accounts are created to play around with:
+
+```
+Username: Admin		Password: password
+Username: Employee	Password: password
+```
 
 # Unit Tests
 

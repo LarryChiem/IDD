@@ -12,8 +12,6 @@ namespace AdminUI.Areas.Identity.Data
         [PersonalData]
         public string Name { get; set; }
         [PersonalData]
-        public string Role { get; set; }
-        [PersonalData]
         public IList<Filter> Filters { get; set; }
     }
 }

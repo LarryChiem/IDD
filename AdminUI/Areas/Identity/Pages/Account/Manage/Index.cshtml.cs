@@ -57,7 +57,6 @@ namespace AdminUI.Areas.Identity.Pages.Account.Manage
             Input = new InputModel
             {
                 Name = user.Name,
-                Role = user.Role,
                 PhoneNumber = phoneNumber
             };
         }
@@ -103,10 +102,6 @@ namespace AdminUI.Areas.Identity.Pages.Account.Manage
                 user.Name = Input.Name;
             }
 
-            if (Input.Role != user.Role)
-            {
-                user.Role = Input.Role;
-            }
 
             await _userManager.UpdateAsync(user);
             await _signInManager.RefreshSignInAsync(user);

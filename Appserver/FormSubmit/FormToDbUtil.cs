@@ -9,6 +9,7 @@ using Appserver.Data;
 using Microsoft.EntityFrameworkCore.SqlServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using convUtil = IDD.FormConversionUtils;
 
 namespace IDD
 {
@@ -131,13 +132,11 @@ namespace IDD
             tsf.serviceAuthorized = pwasub.serviceAuthorized.value;
             tsf.serviceGoal = pwasub.serviceGoal.value;
             tsf.progressNotes = pwasub.progressNotes.value;
-            tsf.employerSignature = PWABoolConverter(pwasub.employerSignature.value);
+            tsf.employerSignature = convUtil.PWABoolConverter(pwasub.employerSignature.value);
             tsf.employerSignDate = pwasub.employerSignDate.value;
-            tsf.providerSignature = PWABoolConverter(pwasub.providerSignature.value);
+            tsf.providerSignature = convUtil.PWABoolConverter(pwasub.providerSignature.value);
             tsf.providerSignDate = pwasub.providerSignDate.value;
-            tsf.authorization = PWABoolConverter(pwasub.authorization.value);
-            tsf.approval = PWABoolConverter(pwasub.approval.value);
-            tsf.type = PWAFormChoiceToString(pwasub.formChoice);
+            tsf.authorization = convUtil.PWABoolConverter(pwasub.authorization.value);
             tsf.id = pwasub.id;
 
 
@@ -182,7 +181,7 @@ namespace IDD
                 x.Group = true;
 
                 // Assume starttime is AM, pad with leading zero if necessary
-                string sdf = TimeFormatterPadding(tsri.starttime);
+                string sdf = convUtil.TimeFormatterPadding(tsri.starttime);
                 string sd;
                 if (!sdf.Contains("AM"))
                 {
@@ -203,7 +202,7 @@ namespace IDD
                 }
 
                 // Assume endtime is PM, convert to 24hr.
-                string edf = TimeFormatter24(tsri.endtime);
+                string edf = convUtil.TimeFormatter24(tsri.endtime);
                 string ed;
                 if (!sdf.Contains("AM"))
                 {
@@ -228,73 +227,6 @@ namespace IDD
 
             tsheet.TotalHours = totalHours;
             tsheet.TimeEntries = tl;   
-        }
-
-
-        // Convert PM time to 24hr time.
-        // TODO make this not necessary?
-        public string TimeFormatter24(string t)
-        {
-            var ts = t.Split(':');
-            int hours;
-            try
-            {
-                hours = Convert.ToInt32(ts[0]);
-            }
-            catch (FormatException)
-            {
-                hours = 0;
-            }
-            hours = hours + 12;
-            if( ts.Length < 2)
-                return Convert.ToString(hours) + ":" + "00";
-            else
-                return Convert.ToString(hours) + ":" + ts[1];
-        }
-
-        // Add leading zero if needed.
-        // TODO make this not necessary?
-        public string TimeFormatterPadding(string t)
-        {
-            var ts = t.Split(':');
-            if( ts.Length < 2)
-            {
-                return "00:00";
-            }
-            if(ts[0].Length < 2)
-            {
-                string x = "0" + ts[0];
-                return x + ":" + ts[1];
-            }
-            return t;
-        }
-
-        public bool PWABoolConverter(string val)
-        {
-            val = val.ToLower();
-            if(val == "true" || val == "yes")
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public string PWAFormChoiceToString(int id)
-        {
-            switch (id)
-            {
-                case 1:
-                    return "OR004 Mileage Form";
-                case 2:
-                    return "OR507 Relief Care";
-                case 3:
-                    return "OR526 Attendant Care";
-                default:
-                    break;
-            }
-
-            return "Unknown";
         }
 
     }

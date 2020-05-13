@@ -5,12 +5,14 @@ namespace Common.Models
 {
     public class PWAsubmission
     {
-        public PWAsubmissionVals customerName { get; set; }
+        public int id { get; set; }
+        public int formChoice { get; set; }
+        public PWAsubmissionVals clientName { get; set; }
         public PWAsubmissionVals prime { get; set; }
         public PWAsubmissionVals submissionDate { get; set; }
         public PWAsubmissionVals providerName { get; set; }
-        public PWAsubmissionVals providerNumber { get; set; }
-        public PWAsubmissionVals service { get; set; }
+        public PWAsubmissionVals providerNum { get; set; }
+        public PWAsubmissionVals serviceAuthorized { get; set; }
         public PWAsubmissionVals totalHours { get; set; }
         public PWAsubmissionVals serviceGoal { get; set; }
         public PWAsubmissionVals progressNotes { get; set; }
@@ -19,10 +21,10 @@ namespace Common.Models
         public PWAsubmissionVals providerSignDate { get; set; }
         public PWAsubmissionVals providerSignature { get; set; }
         public PWAsubmissionVals authorization { get; set; }
-        public PWAsubmissionVals providerInitials { get; set; }
-        public PWAsubmissionVals scpa_name { get; set; }
-        public PWAsubmissionVals cmorg { get; set; }
-        public PWAserviceDeliveredVals serviceDeliveredOn { get; set; }
+        public PWAsubmissionVals approval { get; set; }
+        public PWAsubmissionVals scpaName { get; set; }
+        public PWAsubmissionVals brokerage { get; set; }
+        public PWAtimesheetEntries timesheet { get; set; }
     }
 
     public class PWAsubmissionVals
@@ -31,17 +33,17 @@ namespace Common.Models
         public bool wasEdited { get; set; }
     }
 
-    public class PWAserviceDeliveredVals
+    public class PWAtimesheetEntries
     {
         public bool wasEdited { get; set; }
-        public List<PWAserviceDeliveredListVals> value { get; set; }
+        public ICollection<PWAtimesheetVals> value { get; set; }
     }
 
-    public class PWAserviceDeliveredListVals
+    public class PWAtimesheetVals
     {
         public string date { get; set; }
-        public string startTime { get; set; }
-        public string endTime { get; set; }
+        public string starttime { get; set; }
+        public string endtime { get; set; }
         public string totalHours { get; set; }
         public string group { get; set; }
         public bool wasEdited { get; set; }

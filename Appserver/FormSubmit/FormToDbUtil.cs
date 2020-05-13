@@ -122,13 +122,13 @@ namespace IDD
         {
             TimesheetForm tsf = new TimesheetForm();
             List<TimesheetRowItem> tsl = new List<TimesheetRowItem>();
-            tsf.clientName = pwasub.customerName.value;
+            tsf.clientName = pwasub.clientName.value;
             tsf.prime = pwasub.prime.value;
             tsf.providerName = pwasub.providerName.value;
-            tsf.providerNum = pwasub.providerNumber.value;
-            tsf.brokerage = pwasub.cmorg.value;
-            tsf.scpaName = pwasub.scpa_name.value;
-            tsf.serviceAuthorized = pwasub.service.value;
+            tsf.providerNum = pwasub.providerNum.value;
+            tsf.brokerage = pwasub.brokerage.value;
+            tsf.scpaName = pwasub.scpaName.value;
+            tsf.serviceAuthorized = pwasub.serviceAuthorized.value;
             tsf.serviceGoal = pwasub.serviceGoal.value;
             tsf.progressNotes = pwasub.progressNotes.value;
             tsf.employerSignature = PWABoolConverter(pwasub.employerSignature.value);
@@ -136,11 +136,15 @@ namespace IDD
             tsf.providerSignature = PWABoolConverter(pwasub.providerSignature.value);
             tsf.providerSignDate = pwasub.providerSignDate.value;
             tsf.authorization = PWABoolConverter(pwasub.authorization.value);
+            tsf.approval = PWABoolConverter(pwasub.approval.value);
+            tsf.type = PWAFormChoiceToString(pwasub.formChoice);
+            tsf.id = pwasub.id;
 
-            foreach(PWAserviceDeliveredListVals lsv in pwasub.serviceDeliveredOn.value)
+
+            foreach(PWAtimesheetVals lsv in pwasub.timesheet.value)
             {
                 string s = lsv.totalHours.Replace(':', '.');
-                tsf.addTimeRow(lsv.date, lsv.startTime, lsv.endTime, s, "true");
+                tsf.addTimeRow(lsv.date, lsv.starttime, lsv.endtime, s, "true");
             }
 
             return tsf;
@@ -274,6 +278,23 @@ namespace IDD
             }
 
             return false;
+        }
+
+        public string PWAFormChoiceToString(int id)
+        {
+            switch (id)
+            {
+                case 1:
+                    return "OR004 Mileage Form";
+                case 2:
+                    return "OR507 Relief Care";
+                case 3:
+                    return "OR526 Attendant Care";
+                default:
+                    break;
+            }
+
+            return "Unknown";
         }
 
     }

@@ -161,10 +161,27 @@
   export default {
     name: "ConfirmSubmission",
     props: {
+      // The cols in the datatable
+      cols: {
+        type: Array,
+        default: null,
+      },
+
       //If the information is valid.
       valid: {
         type: Boolean,
         default: false,
+      },
+
+      //ID to submit form with
+      formID: {
+        type: Number,
+        default: 0,
+      },
+
+      // The type of form being submitted
+      formChoice: {
+        type: Number,
       },
 
       // Signal that parent form has completed validation
@@ -223,7 +240,7 @@
         reSigned: [],
 
         //URL for the AppServer
-        url: process.env.VUE_APP_SERVER_URL.concat("Submit"),
+        url: process.env.VUE_APP_SERVER_URL.concat("Timesheet/Submit"),
       };
     },
 
@@ -270,22 +287,22 @@
           submitData[key]["value"] = value["value"];
           submitData[key]["wasEdited"] = !value["disabled"];
         });
+        if ("timesheet" in this.formFields) {
+          submitData["timesheet"]["value"] = [];
+          Object.entries(this.formFields["timesheet"]["value"]).forEach(
+            ([key, value]) => {
+              key;
+              var row = {};
 
-        submitData["serviceDeliveredOn"]["value"] = [];
-        Object.entries(this.formFields["serviceDeliveredOn"]["value"]).forEach(
-          ([key, value]) => {
-            key;
-            var row = {};
+              this.cols.forEach((col) => {
+                row[col] = value[col];
+              });
+              row["wasEdited"] = !value["disabled"];
 
-            var cols = ["date", "startTime", "endTime", "totalHours", "group"];
-            cols.forEach((col) => {
-              row[col] = value[col];
-            });
-            row["wasEdited"] = !value["disabled"];
-
-            submitData["serviceDeliveredOn"]["value"].push(row);
-          }
-        );
+              submitData["timesheet"]["value"].push(row);
+            }
+          );
+        }
 
         return submitData;
       },
@@ -313,16 +330,18 @@
 
         // Else, post timesheet
         this.loading = true;
-        var self = this;
+        let self = this;
 
         // Finally, prepare the form data and send to the backend
         this.submitData = this.formatData();
 
         if (this.errors.length === 0) {
+          this.submitData["id"] = this.formID;
+          this.submitData["formChoice"] = this.formChoice;
           axios
             .post(this.url, this.submitData, {
               headers: {
-                "content-type": "text/plain",
+                "content-type": "application/json",
               },
             })
             .then(function (response) {

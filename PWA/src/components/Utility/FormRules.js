@@ -1,5 +1,8 @@
 // Generic form validation rules
-let rules = {
+// NOTE: When adding rules to a required field, put the 'required' rule
+// at the end, or else form validation will display the wrong error
+// message for an empty field
+const rules = {
   required: [(v) => !!v || "This field is required"],
   maxLength(max) {
     return (v) =>
@@ -9,7 +12,9 @@ let rules = {
   alphanumeric: [
     (v) => /^[a-zA-Z0-9]+$/.test(v) || "This field must be letters or numbers",
   ],
-  numeric: [(v) => /^[0-9]+$/.test(v) || "This field must be a number"],
+  numeric: [
+    (v) => /^[0-9]+(.[0-9]+)?$/.test(v) || "This field must be a number",
+  ],
   timeOfDay: [
     (v) =>
       /^[0-1][0-9]:[0-6][0-9] [AaPp][Mm]$/.test(v) ||

@@ -1,0 +1,43 @@
+{
+  "headers": [
+    { "text": "Date", "align": "start", "value": "date", "sortable": false },
+    { "text": "Start/Time IN", "value": "starttime", "sortable": false },
+    { "text": "End/Time OUT", "value": "endtime", "sortable": false },
+    { "text": "Total Hours", "value": "totalHours", "sortable": false },
+    { "text": "Group?", "value": "group", "sortable": false },
+    { "text": "Actions", "value": "actions", "sortable": false }
+  ],
+  "colValidation": {
+    "date": {
+      "counter": 10,
+      "disabled": false,
+      "hint": "YYYY-MM-DD",
+      "label": "Date",
+      "rules": ["required", "date"]
+    },
+    "starttime": {
+      "counter": 8,
+      "disabled": false,
+      "hint": "HH:mm AM/PM",
+      "label": "Start/Time IN",
+      "rules": ["required", "timeOfDay"]
+    },
+    "endtime": {
+      "counter": 8,
+      "disabled": false,
+      "hint": "HH:mm AM/PM",
+      "label": "End/Time OUT",
+      "rules": ["required", "timeOfDay"]
+    },
+    "totalHours": {
+      "counter": 5,
+      "disabled": false,
+      "hint": "HH:mm",
+      "label": "Total Hours",
+      "rules": ["time", "required"]
+    },
+    "group": {
+      "disabled": false
+    }
+  }
+}

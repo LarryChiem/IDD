@@ -20,6 +20,7 @@ module.exports = {
         }
       ]
     },
+    "manifestPath": "manifest.json",
     "workboxPluginMode": "GenerateSW"
   },
   "transpileDependencies": [

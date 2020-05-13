@@ -1,0 +1,82 @@
+{
+  "id": 1,
+  "clientName": "Baby Cousin",
+  "prime": "AB123C4D",
+  "providerName": "Chiem, Larry P",
+  "providerNum": "123456",
+  "brokerage": "Multnomah Case Management Provider",
+  "submissionDate": "2019-10",
+  "scpaName": "SCPA name",
+  "serviceAuthorized": "SE151/OR526",
+  "units": "0",
+  "type": "",
+  "frequency": "",
+  "timesheet": [
+    {
+      "date": "2019-10-05",
+      "starttime": "09:00 AM",
+      "endtime": "10:00 PM",
+      "totalHours": "13:00",
+      "group": "Yes"
+    },
+    {
+      "date": "2019-10-06",
+      "starttime": "10:00 AM",
+      "endtime": "10:00 PM",
+      "totalHours": "10:00",
+      "group": "No"
+    },
+    {
+      "date": "2019-10-12",
+      "starttime": "09:00 AM",
+      "endtime": "10:00 PM",
+      "totalHours": "11:00",
+      "group": "No"
+    },
+    {
+      "date": "2019-10-13",
+      "starttime": "10:00 AM",
+      "endtime": "10:00 PM",
+      "totalHours": "10:00",
+      "group": "Yes"
+    },
+    {
+      "date": "2019-10-19",
+      "starttime": "09:35 AM",
+      "endtime": "09:06 PM",
+      "totalHours": "11:31",
+      "group": "No"
+    },
+    {
+      "date": "2019-10-20",
+      "starttime": "10:00 AM",
+      "endtime": "10:00 PM",
+      "totalHours": "10:00",
+      "group": "Yes"
+    },
+    {
+      "date": "2019-10-26",
+      "starttime": "08:58 AM",
+      "endtime": "07:21 PM",
+      "totalHours": "10:23",
+      "group": "No"
+    },
+    {
+      "date": "2019-10-27",
+      "starttime": "10:00 AM",
+      "endtime": "06:00 PM",
+      "totalHours": "08:00",
+      "group": "Yes"
+    }
+  ],
+  "totalHours": "00:00",
+  "serviceGoal": "Goal",
+  "progressNotes": "Notes",
+  "employerSignature": true,
+  "employerSignDate": "2019-10-31",
+  "providerSignature": true,
+  "providerSignDate": "2019-11-02",
+  "authorization": true,
+  "approval": "LC",
+  "review_status": "Pending"
+}

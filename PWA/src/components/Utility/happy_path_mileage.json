@@ -1,0 +1,56 @@
+{
+  "id": 1,
+  "clientName": "Baby Cousin",
+  "prime": "AB123C4D",
+  "providerName": "Chiem, Larry P",
+  "providerNum": "123456",
+  "brokerage": "Multnomah Case Management Provider",
+  "submissionDate": "2020-03",
+  "scpaName": "nami",
+  "serviceAuthorized": "SE151/OR526",
+  "units": "0",
+  "type": "",
+  "frequency": "",
+  "timesheet": [
+    {
+      "date": "2020-03-01",
+      "totalMiles": 15.5,
+      "group": "No",
+      "purpose": "Grocery Store"
+    },
+    {
+      "date": "2020-03-04",
+      "totalMiles": 10.2,
+      "group": "No",
+      "purpose": "Aerobics Class"
+    },
+    {
+      "date": "2020-03-06",
+      "totalMiles": 5.1,
+      "group": "No",
+      "purpose": "Doctor's Office"
+    },
+    {
+      "date": "2020-03-10",
+      "totalMiles": 1500.4,
+      "group": "No",
+      "purpose": "Impromptu Vegas Roadtrip"
+    },
+    {
+      "date": "2020-03-15",
+      "totalMiles": 7.5,
+      "group": "No",
+      "purpose": "Gambling Rehab"
+    }
+  ],
+  "totalMiles": 1523.2,
+  "serviceGoal": "Driving Ms. Daisy",
+  "progressNotes": "Aerobics going well, developed a gambling addiction tho",
+  "employerSignature": true,
+  "employerSignDate": "2020-03-17",
+  "providerSignature": true,
+  "providerSignDate": "2020-03-17",
+  "authorization": true,
+  "approval": false,
+  "approval": "JB"
+}

@@ -27,13 +27,12 @@
           <v-card-actions>
             <v-spacer></v-spacer>
 
-            <v-btn color="red darken-1" text @click="closeDialog()">
+            <v-btn color="red white--text" @click="closeDialog()">
               Cancel edit
             </v-btn>
 
             <v-btn
-              color="green darken-1"
-              text
+              color="green white--text"
               @click.stop="
                 changeDisable();
                 closeDialog();
@@ -148,6 +147,10 @@
         type: [String, Boolean, Number],
         Default: null,
       },
+      willResign: {
+        type: Boolean,
+        Default: false,
+      },
     },
 
     created: function () {
@@ -182,7 +185,7 @@
       // Do not display warning if re-locking field
       askEdit(event) {
         this.focusedElement = event.target;
-        if (this.disabled === true) {
+        if (this.disabled === true && this.willResign === false) {
           this.editDialog = true;
         } else {
           this.changeDisable();

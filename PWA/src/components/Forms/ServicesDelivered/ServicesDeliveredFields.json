@@ -1,10 +1,10 @@
 {
-  "customerName": {
-    "counter": 25,
+  "clientName": {
+    "counter": 50,
     "disabled": false,
     "hint": "Full name",
     "label": "Customer Name",
-    "rules": ["required", "name"],
+    "rules": ["name", "required"],
     "value": null
   },
   "prime": {
@@ -12,7 +12,7 @@
     "disabled": false,
     "hint": "Alphanumeric input",
     "label": "Prime",
-    "rules": ["required", "alphanumeric"],
+    "rules": ["alphanumeric", "required"],
     "value": null
   },
   "submissionDate": {
@@ -20,50 +20,62 @@
     "disabled": false,
     "hint": "YYYY-MM",
     "label": "Pay Period Month and Year",
-    "rules": ["required", "monthYear"],
+    "rules": ["monthYear", "required"],
     "value": null
   },
   "providerName": {
-    "counter": 25,
+    "counter": 50,
     "disabled": false,
     "hint": "Full name",
     "label": "Provider Name",
-    "rules": ["required", "name"],
+    "rules": ["name", "required"],
     "value": null
   },
-  "providerNumber": {
+  "providerNum": {
     "counter": 6,
     "disabled": false,
     "hint": "Six digit number found on xyz",
     "label": "Provider Number",
-    "rules": ["required", "numeric"],
+    "rules": ["numeric", "required"],
     "value": null
   },
-  "SC/PA Name": {
-    "counter": 25,
+  "scpaName": {
+    "counter": 50,
     "disabled": false,
     "hint": "Name of the SC PA person",
     "label": "SC/PA Name",
-    "rules": ["required", "name"],
+    "rules": ["name", "required"],
     "value": null
   },
-  "CMOrg": {
-    "counter": 50,
+  "brokerage": {
+    "counter": 100,
     "disabled": false,
     "hint": "Organization name",
     "label": "CM Organization",
-    "rules": ["required", "name"],
+    "rules": ["name", "required"],
     "value": null
   },
-  "service": {
+  "serviceAuthorized": {
     "counter": 100,
     "disabled": false,
     "hint": "Service provided",
     "label": "Service",
-    "rules": ["required", "name"],
+    "rules": ["name", "required"],
     "value": null
   },
-  "serviceDeliveredOn": {
+  "units": {
+    "disabled": false,
+    "value": ""
+  },
+  "type": {
+    "disabled": false,
+    "value": ""
+  },
+  "frequency": {
+    "disabled": false,
+    "value": ""
+  },
+  "timesheet": {
     "disabled": false,
     "value": null
   },
@@ -72,7 +84,7 @@
     "disabled": false,
     "hint": "HH:mm",
     "label": "Total Hours",
-    "rules": ["required", "time"],
+    "rules": ["time", "required"],
     "value": null
   },
   "serviceGoal": {
@@ -81,7 +93,7 @@
     "disabled": false,
     "label": "Service Goal",
     "rows": 1,
-    "rules": ["required", "name"],
+    "rules": ["name", "required"],
     "value": null
   },
   "progressNotes": {
@@ -90,7 +102,7 @@
     "disabled": false,
     "label": "Progress Notes",
     "rows": 5,
-    "rules": ["required", "name"],
+    "rules": ["name", "required"],
     "value": null
   },
   "employerSignDate": {
@@ -108,6 +120,7 @@
   },
   "providerSignDate": {
     "disabled": false,
+    "hint": "YYYY-MM-DD",
     "label": "Date",
     "rules": ["required", "date"],
     "value": null
@@ -124,10 +137,10 @@
     "label": "I authorize the CDDP/Brokerage/CIIS staff to enter the data reported on this form into eXPRS on my behalf for claims creation and payment.",
     "value": null
   },
-  "providerInitials": {
+  "approval": {
     "disabled": false,
     "label": "Provider Initials",
-    "rules": ["required", "name"],
+    "rules": ["name", "required"],
     "value": null
   }
 }

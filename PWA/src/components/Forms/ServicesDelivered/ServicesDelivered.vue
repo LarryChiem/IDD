@@ -6,17 +6,18 @@
 
     <FormField
       v-for="field in [
-        'customerName',
+        'clientName',
         'prime',
         'submissionDate',
         'providerName',
-        'providerNumber',
-        'SC/PA Name',
-        'CMOrg',
-        'service',
+        'providerNum',
+        'scpaName',
+        'brokerage',
+        'serviceAuthorized',
       ]"
       v-model="formFields[field].value"
       v-bind="formFields[field]"
+      :willResign="willResign"
       :key="field"
       :reset="resetChild"
       @disable-change="handleDisableChange(field, $event)"
@@ -24,22 +25,21 @@
 
     <!-- Table containing timesheet  -->
     <v-card-text>
-      <FormTable
-        v-model="formFields.serviceDeliveredOn.value"
-        v-bind="formFields.serviceDeliveredOn"
+      <ServicesDeliveredTable
+        :cols="valCols"
+        v-model="formFields.timesheet.value"
+        v-bind="formFields.timesheet"
         :reset="resetChild"
-        @disable-change="handleDisableChange('serviceDeliveredOn', $event)"
+        :totalHours="formFields['totalHours']['value']"
+        :willResign="willResign"
+        @update-totalHours="formFields['totalHours']['value'] = $event"
+        @disable-change="handleDisableChange('timesheet', $event)"
       />
     </v-card-text>
 
     <!-- totalHours -->
-    <FormField
-      v-model="formFields.totalHours.value"
-      v-bind="formFields.totalHours"
-      :reset="resetChild"
-      @disable-change="handleDisableChange('totalHours', $event)"
-    />
-
+    Total Hours:
+    {{ this.formFields["totalHours"]["value"] }}
     <hr />
 
     <p class="title">
@@ -50,6 +50,7 @@
       v-for="field in ['serviceGoal', 'progressNotes']"
       v-model="formFields[field].value"
       v-bind="formFields[field]"
+      :willResign="willResign"
       :key="field"
       :reset="resetChild"
       @disable-change="handleDisableChange(field, $event)"
@@ -73,6 +74,7 @@
       v-for="field in ['employerSignature', 'employerSignDate']"
       v-model="formFields[field].value"
       v-bind="formFields[field]"
+      :willResign="willResign"
       :key="field"
       :reset="resetChild"
       @disable-change="handleDisableChange(field, $event)"
@@ -99,6 +101,7 @@
       v-for="field in ['providerSignature', 'providerSignDate']"
       v-model="formFields[field].value"
       v-bind="formFields[field]"
+      :willResign="willResign"
       :key="field"
       :reset="resetChild"
       @disable-change="handleDisableChange(field, $event)"
@@ -109,9 +112,10 @@
 
     <strong class="subtitle-1">
       <FormField
-        v-for="field in ['authorization', 'providerInitials']"
+        v-for="field in ['authorization', 'approval']"
         v-model="formFields[field].value"
         v-bind="formFields[field]"
+        :willResign="willResign"
         :key="field"
         :reset="resetChild"
         @disable-change="handleDisableChange(field, $event)"
@@ -131,11 +135,14 @@
 
         <v-col>
           <ConfirmSubmission
+            :cols="cols"
             :valid="valid"
             :errors="errors"
             :formFields="formFields"
             :totalEdited="totalEdited"
             :validationSignal="validationSignal"
+            :formID="formID"
+            :formChoice="formChoice"
             @click="validateInputs"
           />
         </v-col>
@@ -145,17 +152,18 @@
 </template>
 
 <script>
-  import FormTable from "@/components/Timesheet/FormTable";
-  import FormField from "@/components/Timesheet/FormField";
-  import ConfirmSubmission from "@/components/Timesheet/ConfirmSubmission";
-  import fieldData from "@/components/Timesheet/IDDFormFields.json";
-  import rules from "@/components/Timesheet/FormRules.js";
-  import time_functions from "@/components/Timesheet/TimeFunctions.js";
+  import ServicesDeliveredTable from "@/components/Forms/ServicesDelivered/ServicesDeliveredTable";
+  import FormField from "@/components/Forms/FormField";
+  import ConfirmSubmission from "@/components/Forms/ConfirmSubmission";
+  import fieldData from "@/components/Forms/ServicesDelivered/ServicesDeliveredFields.json";
+  import rules from "@/components/Utility/FormRules.js";
+  import { TIME } from "@/components/Utility/Enums.js";
+  import { subtractTime } from "@/components/Utility/TimeFunctions.js";
 
   export default {
-    name: "IDDForm",
+    name: "ServicesDelivered",
     components: {
-      FormTable,
+      ServicesDeliveredTable,
       FormField,
       ConfirmSubmission,
     },
@@ -166,13 +174,16 @@
         type: Object,
         default: null,
       },
+      formChoice: {
+        type: Number,
+      },
     },
 
     // Upon first loading on the page, bind parsed form data to each
     // IDD Timesheet form field
     created: function () {
+      this.formID = this.parsedFileData["id"];
       this.initialize();
-
       // Bind validation rules to each field that has a 'rules' string
       // specified
       Object.entries(fieldData).forEach(([key, value]) => {
@@ -205,14 +216,22 @@
         // The amount of parsed fields that were edited
         totalEdited: 0,
 
+        // The unique ID associated with this form
+        formID: 0,
+
         // Hide form validation error messages by default
         valid: true,
 
         // The number of invalid fields
         errors: [],
 
+        cols: ["date", "starttime", "endtime", "totalHours", "group"],
+        valCols: ["date", "starttime", "endtime", "totalHours"],
+
         // Signal denoting completion of validation for form fields
         validationSignal: false,
+
+        willResign: false,
       };
     },
 
@@ -226,6 +245,7 @@
       initialize() {
         // Initialize some fields
         this.totalEdited = 0;
+        this.willResign = false;
 
         // Bind data from a .json IDD timesheet to form fields
         if (this.entries !== null) {
@@ -261,44 +281,23 @@
         this.validationSignal = !this.validationSignal;
       },
 
-      // Compute the sum of all serviceDeliveredOn totalHours with the totalHours field
-      sumTableHours() {
-        var sumHours = 0;
-        var sumMinutes = 0;
-
-        // For each row in the array of entries...
-        this.formFields["serviceDeliveredOn"]["value"].forEach((entry) => {
-          // Check that the totalHours field is valid
-          if (entry["errors"]["totalHours"].length == 0) {
-            sumHours += parseInt(entry["totalHours"].substr(0, 2));
-            sumMinutes += parseInt(entry["totalHours"].substr(3, 2));
-          }
-        });
-        sumHours += (sumMinutes - (sumMinutes % 60)) / 60;
-        sumMinutes %= 60;
-
-        return sumHours.toString() + ":" + sumMinutes.toString();
-      },
-
-      // Count the number of errors in the serviceDeliveredOn table
+      // Count the number of errors in the timesheet table
       getTableErrors() {
         // For each row in the array of entries...
-        this.formFields["serviceDeliveredOn"]["value"].forEach(
-          (entry, index) => {
-            // For each error col in an entry, check the amount of errors
-            Object.entries(entry["errors"]).forEach(([col, errors]) => {
-              var colErrors = errors.length;
-              if (colErrors > 0) {
-                this.errors.push([
-                  `ERROR: in row ${
-                    index + 1
-                  } of the serviceDeliveredOn table, '${col}' has the following errors:`,
-                  errors,
-                ]);
-              }
-            });
-          }
-        );
+        this.formFields["timesheet"]["value"].forEach((entry, index) => {
+          // For each error col in an entry, check the amount of errors
+          Object.entries(entry["errors"]).forEach(([col, errors]) => {
+            var colErrors = errors.length;
+            if (colErrors > 0) {
+              this.errors.push([
+                `ERROR: in row ${
+                  index + 1
+                } of the timesheet table, '${col}' has the following errors:`,
+                errors,
+              ]);
+            }
+          });
+        });
       },
 
       // Validate the form
@@ -311,18 +310,8 @@
           this.errors.push("ERROR: Invalid input in some form fields!");
         }
 
-        // Check the validity of the serviceDeliveredOn table
+        // Check the validity of the timesheet table
         this.getTableErrors();
-
-        // Ensure that the serviceDeliveredOn table sum == totalHours field
-        if (this.formFields.totalHours.value !== null) {
-          var sumHours = this.sumTableHours();
-          if (sumHours.localeCompare(this.formFields.totalHours.value) !== 0) {
-            this.errors.push(
-              `ERROR: valid rows in the serviceDeliveredOn table sums up to ${sumHours} hours, but the totalHours field reports ${this.formFields.totalHours.value} hours!`
-            );
-          }
-        }
 
         // If there were no edited fields, ensure that the provider and
         // employer signature date are after the last service date
@@ -330,35 +319,37 @@
           // Only compare the earlier date
           var comparisonDate = this.formFields.providerSignDate.value;
           if (
-            time_functions.dateCompare(
+            subtractTime(
               comparisonDate,
-              this.formFields.employerSignDate.value
-            ) > 0
+              this.formFields.employerSignDate.value,
+              TIME.YEAR_MONTH_DAY
+            ) < 0
           ) {
             comparisonDate = this.formFields.employerSignDate.value;
           }
 
           // Compare signage dates with the pay period
-          // Note, only comparing the YYYY-mm part
           var submissionDate = this.formFields.submissionDate.value;
-          if (
-            time_functions.dateCompare(
-              comparisonDate.substr(0, 7),
-              submissionDate
-            ) < 0
-          ) {
+          var submissionDiff = subtractTime(
+            comparisonDate.substr(0, 7),
+            submissionDate,
+            TIME.YEAR_MONTH
+          );
+          if (submissionDiff < 0) {
             this.errors.push(
               `ERROR: the employer or provider sign date is before the pay period.`
             );
           }
 
-          // Get the last date from the serviceDeliveredOn table
-          var latestDateIdx = this.formFields.serviceDeliveredOn.value.length;
+          // Get the last date from the timesheet table
+          var latestDateIdx = this.formFields.timesheet.value.length;
           if (latestDateIdx > 0) {
-            var latestDate = this.formFields.serviceDeliveredOn.value[
-              latestDateIdx - 1
-            ]["date"];
-            if (time_functions.dateCompare(comparisonDate, latestDate) < 0) {
+            var latestDate = this.formFields.timesheet.value[latestDateIdx - 1][
+              "date"
+            ];
+            if (
+              subtractTime(latestDate, comparisonDate, TIME.YEAR_MONTH_DAY) < 0
+            ) {
               this.errors.push(
                 `ERROR: the employer or provider sign date is before the latest service delivery date.`
               );
@@ -397,6 +388,7 @@
       handleDisableChange(fieldName, amtEdited) {
         if (amtEdited > 0) {
           this.formFields[fieldName].disabled = true;
+          this.willResign = true;
         } else {
           this.formFields[fieldName].disabled = false;
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using AdminUI.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using AdminUI.Models;
@@ -121,6 +122,42 @@ namespace AdminUI.Controllers
                 .AsEnumerable();
         }
 
+        public bool GetLockInfo(int id)
+        {
+            var submission = _scontext.Submissions.Find(id);
+            _scontext.Entry(submission).Reference(t => t.LockInfo).Load();
+
+            //if lock exists, disable processing and indicate sheet is locked
+            //else no lock, create lock.
+            if (submission.LockInfo == null)
+            {
+
+                submission.LockInfo = new Lock
+                {
+                    LastActivity = DateTime.Now,
+                    User = User.Identity.Name
+                };
+
+                _scontext.Update(submission);
+                _scontext.SaveChanges();
+            }
+
+            return submission.LockInfo.User.Equals(User.Identity.Name);
+        }
+
+        //Releases the Lock if the current User is holding the lock
+        public void ReleaseLock(int id)
+        {
+            var submission = _scontext.Submissions.Find(id);
+            _scontext.Entry(submission).Reference(t => t.LockInfo).Load();
+
+            if (submission.LockInfo.User.Equals(User.Identity.Name))
+            {
+                submission.LockInfo = null;
+                _scontext.Update(submission);
+                _scontext.SaveChanges();
+            }
+        }
 
         public FileContentResult DownloadCSV(string pName, string cName, string dateFrom, string dateTo, string prime, string id, string status)
         {

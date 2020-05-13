@@ -83,21 +83,21 @@
                     <ul class="pagination pagination-sm">
                         @if (Model.Page > 1)
                         {
-                            <li class="page-item">@Html.ActionLink("First", "Index", new
+                            <li class="page-item">@Html.ActionLink("First", "LockTable", new
                                                   {
                                                       sortOrder = Model.SortOrder,
                                                       page = 1,
                                                       perPage = Model.PerPage
                                                   }, new {@class = "page-link"})
                             </li>
-                            <li class="page-item">@Html.ActionLink("<", "Index", new
+                            <li class="page-item">@Html.ActionLink("<", "LockTable", new
                                                   {
                                                       sortOrder = Model.SortOrder,
                                                       page = Model.Page - 1,
                                                       perPage = Model.PerPage
                                                   }, new {@class = "page-link"})
                             </li>
-                            <li class="page-item">@Html.ActionLink((@Model.Page - 1).ToString(), "Index", new
+                            <li class="page-item">@Html.ActionLink((@Model.Page - 1).ToString(), "LockTable", new
                                                   {
                                                       sortOrder = Model.SortOrder,
                                                       page = Model.Page - 1,
@@ -105,7 +105,7 @@
                                                   }, new {@class = "page-link"})
                             </li>
                         }
-                        <li class="page-item active">@Html.ActionLink(@Model.Page.ToString(), "Index", new
+                        <li class="page-item active">@Html.ActionLink(@Model.Page.ToString(), "LockTable", new
                                                      {
                                                          sortOrder = Model.SortOrder,
                                                          page = Model.Page,
@@ -114,21 +114,21 @@
                         </li>
                         @if (Model.Page < Model.TotalPages)
                         {
-                            <li class="page-item">@Html.ActionLink((@Model.Page + 1).ToString(), "Index", new
+                            <li class="page-item">@Html.ActionLink((@Model.Page + 1).ToString(), "LockTable", new
                                                   {
                                                       sortOrder = Model.SortOrder,
                                                       page = Model.Page + 1,
                                                       perPage = Model.PerPage
                                                   }, new {@class = "page-link"})
                             </li>
-                            <li class="page-item">@Html.ActionLink(">", "Index", new
+                            <li class="page-item">@Html.ActionLink(">", "LockTable", new
                                                   {
                                                       sortOrder = Model.SortOrder,
                                                       page = Model.Page + 1,
                                                       perPage = Model.PerPage
                                                   }, new {@class = "page-link"})
                             </li>
-                            <li class="page-item">@Html.ActionLink("Last", "Index", new
+                            <li class="page-item">@Html.ActionLink("Last", "LockTable", new
                                                   {
                                                       sortOrder = Model.SortOrder,
                                                       page = Model.TotalPages,

@@ -1,4 +1,5 @@
-﻿@model HomeModel
+﻿@using MigraDoc.DocumentObjectModel
+@model HomeModel
 @{
     ViewData["Title"] = "Home Page";
 
@@ -384,7 +385,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer @("modal-footer" + @t.Id)">
                     <form asp-controller="Submission" asp-action="Process">
                         <a class="btn btn-secondary" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">More Details</a>
                         <input type="hidden" name="id" value="@t.Id"/>
@@ -407,3 +408,38 @@
 </dir>
 </div>
 </div>
+<text>
+    <script src="~/lib/jquery/dist/jquery.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var submission_Ids = [];
+        @foreach (var t in Model.Timesheets)
+        {
+            @:submission_Ids.push("@t.Id");
+        }
+        console.log(submission_Ids);
+        var i;
+        for (i = 0; i < submission_Ids.length; i++) {
+            (function (x) {
+                $(document).ready(function () {
+                    //On open (shown.bs.modal), 
+                    //if lock exists, disable processing and indicate sheet is locked
+                    //else no lock, create lock.
+                    $('#sheet' + x).on('show.bs.modal', function () {
+                        //data returns true if the current user holds the lock to the sheet
+                        //TODO: get this to return a string and display who holds the lock
+                        $.get("/Home/GetLockInfo", { id: x }, function (data) {
+                            if (!data) {
+                                $(".modal-footer" + x).html('<div class="alert alert-danger"><b>Someone is already reviewing this submission.</b></div>');
+                            }
+                        });
+                    });
+                    //On close (hide.bs.modal), if the user held the lock, then remove the lock from table.
+                    $('#sheet' + x).on('hide.bs.modal', function () {
+                        $.get("/Home/ReleaseLock", { id: x }, function () {});
+                    });
+
+                });
+            })(submission_Ids[i]);
+        }
+    </script>
+</text>

@@ -1,5 +1,7 @@
 using Appserver.TextractDocument;
+using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 public abstract class AbstractFormObject{
@@ -11,19 +13,37 @@ public abstract class AbstractFormObject{
 
         TimesheetForm t = new TimesheetForm();
 
-        // Grab the first page
-        Page p;
-        try
+        // Grab the first page and make sure it is the front
+        if( doc.PageCount() < 2)
         {
-            p = doc.GetPage(0);
-        }catch( System.ArgumentOutOfRangeException e)
-        {
-            Console.WriteLine(e.Message);
-            return t;
+            throw new ArgumentException();
         }
 
-        // Assume we got the page
-        var formitems = p.GetFormItems();
+        // Do a silly assignment because C# won't let me assign the variable in the foreach loop instead
+        // and there is no default constructor
+        Page frontpage = doc.GetPage(0);
+        bool frontfound = false;
+        List<Page> backpages = new List<Page>();
+
+        foreach( var page in doc.Pages)
+        {
+            if (page.GetTables().Count >= 1)
+            {
+                frontpage = page;
+                frontfound = true;
+            }
+            else
+            {
+                backpages.Add(page);
+            }
+        }
+
+        if( !frontfound )
+        {
+            throw new ArgumentException();
+        }
+
+        var formitems = frontpage.GetFormItems();
 
         // Top Form Information
         
@@ -36,7 +56,7 @@ public abstract class AbstractFormObject{
         t.serviceAuthorized = formitems[6].Value.ToString(); // Service
 
         // Table
-        var tables = p.GetTables();
+        var tables = frontpage.GetTables();
         if(tables.Count == 0)
         {
             Console.WriteLine("No Table Information");
@@ -56,9 +76,6 @@ public abstract class AbstractFormObject{
         {
             t.addTimeRow(row[0].ToString(), row[1].ToString(), row[2].ToString(), ConvertHours(row[3].ToString()).ToString(), ConvertInt(row[4].ToString()).ToString());
         }
-        //t.units = Int32.Parse( formitems[9].Value.ToString() );
-        //t.type = formitems[10].Value.ToString();
-        //t.frequency = formitems[11].Value.ToString();
 
         if (lastrow.Count > 3)
         {
@@ -70,6 +87,18 @@ public abstract class AbstractFormObject{
                 t.totalHours = "0";
             }
         }
+
+        // Populate back form objects
+        formitems = backpages[0].GetFormItems();
+
+        t.serviceGoal = formitems[6].Value.ToString();
+        t.progressNotes = formitems[7].Value.ToString();
+        t.employerSignDate = formitems[8].Value.ToString();
+        t.employerSignature = !string.IsNullOrEmpty(t.employerSignDate);
+        t.providerSignDate = formitems[10].Value.ToString();
+        t.providerSignature = !string.IsNullOrEmpty(t.providerSignDate);
+        // t.authorization
+
         return t;
     }
     public static DateTime ConvertDate( string s )

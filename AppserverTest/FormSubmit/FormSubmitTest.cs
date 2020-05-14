@@ -13,6 +13,7 @@ using IDD;
 using Microsoft.EntityFrameworkCore;
 using Common.Data;
 using Appserver.Data;
+using Appserver.TextractDocument;
 
 namespace FormSubmit.Tests
 {
@@ -108,12 +109,18 @@ namespace FormSubmit.Tests
         public void TextractToTimesheetTest()
         {
             // Setup Textract Document
-            var jsonFile = File.OpenText( "TextractDocument/textract.json" );
             var document = new Appserver.TextractDocument.TextractDocument();
-
-            using (StreamReader reader = jsonFile)
+            List<string> filelist = new List<string>(){ "TextractDocument/OR507_526_front.json", "TextractDocument/OR507_526_back.json"};
+            foreach( var file in filelist)
             {
-                document.FromJson((JObject)JToken.ReadFrom(new JsonTextReader(reader)));
+                var jsonFile = File.OpenText(file);
+                TextractDocument page;
+                using (StreamReader reader = jsonFile)
+                {
+                    page = new TextractDocument();
+                    page.FromJson((JObject)JToken.ReadFrom(new JsonTextReader(reader)));
+                }
+                document.AddPages(page);
             }
 
             var obj = AbstractFormObject.FromTextract(document);

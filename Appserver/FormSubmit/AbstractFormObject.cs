@@ -47,13 +47,13 @@ public abstract class AbstractFormObject{
 
         // Top Form Information
         
-        t.clientName        = formitems[0].Value.ToString(); // Customer Name 
-        t.prime             = formitems[1].Value.ToString(); // Prime 
-        t.providerName      = formitems[2].Value.ToString(); // Provider Name 
-        t.providerNum       = formitems[3].Value.ToString(); // Provider Num 
-        t.brokerage         = formitems[4].Value.ToString(); // CM Organization
-        t.scpaName          = formitems[5].Value.ToString(); // SC/PA Name
-        t.serviceAuthorized = formitems[6].Value.ToString(); // Service
+        t.clientName        = formitems[0].Value.ToString().Trim(); // Customer Name 
+        t.prime             = formitems[1].Value.ToString().Trim(); // Prime 
+        t.providerName      = formitems[2].Value.ToString().Trim(); // Provider Name 
+        t.providerNum       = formitems[3].Value.ToString().Trim(); // Provider Num 
+        t.brokerage         = formitems[4].Value.ToString().Trim(); // CM Organization
+        t.scpaName          = formitems[5].Value.ToString().Trim(); // SC/PA Name
+        t.serviceAuthorized = formitems[6].Value.ToString().Trim(); // Service
 
         // Table
         var tables = frontpage.GetTables();
@@ -74,14 +74,18 @@ public abstract class AbstractFormObject{
 
         foreach( var row in table)
         {
-            t.addTimeRow(row[0].ToString(), row[1].ToString(), row[2].ToString(), ConvertHours(row[3].ToString()).ToString(), ConvertInt(row[4].ToString()).ToString());
+            t.addTimeRow(row[0].ToString().Trim(), 
+                row[1].ToString().Trim(), 
+                row[2].ToString().Trim(), 
+                ConvertHours(row[3].ToString()).ToString().Trim(), 
+                ConvertInt(row[4].ToString()).ToString().Trim());
         }
 
         if (lastrow.Count > 3)
         {
             try
             {
-                t.totalHours = lastrow[2].ToString();
+                t.totalHours = lastrow[2].ToString().Trim();
             }catch(FormatException)
             {
                 t.totalHours = "0";

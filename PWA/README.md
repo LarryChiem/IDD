@@ -79,5 +79,21 @@ npm run serve
 npm run lint
 ```
 
+### Other commands
+- npm test
+- npm list
+- prettify /directory_to_prettify --write
+
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### Deployment
+- Build the project via `npm run build`
+- Copy the web.manifest file into the /dist folder, as this is where the website will be served
+- In VS Code, download the Azure extension
+- Press Ctrl+Shift+P
+- Type "deploy" and select the first option
+- Follow through until it deploys
+- Check the Deployments (in the navbar to the left) to ensure that the project built correctly
+- Check the output logs if there was an error

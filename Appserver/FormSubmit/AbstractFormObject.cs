@@ -95,11 +95,11 @@ public abstract class AbstractFormObject{
         // Populate back form objects
         formitems = backpages[0].GetFormItems();
 
-        t.serviceGoal = formitems[6].Value.ToString();
-        t.progressNotes = formitems[7].Value.ToString();
-        t.employerSignDate = formitems[8].Value.ToString();
+        t.serviceGoal = formitems[6].Value.ToString().Trim();
+        t.progressNotes = formitems[7].Value.ToString().Trim();
+        t.employerSignDate = formitems[8].Value.ToString().Trim();
         t.employerSignature = !string.IsNullOrEmpty(t.employerSignDate);
-        t.providerSignDate = formitems[10].Value.ToString();
+        t.providerSignDate = formitems[10].Value.ToString().Trim();
         t.providerSignature = !string.IsNullOrEmpty(t.providerSignDate);
         // t.authorization
 

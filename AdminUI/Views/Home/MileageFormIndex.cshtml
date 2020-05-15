@@ -353,7 +353,9 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">@m.ProviderName (@m.ProviderId)</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">@m.ProviderName
+                        (<span class="providerId" title="Provider Id">@m.ProviderId</span>)<button class="btn btn-default leftMargin4px" onclick="copyProviderId(this)" title="Copies the Provider's Id">Copy</button>
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -431,6 +433,16 @@
 <text>
     <script src="~/lib/jquery/dist/jquery.min.js" type="text/javascript"></script>
     <script type="text/javascript">
+        function copyProviderId(element) {
+            var msg = $(element).closest("h5").find("span.providerId").text();
+            console.log($(element).closest("h5"));
+            try {
+                navigator.clipboard.writeText(msg);
+                console.log('Page URL copied to clipboard');
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+            }
+        }
         var submission_Ids = [];
         @foreach (var s in Model.Submissions)
         {

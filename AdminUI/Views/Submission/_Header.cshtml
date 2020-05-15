@@ -1,0 +1,45 @@
+﻿@model Common.Models.Submission
+@{
+    Layout = null;
+    var permission = Model.LockInfo.User.Equals(User.Identity.Name, StringComparison.CurrentCultureIgnoreCase);
+}
+
+@if (!permission)
+{
+    <div class="alert alert-danger"><h1>Sheet is being reviewed by @Model.LockInfo.User</h1></div>
+}
+
+<h1>eXPRS Plan of Care - Services Delivered Report Form</h1>
+<div class="row">
+    <div class="column">
+        <label>Submission ID:</label> @Model.Id
+    </div>
+    <div class="column">
+        <label>Submission Status:</label> @(string.IsNullOrEmpty(Model.UserActivity) ? "Pending" : Model.UserActivity)
+    </div>
+</div>
+<div class="row">
+    <div class="column">
+        <label>Client Name:</label> @Model.ClientName
+    </div>
+    <div class="column">
+        <label>Client Prime:</label> @Model.ClientPrime
+    </div>
+</div>
+<div class="row">
+    <div class="column">
+        <label>Provider Name:</label> @Model.ProviderName
+    </div>
+    <div class="column">
+        <label>Provider ID:</label> @Model.ProviderId
+    </div>
+</div>
+<div class="row">
+    <div class="column">
+        <label>Service Authorized:</label>  @Model.FormType
+    </div>
+    <div class="column">
+        <label>Submitted on:</label> @Model.Submitted.ToString("MM-dd-yyyy")
+    </div>
+</div>
+

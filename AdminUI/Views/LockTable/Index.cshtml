@@ -17,7 +17,7 @@
     HTML ActionLink sorts the data in the table and having 2 sets for each column allows the 
     user to toggle back and forth between descending and ascending-->
 
-    <th>@Html.ActionLink("ID", "LockTable", new
+    <th>@Html.ActionLink("ID", "Index", new
         {
             sortOrder = @Model.SortOrder.Equals("id", StringComparison.CurrentCultureIgnoreCase) ? "id_desc" : "id",
             page = Model.Page,
@@ -25,45 +25,45 @@
 
         })</th>
 
-    <th>@Html.ActionLink("Provider Name", "LockTable", new
+    <th>@Html.ActionLink("Provider Name", "Index", new
         {
             sortOrder = @Model.SortOrder.Equals("pname", StringComparison.CurrentCultureIgnoreCase) ? "pname_desc" : "pname",
             page = Model.Page,
             perPage = Model.PerPage
 
         })</th>
-    <th>@Html.ActionLink("Provider ID", "LockTable", new
+    <th>@Html.ActionLink("Provider ID", "Index", new
         {
             sortOrder = @Model.SortOrder.Equals("ProviderId", StringComparison.CurrentCultureIgnoreCase) ? "ProviderId_desc" : "ProviderId",
             page = Model.Page,
             perPage = Model.PerPage
         })</th>
 
-    <th>@Html.ActionLink("Client Name", "LockTable", new
+    <th>@Html.ActionLink("Client Name", "Index", new
         {
             sortOrder = @Model.SortOrder.Equals("cname", StringComparison.CurrentCultureIgnoreCase) ? "cname_desc" : "cname",
             page = Model.Page,
             perPage = Model.PerPage
         })</th>
-    <th>@Html.ActionLink("Client Prime", "LockTable", new
+    <th>@Html.ActionLink("Client Prime", "Index", new
         {
             sortOrder = @Model.SortOrder.Equals("prime", StringComparison.CurrentCultureIgnoreCase) ? "prime_desc" : "prime",
             page = Model.Page,
             perPage = Model.PerPage
         })</th>
-    <th>@Html.ActionLink("Date Submitted", "LockTable", new
+    <th>@Html.ActionLink("Date Submitted", "Index", new
         {
             sortOrder = @Model.SortOrder.Equals("date", StringComparison.CurrentCultureIgnoreCase) ? "date_desc" : "date",
             page = Model.Page,
             perPage = Model.PerPage
         })</th>
-    <th>@Html.ActionLink("Locked By", "LockTable", new
+    <th>@Html.ActionLink("Locked By", "Index", new
         {
             sortOrder = @Model.SortOrder.Equals("lockedby", StringComparison.CurrentCultureIgnoreCase) ? "lockedby_desc" : "lockedby",
             page = Model.Page,
             perPage = Model.PerPage
         })</th>
-    <th>@Html.ActionLink("Last Activity", "LockTable", new
+    <th>@Html.ActionLink("Last Activity", "Index", new
         {
             sortOrder = @Model.SortOrder.Equals("lastactivity", StringComparison.CurrentCultureIgnoreCase) ? "lastactivity_desc" : "lastactivity",
             page = Model.Page,
@@ -83,21 +83,21 @@
                     <ul class="pagination pagination-sm">
                         @if (Model.Page > 1)
                         {
-                            <li class="page-item">@Html.ActionLink("First", "LockTable", new
+                            <li class="page-item">@Html.ActionLink("First", "Index", new
                                                   {
                                                       sortOrder = Model.SortOrder,
                                                       page = 1,
                                                       perPage = Model.PerPage
                                                   }, new {@class = "page-link"})
                             </li>
-                            <li class="page-item">@Html.ActionLink("<", "LockTable", new
+                            <li class="page-item">@Html.ActionLink("<", "Index", new
                                                   {
                                                       sortOrder = Model.SortOrder,
                                                       page = Model.Page - 1,
                                                       perPage = Model.PerPage
                                                   }, new {@class = "page-link"})
                             </li>
-                            <li class="page-item">@Html.ActionLink((@Model.Page - 1).ToString(), "LockTable", new
+                            <li class="page-item">@Html.ActionLink((@Model.Page - 1).ToString(), "Index", new
                                                   {
                                                       sortOrder = Model.SortOrder,
                                                       page = Model.Page - 1,
@@ -105,7 +105,7 @@
                                                   }, new {@class = "page-link"})
                             </li>
                         }
-                        <li class="page-item active">@Html.ActionLink(@Model.Page.ToString(), "LockTable", new
+                        <li class="page-item active">@Html.ActionLink(@Model.Page.ToString(), "Index", new
                                                      {
                                                          sortOrder = Model.SortOrder,
                                                          page = Model.Page,
@@ -114,21 +114,21 @@
                         </li>
                         @if (Model.Page < Model.TotalPages)
                         {
-                            <li class="page-item">@Html.ActionLink((@Model.Page + 1).ToString(), "LockTable", new
+                            <li class="page-item">@Html.ActionLink((@Model.Page + 1).ToString(), "Index", new
                                                   {
                                                       sortOrder = Model.SortOrder,
                                                       page = Model.Page + 1,
                                                       perPage = Model.PerPage
                                                   }, new {@class = "page-link"})
                             </li>
-                            <li class="page-item">@Html.ActionLink(">", "LockTable", new
+                            <li class="page-item">@Html.ActionLink(">", "Index", new
                                                   {
                                                       sortOrder = Model.SortOrder,
                                                       page = Model.Page + 1,
                                                       perPage = Model.PerPage
                                                   }, new {@class = "page-link"})
                             </li>
-                            <li class="page-item">@Html.ActionLink("Last", "LockTable", new
+                            <li class="page-item">@Html.ActionLink("Last", "Index", new
                                                   {
                                                       sortOrder = Model.SortOrder,
                                                       page = Model.TotalPages,

@@ -4,7 +4,8 @@ namespace AdminUI.Models
 {
     public class HomeModel
     {
-        public IList<Timesheet> Timesheets;
+        //submissions to display + pagination variables
+        public IList<Submission> Submissions;
         public int TotalPages;
         public int TotalSubmissions;
         public int PerPage;
@@ -15,12 +16,15 @@ namespace AdminUI.Models
 
         //keep track of current filters
         public string PName; 
-        public int? Id;
         public string CName;
         public string Prime;
         public string DateFrom;
         public string DateTo;
         public string ProviderId;
         public string Status;
+        public string FormType;
+
+        //do we need to warn the users we're low on pay periods?
+        public bool Warning;
     }
 }

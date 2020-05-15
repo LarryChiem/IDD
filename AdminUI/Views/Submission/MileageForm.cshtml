@@ -1,11 +1,11 @@
-@model Common.Models.Timesheet
+﻿@model Common.Models.MileageForm
 @{
-    ViewData["Title"] = "Timesheet";
+    ViewData["Title"] = "Mileage Form";
 }
 
 <div class="container">
     <div class="flex-container column">
-        
+
         @{await Html.RenderPartialAsync("_Header", Model);}
 
         <table class="table table-striped table-bordered table-hover">
@@ -13,28 +13,26 @@
             <thead>
             <tr>
                 <th scope="col">Date</th>
-                <th scope="col">Start/Time IN</th>
-                <th scope="col">End/Time OUT</th>
-                <th scope="col">Total Hours for Entry</th>
-                <th scope="col">Group? (yes/no)</th>
+                <th scope="col">Miles</th>
+                <th scope="col">Group?</th>
+                <th scope="col">Purpose of Trip/Service Goal</th>
             </tr>
             </thead>
             <tbody>
-            @foreach (var t in Model.TimeEntries)
+            @foreach (var t in Model.MileageEntries)
             {
                 <tr>
                     <td>@t.Date.ToString("d")</td>
-                    <td>@t.In.ToString("h:mm tt")</td>
-                    <td>@t.Out.ToString("h:mm tt")</td>
-                    <td>@t.Hours</td>
+                    <td>@t.Miles</td>
                     <td>@(t.Group ? "Yes" : "No")</td>
+                    <td>@t.PurposeOfTrip</td>
                 </tr>
             }
             </tbody>
             <tfoot>
             <tr class="table-success font-weight-bold">
-                <th colspan="3" style="text-align: right;">Total:</th>
-                <td colspan="2">@Model.TotalHours Hours</td>
+                <th colspan="2" style="text-align: right;">Total:</th>
+                <td colspan="2">@Model.TotalMiles Miles</td>
             </tr>
             </tfoot>
         </table>

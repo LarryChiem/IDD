@@ -9,6 +9,7 @@ In the Package Manager Console, run the following commands:
 ```
 	Update-Database -Context AdminUIUserContext
 	Update-Database -Context SubmissionContext
+	Update-Database -Context PayPeriodContext
 ```
 
 If you see an error along the lines of "Database xxx already exists, pick a different name",

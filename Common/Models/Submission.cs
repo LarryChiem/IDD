@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using PdfSharp.Pdf;
+using Microsoft.AspNetCore.Mvc;
+using Common.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Common.Models
 {
@@ -27,6 +31,9 @@ namespace Common.Models
             get => string.Join(",", UriList); 
             set => UriList = value.Split(',').ToList();
         }
+
+        public abstract PdfDocument ToPdf();
+        public abstract void LoadEntries(DbContext context);
 
     }
 }

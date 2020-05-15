@@ -1,0 +1,45 @@
+﻿@model Common.Models.Submission
+@{
+    Layout = null;
+    var permission = Model.LockInfo.User.Equals(User.Identity.Name, StringComparison.CurrentCultureIgnoreCase);
+}
+
+<div class="row m-1 border">
+    <div class="column">
+        <label>Service Goal:</label>  @Model.ServiceGoal
+    </div>
+</div>
+<div class="row m-1 border">
+    <div class="column">
+        <label>Progress Notes:</label>  @Model.ProgressNotes
+    </div>
+</div>
+<div class="row">
+    @foreach (var uri in Model.UriList)
+    {
+        <div class="column">
+            <div class="container">
+                <a target="_blank" href=@uri>
+                    <img src=@uri alt="Image Thumbnail" class="img-thumbnail image"/>
+                    <div class="overlay">
+                        <div class="textoverlay">Click to view full size</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    }
+</div> <!--End of div.row-->
+@if (permission)
+{
+    <div class="fixed-bottom row d-flex justify-content-center" id="bottom-sticky">
+        <form asp-controller="Submission" asp-action="Process">
+            <div class="row">
+                @Html.ActionLink("Download PDF", "GenPDF", "Submission", new { id = Model.Id }, new { @class = "btn btn-info aToInput" })
+                <input type="hidden" name="id" value="@Model.Id" />
+                <input class="btn btn-primary" name="status" value="Approved" type="submit">
+                <input class="btn btn-danger" name="status" value="Rejected" type="submit">
+                <input type="text" name="rejectionReason" placeholder="Rejection reason..." />
+            </div>
+        </form>
+    </div>
+}

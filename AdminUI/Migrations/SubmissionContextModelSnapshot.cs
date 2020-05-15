@@ -56,6 +56,9 @@ namespace AdminUI.Migrations
                     b.Property<double>("Miles")
                         .HasColumnType("float");
 
+                    b.Property<string>("PurposeOfTrip")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 

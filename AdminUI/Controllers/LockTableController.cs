@@ -19,10 +19,10 @@ namespace AdminUI.Controllers
             _context = context;
         }
         // GET
-        public IActionResult LockTable(string sortOrder="id", int page = 1, int perPage = 20)
+        public IActionResult Index(string sortOrder="id", int page = 1, int perPage = 20)
         {
             var model = new LockTableModel();
-            var submissions = _context.Submissions.Where(s => s.LockInfo != null);
+            var submissions = _context.Submissions.Include(s=>s.LockInfo).Where(s => s.LockInfo != null);
 
 
             //big ol' switch statement determines how to sort the data in the table
@@ -54,9 +54,6 @@ namespace AdminUI.Controllers
             model.PerPage = perPage;
             model.Page = page;
 
-            foreach (var s in submissions)
-                _context.Entry(s).Reference(s => s.LockInfo).Load();
-            
             model.Submissions = submissions.ToList();
 
             return View(model);
@@ -71,7 +68,7 @@ namespace AdminUI.Controllers
             submission.LockInfo = null;
             _context.Update(submission);
             await _context.SaveChangesAsync();
-            return RedirectToAction("LockTable", "LockTable");
+            return RedirectToAction("Index", "LockTable");
         }
 
         public async Task<IActionResult> ReleaseAllLocks()
@@ -84,7 +81,7 @@ namespace AdminUI.Controllers
                 _context.Update(s);
             }
             await _context.SaveChangesAsync();
-            return RedirectToAction("LockTable", "LockTable");
+            return RedirectToAction("Index", "LockTable");
         }
 
     }

@@ -11,5 +11,6 @@ namespace Common.Models
         public bool Group { get; set; }
         public string Status { get; set; }
         public double Miles { get; set; }
+        public string PurposeOfTrip { get; set; }
     }
 }

@@ -63,14 +63,20 @@
               <v-btn color="red" text @click="displaySubmit = false">
                 Cancel
               </v-btn>
-              <v-btn
-                text
-                color="green darken-1"
-                :disabled="canSubmit"
-                @click="submit"
-              >
-                Submit
-              </v-btn>
+
+              <template v-if="isOnline">
+                <v-btn
+                  text
+                  color="green darken-1"
+                  :disabled="canSubmit"
+                  @click="submit"
+                >
+                  Submit
+                </v-btn>
+              </template>
+              <template v-else>
+                Offline! Please connect to the internet to submit.
+              </template>
             </v-card-actions>
           </div>
 
@@ -161,6 +167,10 @@
   export default {
     name: "ConfirmSubmission",
     props: {
+      isOnline: {
+        type: Boolean,
+        default: false,
+      },
       // The cols in the datatable
       cols: {
         type: Array,

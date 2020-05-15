@@ -5,18 +5,26 @@ import Home from "./views/Home";
 Vue.use(VueRouter);
 
 export default new VueRouter({
+  mode: "history",
   routes: [
-    { path: "/", name: "home", component: Home },
+    { path: "/", name: "home", component: Home, props: true },
     {
       path: "/timesheet",
       name: "timesheet",
       component: () => import("./views/Timesheet"),
+      props: true,
     },
-    { path: "/about", name: "about", component: () => import("./views/About") },
+    {
+      path: "/about",
+      name: "about",
+      component: () => import("./views/About"),
+      props: true,
+    },
     {
       path: "*",
       name: "not_found",
       component: () => import("./views/NotFound"),
+      props: true,
     },
   ],
 

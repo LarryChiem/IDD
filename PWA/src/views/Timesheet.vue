@@ -26,6 +26,7 @@
     <v-row v-if="formChoice !== null">
       <v-col v-if="fileStatus === FILE.INIT || fileStatus === FILE.FAILURE">
         <FileUploader
+          :isOnline="isOnline"
           @error="handleError($event)"
           @success="fillForm($event)"
         />
@@ -49,18 +50,19 @@
         <ServicesDelivered
           :parsedFileData="parsedFileData"
           :formChoice="FORM[formChoice]"
+          :isOnline="isOnline"
         />
       </v-col>
 
       <v-col
         v-else-if="
-          fileStatus === FILE.SUCCESS&&
-          FORM[formChoice] === FORM.OR004_MILEAGE
+          fileStatus === FILE.SUCCESS && FORM[formChoice] === FORM.OR004_MILEAGE
         "
       >
         <Mileage
           :parsedFileData="parsedFileData"
           :formChoice="FORM[formChoice]"
+          :isOnline="isOnline"
         />
       </v-col>
     </v-row>
@@ -78,7 +80,13 @@
     components: {
       FileUploader,
       ServicesDelivered,
-      Mileage
+      Mileage,
+    },
+    props: {
+      isOnline: {
+        type: Boolean,
+        default: false,
+      },
     },
     data: function () {
       return {

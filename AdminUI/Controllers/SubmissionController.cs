@@ -115,7 +115,51 @@ namespace AdminUI.Controllers
                     }
                 }
             }
-            return RedirectToAction("Index","Home");
+
+            var next = _context.Submissions.FirstOrDefault(s => (s.Status == null || s.Status == "Pending") && (s.LockInfo == null || s.LockInfo.User == User.Identity.Name));
+            return next != null ? Index(next.Id) : RedirectToAction("Index","Home");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ModalProcess(int id, string status, string rejectionReason)
+        {
+            var submission = _context.Submissions.Find(id);
+
+            if (submission == null)
+                return NotFound();
+
+            _context.Entry(submission).Reference(t => t.LockInfo).Load();
+
+            if (submission.LockInfo == null || !submission.LockInfo.User.Equals(User.Identity.Name, StringComparison.CurrentCultureIgnoreCase))
+                return View("NoPermission");
+
+            submission.Status = status;
+            submission.RejectionReason = rejectionReason;
+            submission.UserActivity = status + " by " + submission.LockInfo.User + " on " + DateTime.Now;
+            submission.LockInfo = null;
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(submission);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+
+                    if (!_context.Submissions.Any(e => e.Id == id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
     }

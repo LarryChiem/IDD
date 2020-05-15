@@ -65,21 +65,21 @@ namespace AdminUITest
         }
 
         [Test]
-        public async Task Process_SubmissionNotFound()
+        public async Task ModalProcess_SubmissionNotFound()
         {
             var tc = new SubmissionController(_logger, _scontext);
-            var result = await tc.Process(-1, "Accept", "Nah");
+            var result = await tc.ModalProcess(-1, "Accept", "Nah");
             Assert.IsInstanceOf(typeof(NotFoundResult), result);
         }
         [Test]
-        public async Task Process_LockNotFound()
+        public async Task ModalProcess_LockNotFound()
         { 
             var tc = new SubmissionController(_logger, _scontext);
-            var result = await tc.Process(2, "Accept", "Nah") as ViewResult;
+            var result = await tc.ModalProcess(2, "Accept", "Nah") as ViewResult;
             Assert.AreEqual("NoPermission", result.ViewName);
         }
         [Test]
-        public async Task Process_LockDoesntMatchUser()
+        public async Task ModalProcess_LockDoesntMatchUser()
         {
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
@@ -95,11 +95,11 @@ namespace AdminUITest
                 }
             };
 
-            var result = await tc.Process(1, "Accept", "Nah") as ViewResult;
+            var result = await tc.ModalProcess(1, "Accept", "Nah") as ViewResult;
             Assert.AreEqual("NoPermission", result.ViewName);
         }
         [Test]
-        public async Task Process_AllGood()
+        public async Task ModalProcess_AllGood()
         {
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
@@ -115,7 +115,7 @@ namespace AdminUITest
                 }
             };
 
-            var result = await tc.Process(1, "Accept", "Nah") as RedirectToActionResult;
+            var result = await tc.ModalProcess(1, "Accept", "Nah") as RedirectToActionResult;
             Assert.AreEqual("Index", result.ActionName);
         }
 

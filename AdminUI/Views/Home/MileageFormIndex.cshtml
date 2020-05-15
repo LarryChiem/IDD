@@ -408,7 +408,7 @@
                     </div>
                 </div>
                 <div class="modal-footer @("modal-footer" + @m.Id)">
-                    <form asp-controller="Submission" asp-action="Process">
+                    <form asp-controller="Submission" asp-action="ModalProcess">
                         <a class="btn btn-secondary" asp-controller="Submission" asp-action="Index" asp-route-id="@m.Id">More Details</a>
                         <input type="hidden" name="id" value="@m.Id"/>
                         <input class="btn btn-primary" name="Status" value="Approved" type="submit">

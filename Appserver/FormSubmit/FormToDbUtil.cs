@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore.SqlServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using convUtil = IDD.FormConversionUtils;
+using System.Linq;
 
 namespace IDD
 {
@@ -35,66 +36,6 @@ namespace IDD
             return ts.Id;
         }
 
-
-        // Given a timesheet and a timesheetid referencing an existing timesheet
-        // submission in the DB, insert the TimeEntry(s) in the TimeSheet. Get
-        // back the number of records inserted.
-        public int TimesheetEntriesToDB(Timesheet ts, int tsid)
-        {
-            string conn_str = Environment.GetEnvironmentVariable("test-db-conn-str");
-            int totalInserts = 0;
-            // Create connection for each entry
-            // TODO bulk insert option? executemany?
-            // FIXME add try/catch
-            foreach (TimeEntry te in ts.TimeEntries)
-            {
-
-                string query = "INSERT INTO [dbo].[TimeEntry] ([Date],[Group],[Status],[In],[Out],[Hours],[TimesheetId]) ";
-                query += "VALUES(@date, @group, @status, @in, @out, @hours, @timesheetid) SELECT SCOPE_IDENTITY();";
-
-                SqlConnection conn = new SqlConnection(conn_str);
-                SqlCommand command = null;
-                SqlDataReader reader = null;
-
-                System.Console.WriteLine("ENTRY SQL: " + query);
-                command = new SqlCommand(query, conn);
-                command.Parameters.Add("@date", System.Data.SqlDbType.DateTime2);
-                command.Parameters["@date"].Value = te.Date;
-
-                command.Parameters.Add("@group", System.Data.SqlDbType.Bit);
-                command.Parameters["@group"].Value = 1;
-
-                command.Parameters.Add("@status", System.Data.SqlDbType.NVarChar, 25);
-                command.Parameters["@status"].Value = te.Status;
-
-                command.Parameters.Add("@in", System.Data.SqlDbType.DateTime2);
-                command.Parameters["@in"].Value = te.In;
-
-                command.Parameters.Add("@out", System.Data.SqlDbType.DateTime2);
-                command.Parameters["@out"].Value = te.Out;
-
-                command.Parameters.Add("@hours", System.Data.SqlDbType.Float);
-                command.Parameters["@hours"].Value = te.Hours;
-
-                command.Parameters.Add("@timesheetid", System.Data.SqlDbType.Int);
-                command.Parameters["@timesheetid"].Value = tsid;
-
-                conn.Open();
-
-                reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    decimal id = reader.GetDecimal(0);
-                    if (id > 0)
-                    {
-                        totalInserts += 1;
-                    }
-                }
-                reader.Close();
-            }
-            return totalInserts;
-        }
-
         // Give a timesheetform obj, get back a partially populated timesheet obj.
         // TODO fix UriString, confirm vals for // marks
         public Timesheet PopulateTimesheet(TimesheetForm tsf, Timesheet tsheet=null)
@@ -109,7 +50,7 @@ namespace IDD
             tsheet.ProgressNotes = tsf.progressNotes;
             tsheet.FormType = tsf.serviceAuthorized;
             tsheet.RejectionReason = ""; //
-            tsheet.Submitted = DateTime.Now; //
+            tsheet.Submitted = DateTime.UtcNow; //
             tsheet.LockInfo = null;
             tsheet.UserActivity = ""; //
             
@@ -142,8 +83,11 @@ namespace IDD
 
             foreach(PWAtimesheetVals lsv in pwasub.timesheet.value)
             {
-                string s = lsv.totalHours.Replace(':', '.');
-                tsf.addTimeRow(lsv.date, lsv.starttime, lsv.endtime, s, "true");
+                // Convert from HH:MM to HH.hh
+                var stime = lsv.totalHours.Split(':');
+                double phour = (double.Parse(stime[1]) / 60.0) + double.Parse(stime[0]);
+                
+                tsf.addTimeRow(lsv.date, lsv.starttime, lsv.endtime, string.Format("{0:0.00}", phour), "true");
             }
 
             return tsf;
@@ -225,7 +169,7 @@ namespace IDD
                 tl.Add(x);
             }
 
-            tsheet.TotalHours = totalHours;
+            tsheet.TotalHours = Math.Round(totalHours, 2);
             tsheet.TimeEntries = tl;   
         }
 

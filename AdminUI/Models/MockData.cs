@@ -27,6 +27,7 @@ namespace AdminUI.Models
                 {
                     ClientName = "Minnie Mouse",
                     ClientPrime = "M0U5E",
+                    Edited = true,
                     ProviderName = "Mickey Mouse",
                     ProviderId = "B1GM0U53",
                     TotalHours = 10,
@@ -86,6 +87,7 @@ namespace AdminUI.Models
                 {
                     ClientName = "Beast",
                     ClientPrime = "666",
+                    Edited = false,
                     ProviderName = "Belle",
                     ProviderId = "B3113",
                     TotalHours = 80.7,
@@ -129,6 +131,7 @@ namespace AdminUI.Models
                 {
                     ClientName = "Cinderella",
                     ClientPrime = "5L1PP3R",
+                    Edited = true,
                     ProviderName = "Prince Charming",
                     ProviderId = "H0TT13",
                     TotalHours = 54.5,
@@ -180,6 +183,7 @@ namespace AdminUI.Models
                 {
                     ClientName = "Anna",
                     ClientPrime = "R3DH3AD",
+                    Edited = false,
                     ProviderName = "Elsa",
                     ProviderId = "L3T1TG0",
                     TotalHours = 12,
@@ -231,6 +235,7 @@ namespace AdminUI.Models
                 {
                     ClientName = "Snow White",
                     ClientPrime = "5L33PY",
+                    Edited = false,
                     ProviderName = "Prince Florian",
                     ProviderId = "K155",
                     TotalHours = 89.2,
@@ -270,6 +275,7 @@ namespace AdminUI.Models
                     {
                         ClientName = "Dalmation " + i,
                         ClientPrime = "5P0T5",
+                        Edited = false,
                         ProviderName = "Dalmation Dad",
                         ProviderId = "T1R3D",
                         TotalHours = 80.0,
@@ -338,6 +344,7 @@ namespace AdminUI.Models
                    {
                        ClientName = "Hun Soldier " + i,
                        ClientPrime = "M0NG0L",
+                       Edited = false,
                        ProviderName = "Atila The Hun",
                        ProviderId = "011700",
                        TotalMiles = 200 - i,

@@ -201,6 +201,7 @@
             perPage = Model.PerPage
         })</th>
     <th>Lock Status</th>
+    <th>Edited (Y/N)</th>
 </tr>
 </thead>
 <tfoot>
@@ -347,6 +348,14 @@
         else
         {
             <td class="table-danger"><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.LockInfo.User</a></td>
+        }
+        @if (t.Edited)
+        { 
+             <td class="table-warning"><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">Y</a></td>
+        }
+        else 
+        {
+             <td class="table-success"><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">N</a></td>
         }
     </tr>
     <div class="modal fade" id="@("sheet" + t.Id)" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

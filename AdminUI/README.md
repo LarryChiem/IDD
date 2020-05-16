@@ -16,6 +16,13 @@ If you see an error along the lines of "Database xxx already exists, pick a diff
 then go to view -> SQL Server Object Explorer -> (localdb)\MSSQL.... -> Databases -> Right Click AzureDB -> Delete.
 Now re-run the commands and it should work.
 
+If you're adding a field to the Submission.cs Mode, then you need to first Delete the AzureDB and then run:
+
+```
+Add-Migration -Context SubmissionContext
+Update-Database -Context SubmissionContext
+```
+
 ## How to run
 
 Compile with IISExpress

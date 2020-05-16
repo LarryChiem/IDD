@@ -413,9 +413,9 @@
                     <form asp-controller="Submission" asp-action="ModalProcess">
                         <a class="btn btn-secondary" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id" title="Opens a full-detailed page on this submission">More Details</a>
                         <input type="hidden" name="id" value="@t.Id"/>
-                        <input class="btn btn-primary" name="Status" value="Approved" type="submit">
+                        <input class="btn btn-primary" name="Status" value="Approved" type="submit" formnovalidate>
                         <input class="btn btn-danger" name="Status" value="Rejected" type="submit">
-                        <input type="text" name="RejectionReason" placeholder="Rejection Reason"/>
+                        <input type="text" name="RejectionReason" placeholder="Rejection Reason" required/>
                     </form>
                 </div>
             </div>
@@ -435,7 +435,6 @@
 <text>
     <script src="~/lib/jquery/dist/jquery.min.js" type="text/javascript"></script>
     <script type="text/javascript">
-
         function copyProviderId(element) {
             var msg = $(element).closest("h5").find("span.providerId").text();
             console.log($(element).closest("h5"));

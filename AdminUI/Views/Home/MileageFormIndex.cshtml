@@ -411,9 +411,9 @@
                     <form asp-controller="Submission" asp-action="ModalProcess">
                         <a class="btn btn-secondary" asp-controller="Submission" asp-action="Index" asp-route-id="@m.Id">More Details</a>
                         <input type="hidden" name="id" value="@m.Id"/>
-                        <input class="btn btn-primary" name="Status" value="Approved" type="submit">
+                        <input class="btn btn-primary" name="Status" value="Approved" type="submit" formnovalidate>
                         <input class="btn btn-danger" name="Status" value="Rejected" type="submit">
-                        <input type="text" name="RejectionReason" placeholder="Rejection Reason"/>
+                        <input type="text" name="RejectionReason" placeholder="Rejection Reason" required/>
                     </form>
                 </div>
             </div>

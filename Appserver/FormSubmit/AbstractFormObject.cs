@@ -74,10 +74,10 @@ public abstract class AbstractFormObject{
 
         foreach( var row in table)
         {
-            t.addTimeRow(row[0].ToString().Trim(), 
-                row[1].ToString().Trim(), 
-                row[2].ToString().Trim(), 
-                ConvertHours(row[3].ToString()).ToString().Trim(), 
+            t.addTimeRow(row[0].ToString().Trim(),
+                FixHours(row[1].ToString()).ToString().Trim(),
+                FixHours(row[2].ToString()).ToString().Trim(),
+                FixHours(row[3].ToString()).ToString().Trim(), 
                 ConvertInt(row[4].ToString()).ToString().Trim());
         }
 
@@ -85,10 +85,10 @@ public abstract class AbstractFormObject{
         {
             try
             {
-                t.totalHours = lastrow[2].ToString().Trim();
+                t.totalHours = FixHours(lastrow[2].ToString()).Trim();
             }catch(FormatException)
             {
-                t.totalHours = "0";
+                t.totalHours = lastrow[2].ToString();
             }
         }
 
@@ -109,47 +109,9 @@ public abstract class AbstractFormObject{
     {
         return DateTime.Now;
     }
-    public static float ConvertHours( string s )
+    public static string FixHours( string s )
     {
-        // Try to read in only the number portion
-        string num = "";
-        bool encounteredDecimal = false;
-        bool invalid = false;
-        foreach( var c in s.ToCharArray())
-        {
-            switch (c)
-            {
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                case '8':
-                case '9':
-                    num += c;
-                    break;
-                case '.':
-                    if (encounteredDecimal)
-                    {
-                        invalid = true;
-                        break;
-                    }
-                    encounteredDecimal = true;
-                    num += c;
-                    break;
-                default:
-                    invalid = true;
-                    break;
-            }
-            // If we've encountered a second decimal then we break out of loop
-            if (invalid) break;
-        }
-        if (num.Length == 0)
-            return 0;
-        return int.Parse(num);
+        return s.Replace(".", ":");
     }
 
     public static int ConvertInt( string s)

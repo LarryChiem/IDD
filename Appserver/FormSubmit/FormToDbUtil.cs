@@ -79,15 +79,11 @@ namespace IDD
             tsf.providerSignDate = pwasub.providerSignDate.value;
             tsf.authorization = convUtil.PWABoolConverter(pwasub.authorization.value);
             tsf.id = pwasub.id;
-
+            tsf.totalHours = pwasub.totalHours.value;
 
             foreach(PWAtimesheetVals lsv in pwasub.timesheet.value)
             {
-                // Convert from HH:MM to HH.hh
-                var stime = lsv.totalHours.Split(':');
-                double phour = (double.Parse(stime[1]) / 60.0) + double.Parse(stime[0]);
-                
-                tsf.addTimeRow(lsv.date, lsv.starttime, lsv.endtime, string.Format("{0:0.00}", phour), "true");
+                tsf.addTimeRow(lsv.date, lsv.starttime, lsv.endtime, convUtil.TimeToDecimal(lsv.totalHours), "true");
             }
 
             return tsf;
@@ -97,7 +93,7 @@ namespace IDD
         // certain assumptions about start times, end times, and group. 
         public void PopulateTimesheetEntries(TimesheetForm tsf, Timesheet tsheet)
         {
-            double totalHours = 0;
+            tsheet.TotalHours = Convert.ToDouble(convUtil.TimeToDecimal(tsf.totalHours));
             var tl = new List<TimeEntry>();
 
             foreach (TimesheetRowItem tsri in tsf.Times)
@@ -119,7 +115,6 @@ namespace IDD
                 {
                     x.Hours = 0;
                 }
-                totalHours += x.Hours;
 
                 // Assume Group field is 'N'
                 x.Group = true;
@@ -168,8 +163,6 @@ namespace IDD
 
                 tl.Add(x);
             }
-
-            tsheet.TotalHours = Math.Round(totalHours, 2);
             tsheet.TimeEntries = tl;   
         }
 

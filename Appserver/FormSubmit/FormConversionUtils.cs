@@ -199,5 +199,12 @@ namespace IDD
             // Unable to parse string into DateTime
             throw new FormatException();
         }
+    
+        public static string TimeToDecimal( string s)
+        {
+            var stime = s.Split(':');
+            double phour = (double.Parse(stime[1]) / 60.0) + double.Parse(stime[0]);
+            return string.Format("{0:0.00}", phour);
+        }
     }
 }

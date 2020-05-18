@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using System.Text;
 using System.Threading.Tasks;
 using AdminUI.Areas.Identity.Data;
@@ -14,11 +15,13 @@ namespace AdminUI.Areas.Identity.Pages.Account
     public class RegisterConfirmationModel : PageModel
     {
         private readonly UserManager<AdminUIUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IEmailSender _sender;
 
-        public RegisterConfirmationModel(UserManager<AdminUIUser> userManager, IEmailSender sender)
+        public RegisterConfirmationModel(UserManager<AdminUIUser> userManager, RoleManager<IdentityRole> roleManager, IEmailSender sender)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             _sender = sender;
         }
 
@@ -42,6 +45,19 @@ namespace AdminUI.Areas.Identity.Pages.Account
             }
 
             Email = email;
+
+            //TODO: Uncomment out this block of code and replace 'SendEmailTo' with whatever function Multnomah County
+            //uses to send emails, then remove the block of code below it
+            /*
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var subject = user.Name + " is requesting an account on AdminUI";
+            var body = "<p><b>" + user.Name + "</b> is requesting an account on AdminUI with the Role <b>" +
+                       await _userManager.GetRolesAsync(user) + "</b></p>." +  
+                       "<p>Please click the following link to confirm: <a href=" + code + ">Confirm Account</a></p>";
+            foreach (var admin in await _userManager.GetUsersInRoleAsync("Administrator"))
+                SendEmailTo(admin.Email, subject, body);
+            */
+
             // Once you add a real email sender, you should remove this code that lets you confirm the account
             DisplayConfirmAccountLink = true;
             if (DisplayConfirmAccountLink)

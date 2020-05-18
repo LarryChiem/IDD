@@ -1,0 +1,21 @@
+{
+  "id": 0,
+  "clientName": null,
+  "prime": null,
+  "providerName": null,
+  "providerNum": null,
+  "brokerage": null,
+  "scpaName": null,
+  "serviceAuthorized": null,
+  "mileagesheet": [],
+  "totalMiles": null,
+  "serviceGoal": null,
+  "progressNotes": null,
+  "employerSignature": false,
+  "employerSignDate": null,
+  "providerSignature": false,
+  "providerSignDate": null,
+  "authorization": false,
+  "approval": false,
+  "review_status": "Pending"
+}

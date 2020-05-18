@@ -7,5 +7,6 @@ class TimesheetRowItem : AbstractFormObject
     public string group;
 
     public TimesheetRowItem(string date, string starttime, string endtime, string totalHours, string group) => 
-        (this.date, this.starttime, this.endtime, this.totalHours, this.group) = ( date, starttime, endtime, totalHours, group) ;
+        (this.date, this.starttime, this.endtime, this.totalHours, this.group) = 
+        ( date, starttime, endtime, totalHours, group);
 }

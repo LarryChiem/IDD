@@ -20,7 +20,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="FormSubmit\emptyMileagesheet.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="FormSubmit\emptyTimesheet.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="FormSubmit\TenRowMileagesheet.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="FormSubmit\TenRowTimesheet.json">

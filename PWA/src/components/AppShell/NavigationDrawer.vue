@@ -29,7 +29,7 @@
       <!-- Link to the about page -->
       <v-list-item link to="/about">
         <v-list-item-action>
-          <v-icon>mdi-contact-mail</v-icon>
+          <v-icon>mdi-information-outline</v-icon>
         </v-list-item-action>
         <v-list-item-content>
           <v-list-item-title>About</v-list-item-title>

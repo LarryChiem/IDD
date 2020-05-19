@@ -34,7 +34,7 @@
       "disabled": false,
       "hint": "HH:mm",
       "label": "Total Hours",
-      "rules": ["time", "required"]
+      "rules": ["required", "time"]
     },
     "group": {
       "disabled": false

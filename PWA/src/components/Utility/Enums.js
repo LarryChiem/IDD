@@ -5,6 +5,13 @@ export const FORM = {
   OR526_ATTENDANT: 3,
 };
 
+// Types of forms
+export const FORM_TYPE = {
+  OR004_MILEAGE: "Mileage",
+  OR507_RELIEF: "ServiceDelivered",
+  OR526_ATTENDANT: "ServiceDelivered",
+};
+
 // To be used in views/Timesheet.vue
 export const FILE = {
   INIT: 1,

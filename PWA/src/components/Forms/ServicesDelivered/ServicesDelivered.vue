@@ -1,39 +1,51 @@
 <template>
-  <v-form class="mx-9" lazy-validation ref="form" v-model="valid">
+  <v-form class="mx-2" lazy-validation ref="form" v-model="valid">
     <p class="title">
       Front side of the form
     </p>
 
-    <FormField
-      v-for="field in [
-        'clientName',
-        'prime',
-        'submissionDate',
-        'providerName',
-        'providerNum',
-        'scpaName',
-        'brokerage',
-        'serviceAuthorized',
-      ]"
-      v-model="formFields[field].value"
-      v-bind="formFields[field]"
-      :willResign="willResign"
-      :key="field"
-      :reset="resetChild"
-      @disable-change="handleDisableChange(field, $event)"
-    />
+    <v-layout wrap>
+      <FormField
+        v-for="field in [
+          'clientName',
+          'prime',
+          'submissionDate',
+          'providerName',
+          'providerNum',
+          'scpaName',
+          'brokerage',
+          'serviceAuthorized',
+        ]"
+        v-bind="combineProps([fieldProps[field], formFields[field]])"
+        :willResign="willResign"
+        :key="field"
+        :reset="resetChild"
+        @disable-change="handleDisableChange(field, $event)"
+        @input="setField(wrapSet('formFields.' + field + '.value', $event))"
+      />
+    </v-layout>
 
     <!-- Table containing timesheet  -->
     <v-card-text>
       <ServicesDeliveredTable
-        :cols="valCols"
-        v-model="formFields.timesheet.value"
         v-bind="formFields.timesheet"
+        :cols="valCols"
+        :value="formFields.timesheet.value"
         :reset="resetChild"
         :totalHours="formFields['totalHours']['value']"
         :willResign="willResign"
-        @update-totalHours="formFields['totalHours']['value'] = $event"
+        @update-totalHours="
+          setField(wrapSet('formFields.totalHours.value', $event))
+        "
         @disable-change="handleDisableChange('timesheet', $event)"
+        @input="
+          setField(
+            wrapSet(
+              'formFields.timesheet.value',
+              JSON.parse(JSON.stringify($event))
+            )
+          )
+        "
       />
     </v-card-text>
 
@@ -48,12 +60,13 @@
 
     <FormField
       v-for="field in ['serviceGoal', 'progressNotes']"
-      v-model="formFields[field].value"
-      v-bind="formFields[field]"
+      v-bind="combineProps([fieldProps[field], formFields[field]])"
+      :value="formFields[field].value"
       :willResign="willResign"
       :key="field"
       :reset="resetChild"
       @disable-change="handleDisableChange(field, $event)"
+      @input="setField(wrapSet('formFields.' + field + '.value', $event))"
     />
 
     <hr />
@@ -70,15 +83,18 @@
       </em>
     </p>
 
-    <FormField
-      v-for="field in ['employerSignature', 'employerSignDate']"
-      v-model="formFields[field].value"
-      v-bind="formFields[field]"
-      :willResign="willResign"
-      :key="field"
-      :reset="resetChild"
-      @disable-change="handleDisableChange(field, $event)"
-    />
+    <v-layout wrap>
+      <FormField
+        v-for="field in ['employerSignature', 'employerSignDate']"
+        v-bind="combineProps([fieldProps[field], formFields[field]])"
+        :value="formFields[field].value"
+        :willResign="willResign"
+        :key="field"
+        :reset="resetChild"
+        @disable-change="handleDisableChange(field, $event)"
+        @input="setField(wrapSet('formFields.' + field + '.value', $event))"
+      />
+    </v-layout>
     <!-- End Employer Verification Section -->
 
     <hr />
@@ -97,53 +113,54 @@
       </em>
     </p>
 
-    <FormField
-      v-for="field in ['providerSignature', 'providerSignDate']"
-      v-model="formFields[field].value"
-      v-bind="formFields[field]"
-      :willResign="willResign"
-      :key="field"
-      :reset="resetChild"
-      @disable-change="handleDisableChange(field, $event)"
-    />
-    <!-- END Provider Verification Section -->
-
-    <hr />
-
-    <strong class="subtitle-1">
+    <v-layout wrap>
       <FormField
-        v-for="field in ['authorization', 'approval']"
-        v-model="formFields[field].value"
-        v-bind="formFields[field]"
+        v-for="field in ['providerSignature', 'providerSignDate']"
+        v-bind="combineProps([fieldProps[field], formFields[field]])"
+        :value="formFields[field].value"
         :willResign="willResign"
         :key="field"
         :reset="resetChild"
         @disable-change="handleDisableChange(field, $event)"
+        @input="setField(wrapSet('formFields.' + field + '.value', $event))"
       />
+    </v-layout>
+    <!-- END Provider Verification Section -->
 
+    <hr />
+    <v-layout wrap>
+      <FormField
+        v-for="field in ['authorization', 'approval']"
+        v-bind="combineProps([fieldProps[field], formFields[field]])"
+        :value="formFields[field].value"
+        :willResign="willResign"
+        :key="field"
+        :reset="resetChild"
+        @disable-change="handleDisableChange(field, $event)"
+        @input="setField(wrapSet('formFields.' + field + '.value', $event))"
+      />
+    </v-layout>
+
+    <strong class="subtitle-1">
       Providers submit this completed/signed form to the CDDP, Brokerage or CIIS
       Program that authorized the service delivered.
     </strong>
 
     <v-container>
       <v-row>
-        <v-col>
-          <v-btn color="error" class="mr-4" @click="reset">
-            Reset Form
-          </v-btn>
+        <v-col cols="6">
+          <v-container class="text-center">
+            <v-btn color="error" class="mr-4" @click="reset">
+              Reset Form
+            </v-btn>
+          </v-container>
         </v-col>
-
-        <v-col>
+        <v-col cols="6">
           <ConfirmSubmission
-            :isOnline="isOnline"
             :cols="cols"
             :valid="valid"
             :errors="errors"
-            :formFields="formFields"
-            :totalEdited="totalEdited"
             :validationSignal="validationSignal"
-            :formID="formID"
-            :formChoice="formChoice"
             @click="validateInputs"
           />
         </v-col>
@@ -156,10 +173,13 @@
   import ServicesDeliveredTable from "@/components/Forms/ServicesDelivered/ServicesDeliveredTable";
   import FormField from "@/components/Forms/FormField";
   import ConfirmSubmission from "@/components/Forms/ConfirmSubmission";
-  import fieldData from "@/components/Forms/ServicesDelivered/ServicesDeliveredFields.json";
+  import fieldPropsFile from "@/components/Forms/ServicesDelivered/ServicesDeliveredFields.json";
   import rules from "@/components/Utility/FormRules.js";
   import { TIME } from "@/components/Utility/Enums.js";
-  import { subtractTime } from "@/components/Utility/TimeFunctions.js";
+  import { subtractTime, isValid } from "@/components/Utility/TimeFunctions.js";
+
+  import { mapFields } from "vuex-map-fields";
+  import { mapMutations } from "vuex";
 
   export default {
     name: "ServicesDelivered",
@@ -170,59 +190,47 @@
     },
 
     props: {
-      isOnline: {
-        type: Boolean,
-        default: false,
-      },
       // A .json file that is the parsed uploaded IDD timesheet data
       parsedFileData: {
         type: Object,
         default: null,
-      },
-      formChoice: {
-        type: Number,
       },
     },
 
     // Upon first loading on the page, bind parsed form data to each
     // IDD Timesheet form field
     created: function () {
-      this.formID = this.parsedFileData["id"];
-      this.initialize();
+      // If the user is working with new data, prepare the store
+      if (this.newForm === true) {
+        this.bindData();
+        this.initialize();
+        this.set(this.wrapSet("newForm", false));
+      }
+
       // Bind validation rules to each field that has a 'rules' string
       // specified
-      Object.entries(fieldData).forEach(([key, value]) => {
+      Object.entries(this.fieldProps).forEach(([key, value]) => {
         if ("rules" in value) {
           var _rules = value.rules;
-          this.$set(fieldData[key], "rules", []);
+          let _transRules = [];
           _rules.forEach((fieldRule) => {
-            // Not using the spread operator for IE compatibility
-            fieldData[key].rules.push.apply(
-              fieldData[key].rules,
-              rules[fieldRule]
-            );
+            if (typeof fieldRule === "string") {
+              _transRules.push(rules[fieldRule]());
+            }
           });
 
-          if (fieldData[key].counter) {
-            fieldData[key].rules.push(rules.maxLength(fieldData[key].counter));
+          if (this.fieldProps[key].counter !== undefined) {
+            _transRules.push(rules.maxLength(this.fieldProps[key].counter));
           }
+          this.$set(this.fieldProps[key], "rules", _transRules);
         }
       });
     },
 
     data: function () {
       return {
-        // Import form field structure data and store into local variable
-        formFields: fieldData,
-
         // Reset form of arbitrary value
         resetChildField: false,
-
-        // The amount of parsed fields that were edited
-        totalEdited: 0,
-
-        // The unique ID associated with this form
-        formID: 0,
 
         // Hide form validation error messages by default
         valid: true,
@@ -233,10 +241,11 @@
         cols: ["date", "starttime", "endtime", "totalHours", "group"],
         valCols: ["date", "starttime", "endtime", "totalHours"],
 
+        // Expose the field props, so we can reference it in the HTML
+        fieldProps: JSON.parse(JSON.stringify(fieldPropsFile)),
+
         // Signal denoting completion of validation for form fields
         validationSignal: false,
-
-        willResign: false,
       };
     },
 
@@ -244,36 +253,82 @@
       resetChild() {
         return this.resetChildField;
       },
+      ...mapFields(["formId", "newForm"]),
+      ...mapFields("ServiceDelivered", [
+        "willResign",
+        "formFields",
+        "totalEdited",
+      ]),
     },
-
     methods: {
-      initialize() {
-        // Initialize some fields
-        this.totalEdited = 0;
-        this.willResign = false;
-
-        // Bind data from a .json IDD timesheet to form fields
-        if (this.entries !== null) {
+      // Expose and rename the mutations for changing vuex state
+      ...mapMutations({
+        incrementEdited: "ServiceDelivered/incrementEdited",
+        setField: "ServiceDelivered/updateField",
+        setTimesheet: "ServiceDelivered/updateTimesheet",
+        set: "updateField",
+      }),
+      bindData() {
+        // Bind data from a .json IDD timesheet to forFields in the vuex store
+        if (this.parsedFileData !== null) {
           Object.entries(this.parsedFileData).forEach(([key, value]) => {
             if (key in this.formFields) {
-              this.formFields[key]["parsed_value"] = value;
-              this.formFields[key]["value"] = value;
-              this.formFields[key]["disabled"] = true;
-            } else {
-              console.log(
-                "Unrecognized parsed form field from server: " +
-                  `${key} - ${value}`
+              this.setField(
+                this.wrapSet("formFields." + key + ".parsed_value", value)
               );
+            } else {
+              if (
+                key.localeCompare("id") !== 0 &&
+                key.localeCompare("review_status") !== 0
+              ) {
+                console.log(
+                  "Unrecognized parsed form field from server: " +
+                    `${key} - ${value}`
+                );
+              }
             }
           });
         }
+      },
+      combineProps(props) {
+        return Object.assign(...props);
+      },
+      initialize() {
+        // Initialize some fields
+        this.set(this.wrapSet("willResign", false));
+
+        // Set values to their parsed parts or to empty
+        Object.entries(this.formFields).forEach(([key, value]) => {
+          if (key in this.formFields) {
+            // Set values to their parsed part, or keep as default value
+            const parsed_val = this.formFields[key]["parsed_value"];
+            if (parsed_val !== null) {
+              this.setField(
+                this.wrapSet("formFields." + key + ".value", parsed_val)
+              );
+              this.setField(
+                this.wrapSet("formFields." + key + ".disabled", true)
+              );
+            }
+          } else {
+            if (
+              key.localeCompare("id") !== 0 &&
+              key.localeCompare("review_status") !== 0
+            ) {
+              console.log(
+                "Unrecognized parsed form field from vuex store: " +
+                  `${key} - ${value}`
+              );
+            }
+          }
+        });
 
         // Consider the amount of non-parsed fields
         // The provider and employer must resign the form
         Object.entries(this.formFields).forEach(([key, value]) => {
           key;
           if (!("parsed_value" in value)) {
-            this.totalEdited += 1;
+            this.incrementEdited(1);
           }
         });
       },
@@ -291,17 +346,19 @@
         // For each row in the array of entries...
         this.formFields["timesheet"]["value"].forEach((entry, index) => {
           // For each error col in an entry, check the amount of errors
-          Object.entries(entry["errors"]).forEach(([col, errors]) => {
-            var colErrors = errors.length;
-            if (colErrors > 0) {
-              this.errors.push([
-                `ERROR: in row ${
-                  index + 1
-                } of the timesheet table, '${col}' has the following errors:`,
-                errors,
-              ]);
-            }
-          });
+          if ("errors" in entry) {
+            Object.entries(entry["errors"]).forEach(([col, errors]) => {
+              var colErrors = errors.length;
+              if (colErrors > 0) {
+                this.errors.push([
+                  `ERROR: in row ${
+                    index + 1
+                  } of the timesheet table, '${col}' has the following errors:`,
+                  errors,
+                ]);
+              }
+            });
+          }
         });
       },
 
@@ -321,43 +378,55 @@
         // If there were no edited fields, ensure that the provider and
         // employer signature date are after the last service date
         if (this.totalEdited <= 0) {
-          // Only compare the earlier date
-          var comparisonDate = this.formFields.providerSignDate.value;
           if (
-            subtractTime(
-              comparisonDate,
+            isValid(
+              this.formFields.providerSignDate.value,
+              TIME.YEAR_MONTH_DAY
+            ) === true &&
+            isValid(
               this.formFields.employerSignDate.value,
               TIME.YEAR_MONTH_DAY
-            ) < 0
+            ) === true
           ) {
-            comparisonDate = this.formFields.employerSignDate.value;
-          }
-
-          // Compare signage dates with the pay period
-          var submissionDate = this.formFields.submissionDate.value;
-          var submissionDiff = subtractTime(
-            comparisonDate.substr(0, 7),
-            submissionDate,
-            TIME.YEAR_MONTH
-          );
-          if (submissionDiff < 0) {
-            this.errors.push(
-              `ERROR: the employer or provider sign date is before the pay period.`
-            );
-          }
-
-          // Get the last date from the timesheet table
-          var latestDateIdx = this.formFields.timesheet.value.length;
-          if (latestDateIdx > 0) {
-            var latestDate = this.formFields.timesheet.value[latestDateIdx - 1][
-              "date"
-            ];
+            // Only compare the earlier date
+            var comparisonDate = this.formFields.providerSignDate.value;
             if (
-              subtractTime(latestDate, comparisonDate, TIME.YEAR_MONTH_DAY) < 0
+              subtractTime(
+                comparisonDate,
+                this.formFields.employerSignDate.value,
+                TIME.YEAR_MONTH_DAY
+              ) < 0
             ) {
+              comparisonDate = this.formFields.employerSignDate.value;
+            }
+
+            // Compare signage dates with the pay period
+            var submissionDate = this.formFields.submissionDate.value;
+            var submissionDiff = subtractTime(
+              comparisonDate.substr(0, 7),
+              submissionDate,
+              TIME.YEAR_MONTH
+            );
+            if (submissionDiff < 0) {
               this.errors.push(
-                `ERROR: the employer or provider sign date is before the latest service delivery date.`
+                `ERROR: the employer or provider sign date is before the pay period.`
               );
+            }
+
+            // Get the last date from the timesheet table
+            var latestDateIdx = this.formFields.timesheet.value.length;
+            if (latestDateIdx > 0) {
+              var latestDate = this.formFields.timesheet.value[
+                latestDateIdx - 1
+              ]["date"];
+              if (
+                subtractTime(latestDate, comparisonDate, TIME.YEAR_MONTH_DAY) <
+                0
+              ) {
+                this.errors.push(
+                  `ERROR: the employer or provider sign date is before the latest service delivery date.`
+                );
+              }
             }
           }
         }
@@ -382,8 +451,15 @@
       resetParsed(field) {
         if (this.formFields[field].parsed_value !== undefined) {
           if (this.formFields[field].disabled !== true) {
-            this.formFields[field].value = this.formFields[field].parsed_value;
-            this.formFields[field].disabled = true;
+            this.setField(
+              this.wrapSet("formFields[" + field + "].disabled", true)
+            );
+            this.setField(
+              this.wrapSet(
+                "formFields[" + field + "].value",
+                this.formFields[field].parsed_value
+              )
+            );
           }
         }
       },
@@ -392,12 +468,20 @@
       // Then, update the amount of parsed fields edited
       handleDisableChange(fieldName, amtEdited) {
         if (amtEdited > 0) {
-          this.formFields[fieldName].disabled = true;
-          this.willResign = true;
+          this.setField(
+            this.wrapSet("formFields[" + fieldName + "].disabled", false)
+          );
+          this.setField(this.wrapSet("willResign", true));
         } else {
-          this.formFields[fieldName].disabled = false;
+          this.setField(
+            this.wrapSet("formFields[" + fieldName + "].disabled", true)
+          );
         }
-        this.totalEdited += amtEdited;
+        this.incrementEdited(amtEdited);
+      },
+
+      wrapSet(path, value) {
+        return { path: path, value: value };
       },
     },
   };

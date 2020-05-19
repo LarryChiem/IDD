@@ -6,7 +6,7 @@
     class="fill-height"
     gradient="to top, rgba(255,255,255,.10), rgba(0,0,0,0)"
     max-height="100%"
-    src="@/assets/blurry_card_portland.png"
+    src="@/assets/blurry_card_portland.jpg"
   >
     <v-container>
       <v-row align="center" justify="center">
@@ -39,11 +39,7 @@
               link
             >
               <template>
-                <v-img
-                  height="200px"
-                  :src="require('@/assets/card_portland.png')"
-                >
-                </v-img>
+                <v-img :src="card.src" height="200px"> </v-img>
                 <v-card-text>
                   <h4>
                     {{ card.title }}
@@ -79,6 +75,9 @@
 </style>
 
 <script>
+  const pic_timesheet = require("@/assets/card_timesheet.jpg");
+  const pic_burnside = require("@/assets/card_burnside.jpg");
+
   export default {
     name: "Home",
     props: {
@@ -88,14 +87,14 @@
       cards: [
         {
           title: "Upload Timesheet",
-          src: "@/assets/card_portland.png",
+          src: pic_timesheet,
           link: "/timesheet",
           icon: "add_circle",
           iconColor: "success",
         },
         {
           title: "About",
-          src: "@/assets/card_portland.png",
+          src: pic_burnside,
           link: "/about",
           icon: "info",
           iconColor: "warning",

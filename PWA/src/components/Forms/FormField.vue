@@ -1,12 +1,12 @@
 <template>
-  <v-row>
+  <v-row class="mx-2" xl="4" lg="4" md="6" sm="12" xs="12">
     <v-col cols="1" v-if="this.parsed_value !== null">
       <!-- Lock/Unlock icon to enable editing or reset & lock a parsed field -->
       <v-checkbox
         hide-details
         off-icon="lock_open"
         on-icon="lock"
-        v-model.lazy="disabled"
+        v-model.lazy="isDisabled"
         @click.stop="askEdit($event)"
         @keyup.native.enter.stop="askEdit($event)"
       ></v-checkbox>
@@ -51,11 +51,12 @@
     <v-col v-if="this.field_type === 1">
       <v-checkbox
         :label="label"
-        :disabled="disabled"
+        :disabled="isDisabled"
         :rules="rules"
         :input-value="value"
         @change="$emit('input', !value)"
         @keyup.native.enter="$emit('input', !value)"
+        lazy
       ></v-checkbox>
     </v-col>
 
@@ -64,7 +65,7 @@
       <v-textarea
         :auto-grow="auto_grow"
         :counter="counter"
-        :filled="disabled"
+        :filled="isDisabled"
         :outlined="!disabled"
         :hint="hint"
         :label="label"
@@ -73,6 +74,7 @@
         :rules="rules"
         :value="value"
         @input="$emit('input', $event)"
+        lazy
       ></v-textarea>
     </v-col>
 
@@ -80,14 +82,15 @@
     <v-col v-else>
       <v-text-field
         :counter="counter"
-        :filled="disabled"
-        :outlined="!disabled"
+        :filled="isDisabled"
+        :outlined="!isDisabled"
         :hint="hint"
         :label="label"
-        :readonly="disabled"
+        :readonly="isDisabled"
         :rules="rules"
         :value="value"
         @input="$emit('input', $event)"
+        lazy
       ></v-text-field>
     </v-col>
     <!-- End form Field -->
@@ -151,17 +154,16 @@
         type: Boolean,
         Default: false,
       },
-    },
-
-    created: function () {
-      // If there is a parsed_value, disable this field from editing
-      this.disabled = this.parsed_value !== null;
+      disabled: {
+        type: Boolean,
+        Default: false,
+      },
     },
 
     // Manage fields that change on this page
     data: function () {
       return {
-        disabled: false,
+        isDisabled: this.disabled,
         editDialog: false,
         focusedElement: null,
       };
@@ -170,10 +172,13 @@
     watch: {
       reset() {
         if (this.parsed_value !== null) {
-          this.disabled = true;
+          this.isDisabled = true;
         } else {
           this.$emit("input", null);
         }
+      },
+      disabled(val) {
+        this.isDisabled = val;
       },
     },
 
@@ -185,7 +190,7 @@
       // Do not display warning if re-locking field
       askEdit(event) {
         this.focusedElement = event.target;
-        if (this.disabled === true && this.willResign === false) {
+        if (this.isDisabled === true && this.willResign === false) {
           this.editDialog = true;
         } else {
           this.changeDisable();
@@ -204,8 +209,8 @@
       // Unlock a disabled parsed field
       // Else, reset field to its parsed value & disable the field
       changeDisable() {
-        this.disabled = !this.disabled;
-        if (this.disabled === true) {
+        this.isDisabled = !this.isDisabled;
+        if (this.isDisabled === true) {
           this.$emit("input", this.parsed_value);
           this.$emit("disable-change", -1);
         } else {

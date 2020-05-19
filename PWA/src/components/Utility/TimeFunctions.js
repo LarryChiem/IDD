@@ -53,3 +53,19 @@ export const milliToFormat = (milli, format) => {
 
   return ret;
 };
+
+/**
+ * function:: isValid(date, format)
+ *      Check if a given datetime value conforms to a specified format
+ * Parameters:
+ *      * `date`: <String> A datetime value to check
+ *      * `format`: <String> The enum representing the desired output fomat
+ * Returns:
+ *      * <Boolean> Whether or not date is valid, according to format
+ */
+export const isValid = (date, format) => {
+  if (date == undefined || format == undefined) return TIME.ERROR;
+
+  const formattedDate = moment(date, format, true);
+  return formattedDate.isValid();
+};

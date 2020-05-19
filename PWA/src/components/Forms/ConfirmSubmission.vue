@@ -1,5 +1,5 @@
 <template>
-  <v-row justify="center">
+  <v-container class="text-center">
     <v-btn color="success" dark @click.stop="signalParentValidate">
       Submit
     </v-btn>
@@ -20,7 +20,7 @@
             <v-card-text v-if="this.totalEdited > 0">
               <em>
                 There were {{ totalEdited }} edited fields. Provider and
-                Employer must resign the timesheet form.
+                Employer must resign the form.
               </em>
 
               <!-- 
@@ -64,7 +64,7 @@
                 Cancel
               </v-btn>
 
-              <template v-if="isOnline">
+              <template v-if="onlineStatus">
                 <v-btn
                   text
                   color="green darken-1"
@@ -142,7 +142,7 @@
         </v-card>
       </div>
     </v-dialog>
-  </v-row>
+  </v-container>
 </template>
 
 <style>
@@ -163,15 +163,13 @@
 
 <script>
   import axios from "axios";
-  import { FORM } from "@/components/Utility/Enums.js";
+  import store from "@/store/index.js";
+  import { mapFields } from "vuex-map-fields";
+  import { FORM, FORM_TYPE } from "@/components/Utility/Enums.js";
 
   export default {
     name: "ConfirmSubmission",
     props: {
-      isOnline: {
-        type: Boolean,
-        default: false,
-      },
       // The cols in the datatable
       cols: {
         type: Array,
@@ -182,17 +180,6 @@
       valid: {
         type: Boolean,
         default: false,
-      },
-
-      //ID to submit form with
-      formID: {
-        type: Number,
-        default: 0,
-      },
-
-      // The type of form being submitted
-      formChoice: {
-        type: Number,
       },
 
       // Signal that parent form has completed validation
@@ -209,18 +196,6 @@
 
       // The amount of errors from the parent's validation function
       numErrors: {
-        type: Number,
-        default: 0,
-      },
-
-      //User (edited) information.
-      formFields: {
-        type: Object,
-        default: null,
-      },
-
-      // The amount of parsed fields that were edited
-      totalEdited: {
         type: Number,
         default: 0,
       },
@@ -265,6 +240,20 @@
           this.totalEdited > 0 && !(this.reSigned.length === 2) && this.isValid
         );
       },
+      ...mapFields(["formChoice", "formId", "onlineStatus"]),
+      formType: function () {
+        return FORM_TYPE[this.formChoice];
+      },
+      totalEdited: function () {
+        if (this.formType !== undefined && store.getters !== undefined)
+          return store.getters[this.formType + "/getField"]("totalEdited");
+        else return 0;
+      },
+      formFields: function () {
+        if (this.formType !== undefined && store.getters !== undefined)
+          return store.getters[this.formType + "/getField"]("formFields");
+        else return null;
+      },
     },
 
     watch: {
@@ -302,9 +291,15 @@
           submitData[key]["value"] = value["value"];
           submitData[key]["wasEdited"] = !value["disabled"];
         });
+        var sheetType = "";
         if ("timesheet" in this.formFields) {
-          submitData["timesheet"]["value"] = [];
-          Object.entries(this.formFields["timesheet"]["value"]).forEach(
+          sheetType = "timesheet";
+        } else if ("mileagesheet" in this.formFields) {
+          sheetType = "mileagesheet";
+        }
+        if (sheetType.localeCompare("") !== true) {
+          submitData[sheetType]["value"] = [];
+          Object.entries(this.formFields[sheetType]["value"]).forEach(
             ([key, value]) => {
               key;
               var row = {};
@@ -314,7 +309,7 @@
               });
               row["wasEdited"] = !value["disabled"];
 
-              submitData["timesheet"]["value"].push(row);
+              submitData[sheetType]["value"].push(row);
             }
           );
         }
@@ -349,10 +344,9 @@
 
         // Finally, prepare the form data and send to the backend
         this.submitData = this.formatData();
-
         if (this.errors.length === 0) {
-          this.submitData["id"] = this.formID;
-          this.submitData["formChoice"] = this.formChoice;
+          this.submitData["id"] = this.formId;
+          this.submitData["formChoice"] = FORM[this.formChoice];
           axios
             .post(this.url, this.submitData, {
               headers: {

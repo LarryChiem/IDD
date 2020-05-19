@@ -5,7 +5,9 @@
 
     <!-- Application name -->
     <v-toolbar-title>
-      IDD Timesheet Submission
+      <v-btn x-large title text link to="/">
+        IDD Timesheet Submission
+      </v-btn>
     </v-toolbar-title>
 
     <v-spacer></v-spacer>

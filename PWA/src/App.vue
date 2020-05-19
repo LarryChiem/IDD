@@ -13,7 +13,7 @@
     <v-content>
       <!-- Update whether or not the client has Internet access -->
       <v-offline @detected-condition="handleConnectivityChange"></v-offline>
-      <template v-if="isOnline === false">
+      <template v-if="onlineStatus === false">
         <v-alert type="error" class="my-0">
           No Internet connection! Some features may be unavailable at this time.
         </v-alert>
@@ -34,6 +34,7 @@
   import AppBar from "@/components/AppShell/AppBar";
   import AppFooter from "@/components/AppShell/AppFooter";
   import NavigationDrawer from "@/components/AppShell/NavigationDrawer";
+  import { mapFields } from "vuex-map-fields";
   import VOffline from "v-offline";
 
   export default {
@@ -49,13 +50,16 @@
       openNavigationDrawer: false,
       isOnline: false,
     }),
+    computed: {
+      ...mapFields(["formChoice", "onlineStatus"]),
+    },
     methods: {
       // Toggle displaying the navigation drawer
       handleDrawerChange(isOpen) {
         this.openNavigationDrawer = isOpen;
       },
       handleConnectivityChange(status) {
-        this.isOnline = status;
+        this.onlineStatus = status;
       },
     },
   };

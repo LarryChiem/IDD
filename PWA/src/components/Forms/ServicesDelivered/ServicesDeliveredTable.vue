@@ -191,7 +191,7 @@
 
 <script>
   import FormField from "@/components/Forms/FormField";
-  import ServicesDeliveredTableFields from "@/components/Forms/ServicesDelivered/ServicesDeliveredTableFields.json";
+  import fieldPropsFile from "@/components/Forms/ServicesDelivered/ServicesDeliveredTableFields.json";
   import rules from "@/components/Utility/FormRules.js";
   import { TIME } from "@/components/Utility/Enums.js";
   import {
@@ -249,11 +249,11 @@
       return {
         // Specify rules and hints for adding a new row to the table
         colValidation: JSON.parse(
-          JSON.stringify(ServicesDeliveredTableFields["colValidation"])
+          JSON.stringify(fieldPropsFile["colValidation"])
         ),
 
         // Column headers and associated values for the table
-        headers: ServicesDeliveredTableFields["headers"],
+        headers: fieldPropsFile["headers"],
 
         // Record the amount of edited parsed fields and added rows
         amtEdited: false,
@@ -328,21 +328,20 @@
       // specified
       Object.entries(this.colValidation).forEach(([key, value]) => {
         if ("rules" in value) {
-          var _rules = value.rules;
-          this.$set(this.colValidation[key], "rules", []);
+          const _rules = value.rules;
+          let _transRules = [];
           _rules.forEach((fieldRule) => {
-            // Not using the spread operator for IE compatibility
-            this.colValidation[key].rules.push.apply(
-              this.colValidation[key].rules,
-              rules[fieldRule]
-            );
+            if (typeof fieldRule === "string") {
+              _transRules.push(rules[fieldRule]());
+              this.colValidation[key].rules.push(rules[fieldRule]());
+            }
           });
 
           if (this.colValidation[key].counter) {
-            this.colValidation[key].rules.push(
-              rules.maxLength(this.colValidation[key].counter)
-            );
+            _transRules.push(rules.maxLength(this.colValidation[key].counter));
           }
+
+          this.$set(this.colValidation[key], "rules", _transRules);
         }
       });
       this.initialize();
@@ -354,7 +353,9 @@
       initialize() {
         // Reset the entries in the table & notify parent of change
         this.allEntries = [];
-        this.$emit("disable-change", this.amtEdited * -1);
+        if (this.amtEdited > 0) {
+          this.$emit("disable-change", this.amtEdited * -1);
+        }
         this.amtEdited = 0;
         this.editingTable = false;
 
@@ -438,10 +439,8 @@
         if (confirm("Are you sure you want to delete this item?")) {
           this.allEntries.splice(index, 1);
           this.validate();
+          this.$emit("input", this.allEntries);
         }
-
-        // No need to notify parent, because an item can only be deleted if
-        // the 'add row' button was unlocked or if a parsed row was unlocked
       },
 
       // Close the add/edit dialog popup
@@ -476,9 +475,9 @@
           this.allEntries.push(this.editedItem);
           this.amtEdited += 1;
           this.$emit("disable-change", 1);
-          this.$emit("input", this.allEntries);
         }
         this.validate();
+        this.$emit("input", this.allEntries);
         this.close();
       },
 

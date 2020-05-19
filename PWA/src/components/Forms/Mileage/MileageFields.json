@@ -1,145 +1,96 @@
 {
   "clientName": {
     "counter": 50,
-    "disabled": false,
     "hint": "Full name",
     "label": "Customer Name",
-    "rules": ["name", "required"],
-    "value": null
+    "rules": ["required", "name"]
   },
   "prime": {
     "counter": 8,
-    "disabled": false,
     "hint": "Alphanumeric input",
     "label": "Prime",
-    "rules": ["alphanumeric", "required"],
-    "value": null
+    "rules": ["required", "alphanumeric"]
   },
   "submissionDate": {
     "counter": 7,
-    "disabled": false,
     "hint": "YYYY-MM",
     "label": "Pay Period Month and Year",
-    "rules": ["monthYear", "required"],
-    "value": null
+    "rules": ["required", "monthYear"]
   },
   "providerName": {
     "counter": 50,
-    "disabled": false,
     "hint": "Full name",
     "label": "Provider Name",
-    "rules": ["name", "required"],
-    "value": null
+    "rules": ["required", "name"]
   },
   "providerNum": {
     "counter": 6,
-    "disabled": false,
     "hint": "Six digit number found on xyz",
     "label": "Provider Number",
-    "rules": ["numeric", "required"],
-    "value": null
+    "rules": ["required", "numeric"]
   },
   "scpaName": {
     "counter": 50,
-    "disabled": false,
-    "hint": "Name of the SC PA person",
+    "hint": "Name of the SC PA",
     "label": "SC/PA Name",
-    "rules": ["name", "required"],
-    "value": null
+    "rules": ["required"]
   },
   "brokerage": {
     "counter": 100,
-    "disabled": false,
     "hint": "Organization name",
     "label": "CM Organization",
-    "rules": ["name", "required"],
-    "value": null
+    "rules": ["required"]
   },
   "serviceAuthorized": {
     "counter": 100,
-    "disabled": false,
     "hint": "Service provided",
     "label": "Service",
-    "rules": ["name", "required"],
-    "value": null
-  },
-  "units": {
-    "disabled": false,
-    "value": ""
-  },
-  "type": {
-    "disabled": false,
-    "value": ""
-  },
-  "frequency": {
-    "disabled": false,
-    "value": ""
-  },
-  "timesheet": {
-    "disabled": false,
-    "value": null
+    "rules": ["required"]
   },
   "totalMiles": {
-    "disabled": false,
     "hint": "A number",
     "label": "Total Miles",
-    "rules": ["numeric", "required"],
-    "value": null
+    "rules": ["required", "numeric"]
   },
   "serviceGoal": {
     "auto_grow": true,
     "counter": 250,
-    "disabled": false,
     "label": "Service Goal",
     "rows": 1,
-    "rules": ["name", "required"],
-    "value": null
+    "rules": ["required"]
   },
   "progressNotes": {
     "auto_grow": true,
     "counter": 500,
-    "disabled": false,
     "label": "Progress Notes",
     "rows": 5,
-    "rules": ["name", "required"],
-    "value": null
+    "rules": ["required"]
   },
   "employerSignDate": {
-    "disabled": false,
     "hint": "YYYY-MM-DD",
     "label": "Date",
-    "rules": ["required", "date"],
-    "value": null
+    "rules": ["required", "date"]
   },
   "employerSignature": {
-    "disabled": false,
     "field_type": 1,
-    "label": "Customer Employer or Employer Rep Signature",
-    "value": null
+    "label": "Customer Employer or Employer Rep Signature"
   },
   "providerSignDate": {
-    "disabled": false,
     "hint": "YYYY-MM-DD",
     "label": "Date",
-    "rules": ["required", "date"],
-    "value": null
+    "rules": ["required", "date"]
   },
   "providerSignature": {
-    "disabled": false,
     "field_type": 1,
-    "label": "Provider/Employee Signature",
-    "value": null
+    "label": "Provider/Employee Signature"
   },
   "authorization": {
-    "disabled": false,
     "field_type": 1,
-    "label": "I authorize the CDDP/Brokerage/CIIS staff to enter the data reported on this form into eXPRS on my behalf for claims creation and payment.",
-    "value": null
+    "label": "I authorize the CDDP/Brokerage/CIIS staff to enter the data reported on this form into eXPRS on my behalf for claims creation and payment."
   },
   "approval": {
-    "disabled": false,
+    "counter": 3,
     "label": "Provider Initials",
-    "rules": ["name", "required"],
-    "value": null
+    "rules": ["required", "alpha"]
   }
 }

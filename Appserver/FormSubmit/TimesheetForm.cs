@@ -1,5 +1,9 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using Appserver.TextractDocument;
+using System;
+using System.Linq;
+
 public class TimesheetForm: AbstractFormObject{
     
     private List<TimesheetRowItem> times = new List<TimesheetRowItem>();
@@ -7,14 +11,6 @@ public class TimesheetForm: AbstractFormObject{
     public TimesheetForm(){
     }
 
-    public int id { get; set; }
-    public string clientName {get; set;}
-    public string prime { get; set; }
-    public string providerName { get; set; }
-    public string providerNum { get; set; }
-    public string brokerage { get; set; }
-    public string scpaName { get; set; }
-    public string serviceAuthorized { get; set; }
     public int units { get; set; }
     public string type { get; set; }
     public string frequency { get; set; }
@@ -23,15 +19,40 @@ public class TimesheetForm: AbstractFormObject{
     [JsonConverter(typeof(TimesheetRowConverter))]
     internal List<TimesheetRowItem> Times { get => times; set => times = value; }
     public string totalHours { get; set; }
-    public string serviceGoal { get; set; }
-    public string progressNotes { get; set; }
-    public bool employerSignature { get; set; }
-    public string employerSignDate { get; set; }
-    public bool providerSignature { get; set; }
-    public string providerSignDate { get; set; }
-    public bool authorization { get; set; }
-    public bool approval { get; set; }
-    public string review_status { get; set; } = "Pending";
+    
     public void addTimeRow(string date, string start, string end, string total, string group) => 
         this.Times.Add(new TimesheetRowItem(date, start, end, total, group));
+
+    protected override void AddTables(List<Table> tables)
+    {
+        var table = tables[0].GetTable();
+        // Remove first row
+        table.RemoveAt(0);
+
+        // Grab last row for total
+        var lastrow = table.Last();
+        // Now remove it
+        table.RemoveAt(table.Count - 1);
+
+        foreach (var row in table)
+        {
+            addTimeRow(row[0].ToString().Trim(),
+              FixHours(row[1].ToString()).ToString().Trim(),
+              FixHours(row[2].ToString()).ToString().Trim(),
+              FixHours(row[3].ToString()).ToString().Trim(),
+              ConvertInt(row[4].ToString()).ToString().Trim());
+        }
+
+        if (lastrow.Count > 3)
+        {
+            try
+            {
+                totalHours = FixHours(lastrow[3].ToString()).Trim();
+            }
+            catch (FormatException)
+            {
+                totalHours = lastrow[3].ToString();
+            }
+        }
+    }
 }

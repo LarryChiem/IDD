@@ -58,7 +58,7 @@ namespace Appserver
             app.UseStaticFiles();
 
             app.UseCors(builder =>
-              builder.WithOrigins("http://iddpwa.azurewebsites.net"));
+              builder.WithOrigins("http://localhost:8080"));
 
 
             app.UseRouting();
@@ -111,12 +111,6 @@ namespace Appserver
             endpoints.MapControllerRoute(
                 name: "document_upload_form_route",
                 pattern: "{controller=ImageUpload}/{action=DocAsForm}");
-
-                //FormSubmissionTest route
-                endpoints.MapControllerRoute(
-                    name: "form_submission_test_route",
-                    pattern: "{controller=ImageUpload}/{action=FormSubmissionTest}");
-
         });
         }
     }

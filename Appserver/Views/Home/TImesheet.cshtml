@@ -1,4 +1,6 @@
-﻿@{
+﻿@model Appserver.Models.ImageUploadModel;
+
+@{
     ViewData["Title"] = "Upload Your Timesheet";
 }
 <h1>@ViewData["Title"]</h1>
@@ -8,6 +10,7 @@
         <div class="col-md-10">
             <p>Upload one or more files using this form:</p>
             <input type="file" name="files" multiple />
+            <select asp-for="formType" asp-items="Html.GetEnumSelectList<AbstractFormObject.FormType>()"></select>
         </div>
     </div>
     <div class="form-group">

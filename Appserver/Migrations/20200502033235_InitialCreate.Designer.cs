@@ -35,7 +35,7 @@ namespace Appserver.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Submissions");
+                    b.ToTable("Stagings");
                 });
 #pragma warning restore 612, 618
         }

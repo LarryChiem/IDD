@@ -60,16 +60,18 @@ namespace Appserver.Controllers
 
             var textractform = new TextractDocument.TextractDocument();
 
-            foreach( var a in JArray.Parse(stage.ParsedTextractJSON))
+            foreach (var a in JArray.Parse(stage.ParsedTextractJSON))
             {
                 var childform = new TextractDocument.TextractDocument();
                 childform.FromJson(a);
                 textractform.AddPages(childform);
             }
-            TimesheetForm ts;
+
+            AbstractFormObject ts;
+
             try
             {
-                ts = (TimesheetForm)AbstractFormObject.FromTextract(textractform);
+                ts = AbstractFormObject.FromTextract(textractform, stage.formType);
             }
             catch (Exception)
             {
@@ -80,27 +82,6 @@ namespace Appserver.Controllers
 
             return Json(ts);
         }
-
-        private class JsonResponse
-        {
-            public JsonResponse(string res = "ok")
-            {
-                response = res;
-            }
-            public string response;
-        }
-
-        [Route("Timesheet/Validate")]
-        [HttpPost("Validate")]
-        [Produces("application/json")]
-        public IActionResult Validate(TimesheetForm ?form )
-        {
-            // Do something with form
-
-            JsonResponse model = new JsonResponse();
-            return Json(model);
-        }
-
 
         [Route("Timesheet/SubmitTest")]
         [HttpGet]
@@ -121,65 +102,32 @@ namespace Appserver.Controllers
                 childform.FromJson(a);
                 textractform.AddPages(childform);
             }
-            var ts = (TimesheetForm)AbstractFormObject.FromTextract(textractform);
+            var ts = AbstractFormObject.FromTextract(textractform, stage.formType);
 
             ts.id = id;
-            Func<string, PWAsubmissionVals> PWAConv = (x) =>
-            {
-                var val = new PWAsubmissionVals();
-                val.value = x;
-                val.wasEdited = false;
-                return val;
-            };
 
-            var PWAForm = new PWAsubmission();
-            PWAForm.approval = PWAConv(ts.approval.ToString());
-            PWAForm.authorization = PWAConv(ts.authorization.ToString());
-            PWAForm.brokerage = PWAConv(ts.brokerage);
-            PWAForm.clientName = PWAConv(ts.clientName);
-            PWAForm.employerSignature = PWAConv(ts.employerSignature.ToString());
-            PWAForm.employerSignDate = PWAConv(ts.employerSignDate);
-            PWAForm.id = ts.id;
-            PWAForm.prime = PWAConv(ts.prime);
-            PWAForm.progressNotes = PWAConv(ts.progressNotes);
-            PWAForm.providerName = PWAConv(ts.providerName);
-            PWAForm.providerNum = PWAConv(ts.providerNum);
-            PWAForm.providerSignature = PWAConv(ts.employerSignature.ToString());
-            PWAForm.providerSignDate = PWAConv(ts.employerSignDate);
-            PWAForm.scpaName = PWAConv(ts.scpaName);
-            PWAForm.serviceAuthorized = PWAConv(ts.serviceAuthorized);
-            PWAForm.serviceGoal = PWAConv(ts.serviceGoal);
-            PWAForm.totalHours = PWAConv("20:00");
-
-            PWAForm.timesheet = new PWAtimesheetEntries();
-            var entries = new List<PWAtimesheetVals>();
-            foreach (var entry in ts.Times)
-            {
-                entries.Add(new PWAtimesheetVals
-                {
-                    date = entry.date,
-                    starttime = entry.starttime,
-                    endtime = entry.endtime,
-                    group = entry.group,
-                    totalHours = entry.totalHours,
-                    wasEdited = false
-                });
+            var PWAForm = PWAsubmission.FromForm(ts, stage.formType);
+            switch (stage.formType) {
+                case AbstractFormObject.FormType.OR507_RELIEF:
+                    return SubmitTimesheet((PWATimesheet)PWAForm);
+                case AbstractFormObject.FormType.OR004_MILEAGE:
+                    return SubmitMileage((PWAMileage)PWAForm);
+                default:
+                    return Json(new
+                    {
+                        response = "invalid"
+                    }
+            );
             }
-
-            PWAForm.timesheet.value = entries;
-            return Submit(PWAForm);
         }
 
         [Route("Timesheet/Submit")]
         [HttpPost("Submit")]
         [Produces("application/json")]
-        public IActionResult Submit([FromBody] PWAsubmission submittedform)
+        public IActionResult SubmitTimesheet([FromBody] PWATimesheet submittedform)
         {
-           
             var dbutil = new FormToDbUtil(_subcontext, _context);
-            TimesheetForm tsf = dbutil.PWAtoTimesheetFormConverter(submittedform);
-            Timesheet ts = dbutil.PopulateTimesheet(tsf);
-            dbutil.PopulateTimesheetEntries(tsf, ts);
+            Timesheet ts = dbutil.PopulateTimesheet(submittedform);
 
             var submission = _subcontext;
             submission.Add(ts);
@@ -191,17 +139,42 @@ namespace Appserver.Controllers
             return Json(new {response="ok"});
         }
 
+
+        [Route("Timesheet/SubmitMileage")]
+        [HttpPost("Submit")]
         [Produces("application/json")]
-        public IActionResult Received()
+        public IActionResult SubmitMileage([FromBody] PWAMileage submittedform)
         {
-            JsonResponse model = new JsonResponse();
-            return Json(model);
+            var dbutil = new FormToDbUtil(_subcontext, _context);
+            MileageForm mf = dbutil.PopulateMileage(submittedform);
+
+            var submission = _subcontext;
+            submission.Add(mf);
+            submission.SaveChanges();
+
+            // Do something with form
+            Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            return Json(new { response = "ok" });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+
+        /*******************************************************************************
+        /// Classes
+        *******************************************************************************/
+        private class JsonResponse
+        {
+            public JsonResponse(string res = "ok")
+            {
+                response = res;
+            }
+            public string response;
         }
     }
 }

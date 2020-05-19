@@ -1,4 +1,6 @@
 {
+  "mileagesheet": [],
+  "totalMiles": null,
   "id": 0,
   "clientName": null,
   "prime": null,
@@ -7,8 +9,6 @@
   "brokerage": null,
   "scpaName": null,
   "serviceAuthorized": null,
-  "mileagesheet": [],
-  "totalMiles": null,
   "serviceGoal": null,
   "progressNotes": null,
   "employerSignature": false,

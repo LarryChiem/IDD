@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
+using System;
 
 namespace Appserver.FormSubmit
 {
@@ -7,29 +9,39 @@ namespace Appserver.FormSubmit
     {
         private List<MileageRowItem> miles = new List<MileageRowItem>();
         public MileageForm() { }
-        public int id { get; set; }
-        public string clientName { get; set; }
-        public string prime { get; set; }
-        public string providerName { get; set; }
-        public string providerNum { get; set; }
-        public string brokerage { get; set; }
-        public string scpaName { get; set; }
-        public string serviceAuthorized { get; set; }
 
         [JsonProperty("mileagesheet")]
         [JsonConverter(typeof(MileageRowConverter))]
         internal List<MileageRowItem> Mileage { get => miles; set => miles = value; }
         public string totalMiles { get; set; }
-        public string serviceGoal { get; set; }
-        public string progressNotes { get; set; }
-        public bool employerSignature { get; set; }
-        public string employerSignDate { get; set; }
-        public bool providerSignature { get; set; }
-        public string providerSignDate { get; set; }
-        public bool authorization { get; set; }
-        public bool approval { get; set; }
-        public string review_status { get; set; } = "Pending";
         public void addMileRow(string date, string miles, string group, string purpose) =>
             this.Mileage.Add(new MileageRowItem(date, miles, group, purpose));
+
+        protected override void AddTables(List<TextractDocument.Table> tables)
+        {
+            var table = tables[0].GetTable();
+            // Remove first row
+            table.RemoveAt(0);
+
+            // Grab last row for total
+            var lastrow = table.Last();
+            // Now remove it
+            table.RemoveAt(table.Count - 1);
+
+            foreach (var row in table)
+            {
+                addMileRow(
+                  row[0].ToString().Trim(), // Date
+                  row[1].ToString().Trim(), // Miles
+                  ConvertInt(row[2].ToString()).ToString().Trim(), // Group
+                  row[3].ToString().Trim() // Purpose
+                );
+            }
+
+            if (lastrow.Count > 3)
+            {
+                totalMiles = lastrow[1].ToString().Trim();
+            }
+        }
     }
 }

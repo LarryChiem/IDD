@@ -1,4 +1,4 @@
-class TimesheetRowItem : AbstractFormObject
+class TimesheetRowItem 
 {
     public string date="2000-01-01";
     public string starttime="9:00";

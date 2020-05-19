@@ -1,12 +1,4 @@
 {
-  "id": 0,
-  "clientName": "Donald Duck",
-  "prime": "123456",
-  "providerName": "Daughy Duck",
-  "providerNum": "654321",
-  "brokerage": "Not sure",
-  "scpaName": "SC/PA",
-  "serviceAuthorized": "All",
   "mileagesheet": [
     {
       "date": "2020-03-20",
@@ -70,6 +62,14 @@
     }
   ],
   "totalMiles": "100",
+  "id": 0,
+  "clientName": "Donald Duck",
+  "prime": "123456",
+  "providerName": "Daughy Duck",
+  "providerNum": "654321",
+  "brokerage": "Not sure",
+  "scpaName": "SC/PA",
+  "serviceAuthorized": "All",
   "serviceGoal": "Drive them",
   "progressNotes": "Well behaved",
   "employerSignature": true,

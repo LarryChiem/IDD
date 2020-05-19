@@ -3,14 +3,16 @@ using Appserver.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Appserver.Migrations
 {
     [DbContext(typeof(SubmissionStagingContext))]
-    partial class SubmissionStagingContextModelSnapshot : ModelSnapshot
+    [Migration("20200518063847_FormType")]
+    partial class FormType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

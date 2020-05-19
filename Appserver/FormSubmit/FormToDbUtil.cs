@@ -38,70 +38,39 @@ namespace IDD
 
         // Give a timesheetform obj, get back a partially populated timesheet obj.
         // TODO fix UriString, confirm vals for // marks
-        public Timesheet PopulateTimesheet(TimesheetForm tsf, Timesheet tsheet=null)
+        public Timesheet PopulateTimesheet(PWATimesheet tsf, Timesheet tsheet=null)
         {
             if(tsheet == null){tsheet = new Timesheet();}
 
-            tsheet.ClientName = tsf.clientName;
-            tsheet.ClientPrime = tsf.prime;
-            tsheet.ProviderName = tsf.providerName;
-            tsheet.ProviderId = tsf.providerNum;
-            tsheet.ServiceGoal = tsf.serviceGoal;
-            tsheet.ProgressNotes = tsf.progressNotes;
-            tsheet.FormType = tsf.serviceAuthorized;
+            tsheet.ClientName = tsf.clientName.value;
+            tsheet.ClientPrime = tsf.prime.value;
+            tsheet.ProviderName = tsf.providerName.value;
+            tsheet.ProviderId = tsf.providerNum.value;
+            tsheet.ServiceGoal = tsf.serviceGoal.value;
+            tsheet.ProgressNotes = tsf.progressNotes.value;
+            tsheet.FormType = tsf.serviceAuthorized.value;
             tsheet.RejectionReason = ""; //
             tsheet.Submitted = DateTime.UtcNow; //
             tsheet.LockInfo = null;
             tsheet.UserActivity = ""; //
             
             tsheet.UriString = _sscontext.Stagings.Find(tsf.id).UriString;
-
+            PopulateTimesheetEntries(tsf, tsheet);
             return tsheet;
         }
-
-        // PWA to TimesheetForm converter
-        public TimesheetForm PWAtoTimesheetFormConverter(PWAsubmission pwasub)
-        {
-            TimesheetForm tsf = new TimesheetForm();
-            List<TimesheetRowItem> tsl = new List<TimesheetRowItem>();
-            tsf.clientName = pwasub.clientName.value;
-            tsf.prime = pwasub.prime.value;
-            tsf.providerName = pwasub.providerName.value;
-            tsf.providerNum = pwasub.providerNum.value;
-            tsf.brokerage = pwasub.brokerage.value;
-            tsf.scpaName = pwasub.scpaName.value;
-            tsf.serviceAuthorized = pwasub.serviceAuthorized.value;
-            tsf.serviceGoal = pwasub.serviceGoal.value;
-            tsf.progressNotes = pwasub.progressNotes.value;
-            tsf.employerSignature = convUtil.PWABoolConverter(pwasub.employerSignature.value);
-            tsf.employerSignDate = pwasub.employerSignDate.value;
-            tsf.providerSignature = convUtil.PWABoolConverter(pwasub.providerSignature.value);
-            tsf.providerSignDate = pwasub.providerSignDate.value;
-            tsf.authorization = convUtil.PWABoolConverter(pwasub.authorization.value);
-            tsf.id = pwasub.id;
-            tsf.totalHours = pwasub.totalHours.value;
-
-            foreach(PWAtimesheetVals lsv in pwasub.timesheet.value)
-            {
-                tsf.addTimeRow(lsv.date, lsv.starttime, lsv.endtime, convUtil.TimeToDecimal(lsv.totalHours), "true");
-            }
-
-            return tsf;
-        }
-
         // Convert the timesheet form row items into timesheet time entries. Makes
         // certain assumptions about start times, end times, and group. 
-        public void PopulateTimesheetEntries(TimesheetForm tsf, Timesheet tsheet)
+        private void PopulateTimesheetEntries(PWATimesheet tsf, Timesheet tsheet)
         {
-            tsheet.TotalHours = Convert.ToDouble(convUtil.TimeToDecimal(tsf.totalHours));
+            tsheet.TotalHours = Convert.ToDouble(convUtil.TimeToDecimal(tsf.totalHours.value));
             var tl = new List<TimeEntry>();
 
-            foreach (TimesheetRowItem tsri in tsf.Times)
+            foreach (var row in tsf.timesheet.value)
             {
                 var x = new TimeEntry();
                 try
                 {
-                    x.Date = Convert.ToDateTime(tsri.date);
+                    x.Date = Convert.ToDateTime(row.date);
                 }
                 catch (FormatException)
                 {
@@ -109,7 +78,7 @@ namespace IDD
                 }
                 try
                 {
-                    x.Hours = float.Parse(tsri.totalHours);
+                    x.Hours = float.Parse(row.totalHours);
                 }
                 catch (FormatException)
                 {
@@ -117,18 +86,18 @@ namespace IDD
                 }
 
                 // Assume Group field is 'N'
-                x.Group = true;
+                x.Group = false;
 
                 // Assume starttime is AM, pad with leading zero if necessary
-                string sdf = convUtil.TimeFormatterPadding(tsri.starttime);
+                string sdf = convUtil.TimeFormatterPadding(row.starttime);
                 string sd;
                 if (!sdf.Contains("AM"))
                 {
-                    sd = tsri.date + " " + sdf + " AM";
+                    sd = row.date + " " + sdf + " AM";
                 }
                 else
                 {
-                    sd = tsri.date + " " + sdf;
+                    sd = row.date + " " + sdf;
 
                 }
                 try
@@ -141,15 +110,15 @@ namespace IDD
                 }
 
                 // Assume endtime is PM, convert to 24hr.
-                string edf = convUtil.TimeFormatter24(tsri.endtime);
+                string edf = convUtil.TimeFormatter24(row.endtime);
                 string ed;
                 if (!sdf.Contains("AM"))
                 {
-                    ed = tsri.date + " " + edf + " PM";
+                    ed = row.date + " " + edf + " PM";
                 }
                 else
                 {
-                    ed = tsri.date + " " + edf;
+                    ed = row.date + " " + edf;
 
                 }
                 try
@@ -164,6 +133,65 @@ namespace IDD
                 tl.Add(x);
             }
             tsheet.TimeEntries = tl;   
+        }
+
+        // Give a timesheetform obj, get back a partially populated timesheet obj.
+        // TODO fix UriString, confirm vals for // marks
+        public MileageForm PopulateMileage(PWAMileage m, MileageForm mf = null)
+        {
+            if (mf == null) { mf = new MileageForm(); }
+
+            mf.ClientName      = m.clientName.value;
+            mf.ClientPrime     = m.prime.value;
+            mf.ProviderName    = m.providerName.value;
+            mf.ProviderId      = m.providerNum.value;
+            mf.ServiceGoal     = m.serviceGoal.value;
+            mf.ProgressNotes   = m.progressNotes.value;
+            mf.FormType        = m.serviceAuthorized.value;
+            mf.RejectionReason = ""; //
+            mf.Submitted       = DateTime.UtcNow; //
+            mf.LockInfo        = null;
+            mf.UserActivity    = ""; //
+
+            mf.UriString = _sscontext.Stagings.Find(m.id).UriString;
+            PopulateMileageEntries(m, mf);
+            return mf;
+        }
+        // Convert the timesheet form row items into timesheet time entries. Makes
+        // certain assumptions about start times, end times, and group. 
+        private void PopulateMileageEntries(PWAMileage m, MileageForm mf)
+        {
+            mf.TotalMiles = Convert.ToDouble(convUtil.TimeToDecimal(m.totalMiles.value));
+            var tl = new List<MileageEntry>();
+
+            foreach (var row in m.mileage.value)
+            {
+                var x = new MileageEntry();
+                try
+                {
+                    x.Date = Convert.ToDateTime(row.date);
+                }
+                catch (FormatException)
+                {
+                    x.Date = DateTime.Now;
+                }
+                try
+                {
+                    x.Miles = float.Parse(row.totalMiles);
+                }
+                catch (FormatException)
+                {
+                    x.Miles = 0;
+                }
+
+                // Assume Group field is 'N'
+                x.Group = false;
+
+                // Assume starttime is AM, pad with leading zero if necessary
+                x.PurposeOfTrip = row.purpose;
+                tl.Add(x);
+            }
+            mf.MileageEntries = tl;
         }
 
     }

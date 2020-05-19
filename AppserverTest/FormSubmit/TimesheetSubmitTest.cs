@@ -122,7 +122,7 @@ namespace AppserverTest.FormSubmit
                 document.AddPages(page);
             }
 
-            var obj = AbstractFormObject.FromTextract(document);
+            var obj = AbstractFormObject.FromTextract(document,AbstractFormObject.FormType.OR507_RELIEF);
             Console.WriteLine(JsonConvert.SerializeObject(obj, Formatting.Indented).Replace("\r", "") + "\n");
         }
 

@@ -23,6 +23,7 @@ using IDD;
 using Common.Models;
 using Common.Data;
 using Microsoft.Azure.Documents.SystemFunctions;
+using Microsoft.Extensions.Primitives;
 
 namespace Appserver.Controllers
 {
@@ -38,43 +39,9 @@ namespace Appserver.Controllers
             _scontext = scontext;
         }
 
-
-        public int FormSubmissionTest()
-        {
-
-            TimesheetForm model = new TimesheetForm();
-            model.prime = "A1234";
-            model.providerName = "Donald P. Duck";
-            model.providerNum = "N6543";
-            model.providerSignature = true;
-            model.providerSignDate = DateTime.Now.ToString();
-            model.progressNotes = "Looking good for a retired hero.\nNeeds a new hobby.";
-            model.scpaName = "SCPA";
-            model.serviceAuthorized = "Feeding";
-            model.serviceGoal = "Feed fish";
-            model.authorization = true;
-            model.type = "House call";
-            model.brokerage = "Daffy";
-            model.approval = true;
-            model.clientName = "Darkwing Duck";
-            model.employerSignature = true;
-            model.employerSignDate = DateTime.Now.ToString();
-            model.frequency = "Daily";
-            model.addTimeRow("2020-04-02", "09:00", "10:00", "1.0", "true");
-            model.addTimeRow("2020-04-03", "09:00", "10:00", "1.0", "true");
-            model.addTimeRow("2020-04-04", "09:00", "10:00", "1.0", "true");
-
-            var dbutil = new FormToDbUtil(_scontext, _context);
-
-            Timesheet ts = dbutil.PopulateTimesheet(model);
-            dbutil.PopulateTimesheetEntries(model, ts);
-
-            return dbutil.TimesheetEFtoDB(ts);
-        }
-
         // POST: /home/timesheet/
         [HttpPost("ImageUpload")]
-        public async Task<IActionResult> PostImage(List<IFormFile> files)
+        public async Task<IActionResult> PostImage(List<IFormFile> files, AbstractFormObject.FormType formType)
         {
             var c = files.Count;
             var image_responses = new List<AnalyzeDocumentResponse>();
@@ -135,11 +102,11 @@ namespace Appserver.Controllers
             int stageId;
             if (pdf_responses.Count > 0)
             {
-                stageId = await saveSubmissionStagePDF(await UploadToBlob(files), pdf_responses);
+                stageId = await saveSubmissionStage(await UploadToBlob(files), pdf_responses , formType);
             }
             else
             {
-                stageId = await saveSubmissisionStage(await UploadToBlob(files), image_responses);
+                stageId = await saveSubmissionStage(await UploadToBlob(files), image_responses, formType);
             }
 
 
@@ -147,12 +114,10 @@ namespace Appserver.Controllers
             return Json(new
             {
                 file_count = c,
-                //azfc_resp = textract_responses,
                 skipped = skipped_files,
-                //textract_stats = stats,
                 id = stageId
             }
-            ); ;
+            );
         }
 
 
@@ -161,7 +126,16 @@ namespace Appserver.Controllers
         [HttpPost("ImageList")]
         public async Task<IActionResult> ImageList(IFormCollection file_collection)
         {
-            return await PostImage(file_collection.Files.ToList());
+            if (file_collection["formChoice"].Equals(StringValues.Empty))
+            {
+                return Json(new
+                {
+                    response = "invalid form type"
+                });
+            }
+            AbstractFormObject.FormType formType = (AbstractFormObject.FormType)Enum.Parse(typeof(AbstractFormObject.FormType),file_collection["formChoice"].ToString());
+
+            return await PostImage(file_collection.Files.ToList(), formType);
         }
 
         private async Task<string> UploadToBlob(List<IFormFile> files)
@@ -188,28 +162,14 @@ namespace Appserver.Controllers
             return uriString;
         }
 
-        private async Task<int> saveSubmissisionStage(string uriString, List<AnalyzeDocumentResponse> responses)
+        private async Task<int> saveSubmissionStage<T>(string uriString, List<T> responses, AbstractFormObject.FormType formType)
         {
             // Create a SubmissionStaging to upload to SubmissionStaging table
             var ss = new SubmissionStaging
             {
                 ParsedTextractJSON = System.Text.Json.JsonSerializer.Serialize(responses),
-                UriString = uriString
-            };
-
-            // Add SubmissionStaging to table and get the Id to add to JSON response return
-            _context.Add(ss);
-            await _context.SaveChangesAsync();
-            return ss.Id;
-        }
-
-        private async Task<int> saveSubmissionStagePDF(string uriString, List<GetDocumentAnalysisResponse> responses)
-        {
-            // Create a SubmissionStaging to upload to SubmissionStaging table
-            var ss = new SubmissionStaging
-            {
-                ParsedTextractJSON = System.Text.Json.JsonSerializer.Serialize(responses),
-                UriString = uriString
+                UriString = uriString,
+                formType = formType
             };
 
             // Add SubmissionStaging to table and get the Id to add to JSON response return

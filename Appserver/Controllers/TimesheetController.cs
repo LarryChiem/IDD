@@ -121,22 +121,53 @@ namespace Appserver.Controllers
                 childform.FromJson(a);
                 textractform.AddPages(childform);
             }
-            var tsf = (TimesheetForm)AbstractFormObject.FromTextract(textractform);
+            var ts = (TimesheetForm)AbstractFormObject.FromTextract(textractform);
 
-            tsf.id = id;
+            ts.id = id;
+            Func<string, PWAsubmissionVals> PWAConv = (x) =>
+            {
+                var val = new PWAsubmissionVals();
+                val.value = x;
+                val.wasEdited = false;
+                return val;
+            };
 
-            var dbutil = new FormToDbUtil(_subcontext, _context);
-            Timesheet ts = dbutil.PopulateTimesheet(tsf);
-            dbutil.PopulateTimesheetEntries(tsf, ts);
+            var PWAForm = new PWAsubmission();
+            PWAForm.approval = PWAConv(ts.approval.ToString());
+            PWAForm.authorization = PWAConv(ts.authorization.ToString());
+            PWAForm.brokerage = PWAConv(ts.brokerage);
+            PWAForm.clientName = PWAConv(ts.clientName);
+            PWAForm.employerSignature = PWAConv(ts.employerSignature.ToString());
+            PWAForm.employerSignDate = PWAConv(ts.employerSignDate);
+            PWAForm.id = ts.id;
+            PWAForm.prime = PWAConv(ts.prime);
+            PWAForm.progressNotes = PWAConv(ts.progressNotes);
+            PWAForm.providerName = PWAConv(ts.providerName);
+            PWAForm.providerNum = PWAConv(ts.providerNum);
+            PWAForm.providerSignature = PWAConv(ts.employerSignature.ToString());
+            PWAForm.providerSignDate = PWAConv(ts.employerSignDate);
+            PWAForm.scpaName = PWAConv(ts.scpaName);
+            PWAForm.serviceAuthorized = PWAConv(ts.serviceAuthorized);
+            PWAForm.serviceGoal = PWAConv(ts.serviceGoal);
+            PWAForm.totalHours = PWAConv("20:00");
 
-            var submission = _subcontext;
-            submission.Add(ts);
-            submission.SaveChanges();
-            
-            // Do something with form
-            Response.Headers.Add("Access-Control-Allow-Origin", "*");
-            Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-            return Json(new { response = "ok" });
+            PWAForm.timesheet = new PWAtimesheetEntries();
+            var entries = new List<PWAtimesheetVals>();
+            foreach (var entry in ts.Times)
+            {
+                entries.Add(new PWAtimesheetVals
+                {
+                    date = entry.date,
+                    starttime = entry.starttime,
+                    endtime = entry.endtime,
+                    group = entry.group,
+                    totalHours = entry.totalHours,
+                    wasEdited = false
+                });
+            }
+
+            PWAForm.timesheet.value = entries;
+            return Submit(PWAForm);
         }
 
         [Route("Timesheet/Submit")]

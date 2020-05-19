@@ -86,6 +86,9 @@ namespace AdminUI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("Edited")
+                        .HasColumnType("bit");
+
                     b.Property<string>("FormType")
                         .HasColumnType("nvarchar(max)");
 

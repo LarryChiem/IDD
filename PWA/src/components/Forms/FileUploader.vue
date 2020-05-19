@@ -219,6 +219,9 @@
           Array.isArray(value) &&
           value.every((file) => file.id && file.name && file.type),
       },
+      formChoice: {
+        type: Number,
+      }
     },
     methods: {
       //Checks if all of the files are ready to be submitted.
@@ -246,6 +249,7 @@
           let file = this.files[i].file;
           formData.append("files[" + i + "]", file);
         }
+        formData.append("formChoice", this.formChoice);
         let self = this;
         axios
           .post(this.urlPost, formData, {

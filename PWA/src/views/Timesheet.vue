@@ -27,6 +27,7 @@
       <v-col v-if="fileStatus === FILE.INIT || fileStatus === FILE.FAILURE">
         <FileUploader
           :isOnline="isOnline"
+          :formChoice="FORM[formChoice]"
           @error="handleError($event)"
           @success="fillForm($event)"
         />

@@ -163,6 +163,7 @@
 
 <script>
   import axios from "axios";
+  import { FORM } from "@/components/Utility/Enums.js";
 
   export default {
     name: "ConfirmSubmission",
@@ -248,13 +249,17 @@
 
         // Provider and employer re-signed the form
         reSigned: [],
-
-        //URL for the AppServer
-        url: process.env.VUE_APP_SERVER_URL.concat("Timesheet/Submit"),
       };
     },
 
     computed: {
+      url: function () {
+        //URL for the AppServer
+        if (this.formChoice === FORM.OR004_MILEAGE)
+          return process.env.VUE_APP_SERVER_URL.concat("Timesheet/SubmitMileage");
+        else
+          return process.env.VUE_APP_SERVER_URL.concat("Timesheet/Submit");
+      },
       canSubmit: function () {
         return (
           this.totalEdited > 0 && !(this.reSigned.length === 2) && this.isValid

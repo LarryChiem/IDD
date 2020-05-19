@@ -373,23 +373,27 @@
                     <div class="flex-container column">
                         <div class="row">
                             <div class="column">
-                                <label asp-for="Status">Status:</label> @(string.IsNullOrEmpty(t.UserActivity) ? "Pending" : t.UserActivity)
+                                <label>Status:</label> @(string.IsNullOrEmpty(t.UserActivity) ? "Pending" : t.UserActivity)
                             </div>
                         </div>
+                        @if (t.Status.Equals("Rejected", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            <div class="row"><div class="column"><label>Rejection Reason:</label> @t.RejectionReason</div></div>
+                        }
                         <div class="row">
                             <div class="column">
                                 <label>Client Name:</label> @t.ClientName
                             </div>
                             <div class="column">
-                                <label>Client Prime:</label> @t.ClientPrime
+                                <label>Submitted on:</label> @t.Submitted.ToString("MM-dd-yyyy")
                             </div>
                         </div>
                         <div class="row">
                             <div class="column">
-                                <label>Total Hours:</label> @t.TotalHours
+                                <label>Client Prime:</label> @t.ClientPrime
                             </div>
                             <div class="column">
-                                <label>Submitted on:</label> @t.Submitted.ToString("MM-dd-yyyy")
+                                <label>Total Hours:</label> @t.TotalHours
                             </div>
                         </div>
                         <div class="table">
@@ -414,6 +418,13 @@
                                     </div>
                                 }
                             }
+                            <div class="row table-success font-weight-bold">
+                                <div class="col"></div>
+                                <div class="col"></div>
+                                <div class="col" style="text-align: right;">Total:</div>
+                                <div class="col" style="text-align: left;">@t.TotalHours Hours</div>
+                                <div class="col"></div>
+                            </div>
 
                         </div>
                     </div>
@@ -422,8 +433,8 @@
                     <form asp-controller="Submission" asp-action="ModalProcess">
                         <a class="btn btn-secondary" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id" title="Opens a full-detailed page on this submission">More Details</a>
                         <input type="hidden" name="id" value="@t.Id"/>
-                        <input class="btn btn-primary" name="Status" value="Approved" type="submit" formnovalidate>
-                        <input class="btn btn-danger" name="Status" value="Rejected" type="submit">
+                        <input class="btn btn-primary" name="Status" value="Approve" type="submit" formnovalidate>
+                        <input class="btn btn-danger" name="Status" value="Reject" type="submit">
                         <input type="text" name="RejectionReason" placeholder="Rejection Reason" required/>
                     </form>
                 </div>

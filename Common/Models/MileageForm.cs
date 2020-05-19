@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
 using MigraDoc.DocumentObjectModel;
@@ -149,6 +150,19 @@ namespace Common.Models
         public override void LoadEntries(DbContext context)
         {
             context.Entry(this).Collection(m => m.MileageEntries).Load();
+        }
+        public override void ChangeEntryStatus(int entryId, string status)
+        {
+            MileageEntries.First(e => e.Id == entryId).Status = status;
+        }
+        public override void ChangeAllEntriesStatus(string status)
+        {
+            foreach (var e in MileageEntries)
+            {
+                if (string.IsNullOrEmpty(e.Status) ||
+                    e.Status.Equals("Pending", StringComparison.CurrentCultureIgnoreCase))
+                    e.Status = status;
+            }
         }
     }
 }

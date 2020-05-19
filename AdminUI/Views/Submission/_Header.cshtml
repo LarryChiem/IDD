@@ -18,26 +18,30 @@ else
 }
 <div class="row">
     <div class="column">
-        <label>Submission ID:</label> @Model.Id
-    </div>
-    <div class="column">
         <label>Submission Status:</label> @(string.IsNullOrEmpty(Model.UserActivity) ? "Pending" : Model.UserActivity)
     </div>
-</div>
-<div class="row">
     <div class="column">
-        <label>Client Name:</label> @Model.ClientName
-    </div>
-    <div class="column">
-        <label>Client Prime:</label> @Model.ClientPrime
+        <label>Submission ID:</label> @Model.Id
     </div>
 </div>
+@if (Model.Status.Equals("Rejected", StringComparison.CurrentCultureIgnoreCase))
+{
+    <div class="row"><div class="column"><label>Rejection Reason:</label> @Model.RejectionReason</div></div>
+}
 <div class="row">
     <div class="column">
         <label>Provider Name:</label> @Model.ProviderName
     </div>
     <div class="column">
+        <label>Client Name:</label> @Model.ClientName
+    </div>
+</div>
+<div class="row">
+    <div class="column">
         <label>Provider ID:</label> <span class="providerId" title="Provider Id">@Model.ProviderId</span><button class="btn btn-default leftMargin4px" onclick="copyProviderId(this)" title="Copies the Provider's Id">Copy</button>
+    </div>
+    <div class="column">
+        <label>Client Prime:</label> @Model.ClientPrime
     </div>
 </div>
 <div class="row">

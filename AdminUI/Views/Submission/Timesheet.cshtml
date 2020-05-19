@@ -17,6 +17,8 @@
                 <th scope="col">End/Time OUT</th>
                 <th scope="col">Total Hours for Entry</th>
                 <th scope="col">Group? (yes/no)</th>
+                <th scope="col">Status</th>
+                <th scope="col" style="width:200px">Line Action</th>
             </tr>
             </thead>
             <tbody>
@@ -28,13 +30,22 @@
                     <td>@t.Out.ToString("h:mm tt")</td>
                     <td>@t.Hours</td>
                     <td>@(t.Group ? "Yes" : "No")</td>
+                    <td>@t.Status</td>
+                    <td>
+                        <form asp-controller="Submission" asp-action="ProcessLine">
+                            <input type="hidden" name="submissionId" value="@Model.Id" />
+                            <input type="hidden" name="entryId" value="@t.Id" />
+                            <input class="btn btn-primary" name="status" value="Approve" type="submit">
+                            <input class="btn btn-danger" name="status" value="Reject" type="submit">
+                        </form>
+                    </td>
                 </tr>
             }
             </tbody>
             <tfoot>
             <tr class="table-success font-weight-bold">
                 <th colspan="3" style="text-align: right;">Total:</th>
-                <td colspan="2">@Model.TotalHours Hours</td>
+                <td colspan="4">@Model.TotalHours Hours</td>
             </tr>
             </tfoot>
         </table>

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices.ComTypes;
 using Common.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -164,5 +166,18 @@ namespace Common.Models
             context.Entry(this).Collection(t => t.TimeEntries).Load();
         }
 
+        public override void ChangeEntryStatus(int entryId, string status)
+        {
+            TimeEntries.First(e => e.Id == entryId).Status = status;
+        }
+        public override void ChangeAllEntriesStatus(string status)
+        {
+            foreach (var e in TimeEntries)
+            {
+                if (string.IsNullOrEmpty(e.Status) ||
+                    e.Status.Equals("Pending", StringComparison.CurrentCultureIgnoreCase))
+                    e.Status = status;
+            }
+        }
     }
 }

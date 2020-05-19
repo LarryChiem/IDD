@@ -12,6 +12,7 @@ using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
 using System.IO;
 using Common.Models;
+using DocumentFormat.OpenXml.Drawing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MigraDoc.DocumentObjectModel;
@@ -51,6 +52,7 @@ namespace AdminUI.Controllers
             }
 
             submission.LoadEntries(_context);
+
             return View(submission.GetType().Name, submission);
         }
 
@@ -80,13 +82,15 @@ namespace AdminUI.Controllers
         [HttpPost]
         public async Task<IActionResult> Process(int id, string status, string rejectionReason)
         {
+            status = status.Equals("Approve") ? "Approved" : "Rejected";
+
             var submission = _context.Submissions.Find(id);
 
             if (submission == null)
                 return NotFound();
             
             _context.Entry(submission).Reference(t => t.LockInfo).Load();
-            
+
             if (submission.LockInfo == null || !submission.LockInfo.User.Equals(User.Identity.Name, StringComparison.CurrentCultureIgnoreCase))
                 return View("NoPermission");
             
@@ -95,6 +99,9 @@ namespace AdminUI.Controllers
             submission.UserActivity = status + " by " + submission.LockInfo.User + " on " + DateTime.Now;
             submission.LockInfo = null;
             
+            submission.LoadEntries(_context);
+            submission.ChangeAllEntriesStatus(status);
+
             if (ModelState.IsValid)
             {
                 try
@@ -117,12 +124,13 @@ namespace AdminUI.Controllers
             }
 
             var next = _context.Submissions.FirstOrDefault(s => (s.Status == null || s.Status == "Pending") && (s.LockInfo == null || s.LockInfo.User == User.Identity.Name));
-            return next != null ? Index(next.Id) : RedirectToAction("Index","Home");
+            return next != null ? RedirectToAction("Index", new {Id = next.Id}) : RedirectToAction("Index","Home");
         }
 
         [HttpPost]
         public async Task<IActionResult> ModalProcess(int id, string status, string rejectionReason)
         {
+            status = status.Equals("Approve") ? "Approved" : "Rejected";
             var submission = _context.Submissions.Find(id);
 
             if (submission == null)
@@ -138,6 +146,9 @@ namespace AdminUI.Controllers
             submission.UserActivity = status + " by " + submission.LockInfo.User + " on " + DateTime.Now;
             submission.LockInfo = null;
 
+            submission.LoadEntries(_context);
+            submission.ChangeAllEntriesStatus(status);
+            
             if (ModelState.IsValid)
             {
                 try
@@ -160,6 +171,19 @@ namespace AdminUI.Controllers
             }
 
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        public IActionResult ProcessLine(int submissionId, int entryId, string status)
+        {
+            status = status.Equals("Approve") ? "Approved" : "Rejected";
+
+            var submission = _context.Submissions.Find(submissionId);
+            submission.LoadEntries(_context);
+            submission.ChangeEntryStatus(entryId, status);
+            _context.Update(submission);
+            _context.SaveChanges();
+            return RedirectToAction("Index", new {Id = submissionId});
         }
 
     }

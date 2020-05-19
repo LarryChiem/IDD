@@ -35,6 +35,8 @@ namespace Common.Models
 
         public abstract PdfDocument ToPdf();
         public abstract void LoadEntries(DbContext context);
+        public abstract void ChangeEntryStatus(int entryId, string status);
+        public abstract void ChangeAllEntriesStatus(string status);
 
     }
 }

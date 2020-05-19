@@ -27,3 +27,11 @@ When deploying, navigate to Azure Portal, click on you storage account, click on
 ```
 BLOB_CONNECTION		any of the available connection strings
 ```
+
+## Working with Amazon S3
+
+In order to interface with S3 buckets, add the following environment variable:
+
+```
+BUCKET_NAME         some string
+```

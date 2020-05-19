@@ -77,29 +77,45 @@ namespace Appserver.Controllers
         public async Task<IActionResult> PostImage(List<IFormFile> files)
         {
             var c = files.Count;
-            var textract_responses = new List<AnalyzeDocumentResponse>();
+            var image_responses = new List<AnalyzeDocumentResponse>();
+            var pdf_responses = new List<GetDocumentAnalysisResponse>();
             var skipped_files = new List<string>();
             var stats = new List<string>();
 
-            // MIME types for image processing
-            var image_types = new List<string>
+            // MIME types we can send to textract
+            var accepted_types = new List<string>
             {
                 "image/jpeg",
-                "image/png"
+                "image/png",
+                "application/pdf",
             };
-
 
             // Iterate of collection of file and send to Textract
             foreach (var file in files)
             {
-                // Only process image types Textract can handle
-                if (image_types.Contains(file.ContentType) && file.Length > 0)
+                // Nothing to work with, next!
+                if(file.Length == 0)
+                {
+                    skipped_files.Add("File name " + file.Name + " is empty");
+                    continue;
+                }
+                // Only process files that have acceptable types
+                if (accepted_types.Contains(file.ContentType))
                 {
                     //Time how long it takes Textract to process image
                     Stopwatch stopwatch = new Stopwatch();
                     stopwatch.Start();
 
-                    textract_responses.Add(process_image(file.OpenReadStream()));
+                    // Process PDF
+                    if(file.ContentType == "application/pdf")
+                    {
+                        pdf_responses.Add(process_pdf(file));
+                    }
+                    // Process image
+                    else
+                    {
+                        image_responses.Add(process_image(file));
+                    }
 
                     stopwatch.Stop();
                     TimeSpan ts = stopwatch.Elapsed;
@@ -116,16 +132,27 @@ namespace Appserver.Controllers
                 }
             }
 
-            
+            int stageId;
+            if (pdf_responses.Count > 0)
+            {
+                stageId = await saveSubmissionStagePDF(await UploadToBlob(files), pdf_responses);
+            }
+            else
+            {
+                stageId = await saveSubmissisionStage(await UploadToBlob(files), image_responses);
+            }
+
+
+
             return Json(new
             {
                 file_count = c,
                 //azfc_resp = textract_responses,
                 skipped = skipped_files,
                 //textract_stats = stats,
-                id = await saveSubmissisionStage(await UploadToBlob(files), textract_responses)
+                id = stageId
             }
-            );
+            ); ;
         }
 
 
@@ -176,9 +203,24 @@ namespace Appserver.Controllers
             return ss.Id;
         }
 
-        private AnalyzeDocumentResponse process_image(Stream file)
+        private async Task<int> saveSubmissionStagePDF(string uriString, List<GetDocumentAnalysisResponse> responses)
         {
-            return new TextractHandler().HandleAsyncJob(file);
+            // Create a SubmissionStaging to upload to SubmissionStaging table
+            var ss = new SubmissionStaging
+            {
+                ParsedTextractJSON = System.Text.Json.JsonSerializer.Serialize(responses),
+                UriString = uriString
+            };
+
+            // Add SubmissionStaging to table and get the Id to add to JSON response return
+            _context.Add(ss);
+            await _context.SaveChangesAsync();
+            return ss.Id;
+        }
+
+        private AnalyzeDocumentResponse process_image(IFormFile file)
+        {
+            return new TextractHandler().HandleAsyncJob(file.OpenReadStream());
         }
 
 
@@ -187,35 +229,10 @@ namespace Appserver.Controllers
         // We could do this by page in the PDF, but how would we know
         // what type of page we're sending? Milage, hours, etc.?
         // Method argument is file sent with an HTTP Request (IFormFile)
-        private void process_pdf_upload(IFormFile file)
+        private GetDocumentAnalysisResponse process_pdf(IFormFile file)
         {
-            Debug.WriteLine("Would have processed a PDF");
-            return;
+            return new TextractHandler().HandlePDFasync(file);
         }
-
-        // Takes an IFormFile and sends it to AWS Textract for processing.
-        public async Task<string> pass_to_textract(IFormFile file)
-        {
-            // Convert file to bytes
-            MemoryStream ms = new MemoryStream();
-            file.CopyTo(ms);
-            var fileBytes = ms.ToArray();
-
-            // Bytes to ByteArray
-            var data = new ByteArrayContent(fileBytes);
-            data.Headers.Add("Content-Type", "application/json");
-            data.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
-
-            // Create HttpClient to call Azure Function
-            HttpClient client = new HttpClient();
-            string functionDomain = "https://clownedpineapple.azurewebsites.net";
-            string functionURI = "/api/HttpTrigger2?code=01sWzhyR/lezKX8pqrLGcbyRG26qgyM0VGxPfyYm9x3WeJXKjOeDsg==";
-
-            // Wait for Azure Function response
-            var response = await client.PostAsync(functionDomain + functionURI, data);
-            return response.Content.ReadAsStringAsync().Result.Replace("\"", "");
-        }
-
 
     }
 }

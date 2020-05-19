@@ -164,9 +164,7 @@ namespace Appserver.TextractDocument
             if( Pages.Count == 0)
             {
                 DocumentMetadata = doc.DocumentMetadata;
-                Pages = doc.Pages;
                 JobStatus = doc.JobStatus;
-                return;
             }
             var pages = doc.Pages;
             int count = Pages.Count;

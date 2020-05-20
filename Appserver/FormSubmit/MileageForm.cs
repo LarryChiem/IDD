@@ -43,5 +43,16 @@ namespace Appserver.FormSubmit
                 totalMiles = lastrow[1].ToString().Trim();
             }
         }
+        protected override void AddBackForm(TextractDocument.Page page)
+        {
+            var formitems = page.GetFormItems();
+
+            serviceGoal = formitems[7].Value.ToString().Trim();
+            progressNotes = formitems[8].Value.ToString().Trim();
+            employerSignDate = formitems[9].Value.ToString().Trim();
+            employerSignature = !string.IsNullOrEmpty(employerSignDate);
+            providerSignDate = formitems[11].Value.ToString().Trim();
+            providerSignature = !string.IsNullOrEmpty(providerSignDate);
+        }
     }
 }

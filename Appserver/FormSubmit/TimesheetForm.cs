@@ -55,4 +55,15 @@ public class TimesheetForm: AbstractFormObject{
             }
         }
     }
+    protected override void AddBackForm(Page page)
+    {
+        var formitems = page.GetFormItems();
+
+        serviceGoal = formitems[6].Value.ToString().Trim();
+        progressNotes = formitems[7].Value.ToString().Trim();
+        employerSignDate = formitems[8].Value.ToString().Trim();
+        employerSignature = !string.IsNullOrEmpty(employerSignDate);
+        providerSignDate = formitems[10].Value.ToString().Trim();
+        providerSignature = !string.IsNullOrEmpty(providerSignDate);
+    }
 }

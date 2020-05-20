@@ -13,6 +13,6 @@ namespace AdminUI.Areas.Identity.Data
         public DateTime DateFrom { get; set; }
         public DateTime DateTo { get; set; }
         public string Status { get; set; }
-        public bool? Locked { get; set; }
+        public string FormType { get; set; }
     }
 }

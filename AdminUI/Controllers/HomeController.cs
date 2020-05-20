@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
+using AdminUI.Areas.Identity.Data;
 using AdminUI.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -12,8 +13,12 @@ using AdminUI.Models;
 using Common.Models;
 using Microsoft.EntityFrameworkCore;
 using Common.Data;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using PdfSharp.Pdf;
 using SQLitePCL;
+using Lock = Common.Models.Lock;
 
 namespace AdminUI.Controllers
 {
@@ -23,15 +28,17 @@ namespace AdminUI.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly SubmissionContext _context;
         private readonly PayPeriodContext _pcontext;
+        private readonly UserManager<AdminUIUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger, SubmissionContext context, PayPeriodContext pcontext)
+        public HomeController(ILogger<HomeController> logger, SubmissionContext context, PayPeriodContext pcontext, UserManager<AdminUIUser> userManager)
         {
             _logger = logger;
             _context = context;
             _pcontext = pcontext;
+            _userManager = userManager;
         }
 
-        public IActionResult Index(string sortOrder = "id", string pName="", string cName="", string dateFrom="", string dateTo="", string prime="", string providerId="", string status="pending", int page = 1, int perPage = 20, string formType="timesheet")
+        public async Task<IActionResult> Index(string sortOrder = "id", string pName="", string cName="", string dateFrom="", string dateTo="", string prime="", string providerId="", string status="pending", int page = 1, int perPage = 20, string formType="timesheet")
         {
             var submissions = GetSubmissions(formType);
 
@@ -119,6 +126,7 @@ namespace AdminUI.Controllers
 
             model.Submissions = new List<Submission>(submissions);
             model.Warning = _pcontext.PayPeriods.Count() < 3;
+            model.Filters = _userManager.Users.Include(u=>u.Filters).Single(u=>u.UserName == User.Identity.Name).Filters;
             return View(formType + "Index", model);
         }
 
@@ -173,7 +181,7 @@ namespace AdminUI.Controllers
         }
 
         //TODO: Work with Gloria to figure out exactly what the CSV should look like, then fix this and re-enable button
-        public FileContentResult DownloadCSV(string pName, string cName, string dateFrom, string dateTo, string prime, string id, string status, string formType)
+        public FileContentResult DownloadCSV(string pName, string cName, string dateFrom, string dateTo, string prime, string id, string status, string formType, string providerId)
         {
             var submissions = GetSubmissions(formType);
 
@@ -192,6 +200,9 @@ namespace AdminUI.Controllers
 
             if (!string.IsNullOrEmpty(prime))
                 submissions = submissions.Where(t => t.ClientPrime == prime);
+            
+            if (!string.IsNullOrEmpty(providerId))
+                submissions = submissions.Where(t => t.ClientPrime == providerId);
 
             if (!string.IsNullOrEmpty(id))
                 submissions = submissions.Where(t => t.Id == int.Parse(id));
@@ -225,7 +236,7 @@ namespace AdminUI.Controllers
         }
 
         public FileContentResult DownloadPDFs(string pName, string cName, string dateFrom, string dateTo, string prime,
-            string id, string status, string formType)
+            string id, string status, string formType, string providerId)
         {
 
             var submissions = GetSubmissions(formType);
@@ -246,6 +257,9 @@ namespace AdminUI.Controllers
             if (!string.IsNullOrEmpty(prime))
                 submissions = submissions.Where(t => t.ClientPrime == prime);
 
+            if (!string.IsNullOrEmpty(providerId))
+                submissions = submissions.Where(t => t.ClientPrime == providerId);
+            
             if (!string.IsNullOrEmpty(id))
                 submissions = submissions.Where(t => t.Id == int.Parse(id));
 
@@ -277,6 +291,49 @@ namespace AdminUI.Controllers
 
             return File(ms.ToArray(), "application/zip", DateTime.Now.ToString("yyyy-M-dd") + "_" + formType + "_pdfs" + ".zip");
 
+        }
+
+        public async Task<IActionResult> SaveFilter(string pName, string cName, string dateFrom, string dateTo, string prime,
+            string status, string formType, string providerId, string filterName)
+        {
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user.Filters == null)
+                user.Filters = new List<Filter>();
+            if (string.IsNullOrEmpty(filterName))
+                filterName = "Default Name";
+            user.Filters.Add(new Filter
+            {
+                FilterName = filterName,
+                ProviderName = pName,
+                ProviderId = providerId,
+                ClientName = cName,
+                ClientPrime = prime,
+                DateFrom = DateTime.Parse(dateFrom),
+                DateTo = DateTime.Parse(dateTo),
+                Status = status,
+                FormType = formType
+            }); 
+            await _userManager.UpdateAsync(user);
+            return RedirectToAction("Index", new
+            {
+                ProviderName = pName,
+                ProviderId = providerId,
+                ClientName = cName,
+                ClientPrime = prime,
+                DateFrom = dateFrom,
+                DateTo = dateTo,
+                Status = status,
+                FormType = formType
+            });
+        }
+        public async Task<IActionResult> DeleteFilter(int id)
+        {
+            var user = _userManager.Users.Include(u => u.Filters).Single(u => u.UserName == User.Identity.Name);
+            var filter = user.Filters.Single(f => f.Id == id);
+            user.Filters.Remove(filter);
+            await _userManager.UpdateAsync(user);
+            return RedirectToAction("Index");
         }
 
     }

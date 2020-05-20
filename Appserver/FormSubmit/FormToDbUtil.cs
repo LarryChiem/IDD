@@ -164,7 +164,7 @@ namespace IDD
             mf.TotalMiles = Convert.ToDouble(convUtil.TimeToDecimal(m.totalMiles.value));
             var tl = new List<MileageEntry>();
 
-            foreach (var row in m.mileage.value)
+            foreach (var row in m.mileagesheet.value)
             {
                 var x = new MileageEntry();
                 try

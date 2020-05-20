@@ -79,12 +79,12 @@ namespace AdminUI.Controllers
             if (!string.IsNullOrEmpty(dateTo))
             {
                 model.DateTo = dateTo;
-                submissions = submissions.Where(t => t.Submitted <= DateTime.Parse(dateTo));
+                submissions = submissions.Where(t => t.Submitted <= DateTime.Parse(dateTo).AddDays(1));
             }
             else if (GlobalVariables.CurrentPayPeriod != null)
             {
                 model.DateTo = GlobalVariables.CurrentPayPeriod.DateTo.ToString("yyyy-MM-dd");
-                submissions = submissions.Where(t => t.Submitted <= GlobalVariables.CurrentPayPeriod.DateTo);
+                submissions = submissions.Where(t => t.Submitted <= GlobalVariables.CurrentPayPeriod.DateTo.AddDays(1));
             }
 
             if(!string.Equals(status,"all",StringComparison.CurrentCultureIgnoreCase))

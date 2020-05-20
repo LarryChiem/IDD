@@ -259,15 +259,17 @@ namespace AdminUI.Controllers
             using (var archive = new ZipArchive(ms, ZipArchiveMode.Create, true))
             {
 
-                foreach (var sub in submissions)
+                foreach (var submission in submissions)
                 {
-                    var fileDownloadName = (sub.ClientName + "_" + sub.ClientPrime + "_" + sub.ProviderName + "_" +
-                                           sub.ProviderId + "_" + sub.Submitted.ToString("yyyy-M-dd") + "_" + sub.FormType + ".pdf").Replace("/","_");
-                    sub.LoadEntries(_context);
+                    //ClientName_Prime_ProviderID_ProviderName_yyyyMMdd_FormNumber
+                    var fileDownloadName = (submission.ClientName + "_" + submission.ClientPrime + "_" + submission.ProviderId + "_" +
+                                           submission.ProviderName + "_" + submission.Submitted.ToString("yyyyMMdd") + "_" + 
+                                           submission.FormType.Split(" ")[0] + ".pdf").Replace("/",string.Empty).Replace(" ",string.Empty);
+                    submission.LoadEntries(_context);
                     var zipEntry = archive.CreateEntry(fileDownloadName, CompressionLevel.Fastest);
                     using var zipStream = zipEntry.Open();
                     var pdfStream = new MemoryStream();
-                    sub.ToPdf().Save(pdfStream, false);
+                    submission.ToPdf().Save(pdfStream, false);
                     zipStream.Write(pdfStream.ToArray(), 0, (int) pdfStream.Length);
                     zipStream.Close();
                 }

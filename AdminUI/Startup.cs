@@ -46,13 +46,14 @@ namespace AdminUI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<AdminUIUser> userManager, RoleManager<IdentityRole> roleManager, PayPeriodContext context)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, RoleManager<IdentityRole> roleManager, PayPeriodContext ppcontext, SubmissionContext scontext)
         {
-            SeedData(roleManager, userManager);
-            GlobalVariables.CurrentPayPeriod = context.PayPeriods.FirstOrDefault(p => p.Current);
+            GlobalVariables.CurrentPayPeriod = ppcontext.PayPeriods.FirstOrDefault(p => p.Current);
+            SeedRoles(roleManager);
 
             if (env.IsDevelopment())
             {
+                MockData.InitializeSubmissionDb(scontext);
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
@@ -81,50 +82,7 @@ namespace AdminUI
             });
         }
 
-        private async void SeedData(RoleManager<IdentityRole> roleManager, UserManager<AdminUIUser> userManager)
-        {
-            await SeedRoles(roleManager);
-            await SeedUsers(userManager);
-
-
-        }
-        private async Task SeedUsers(UserManager<AdminUIUser> userManager)
-        {
-            var user = await userManager.FindByNameAsync("Admin");
-            if (user == null)
-            {
-                user = new AdminUIUser
-                {
-                    UserName = "Admin",
-                    Email = "Admin@AdminUI.com",
-                    Name = "Administrator",
-                    EmailConfirmed = true
-                };
-
-                var result = await userManager.CreateAsync(user, "password");
-                if (result.Succeeded)
-                    await userManager.AddToRoleAsync(user, "Administrator");
-            }
-            
-            user = await userManager.FindByNameAsync("Employee");
-            if (user == null)
-            {
-                user = new AdminUIUser
-                {
-                    UserName = "Employee",
-                    Email = "Employee@AdminUI.com",
-                    Name = "Employee",
-                    EmailConfirmed = true
-                };
-
-                var result = await userManager.CreateAsync(user, "password");
-
-                if (result.Succeeded)
-                    await userManager.AddToRoleAsync(user, "Employee");
-            }
-        }
-
-        private async Task SeedRoles(RoleManager<IdentityRole> roleManager)
+        private async void SeedRoles(RoleManager<IdentityRole> roleManager)
         {
             var result = await roleManager.RoleExistsAsync("Employee");
             if (!result)

@@ -28,12 +28,11 @@ namespace AdminUI.Areas.Identity
 
                 services.Configure<IdentityOptions>(options =>
                 {
-                    //TODO: Change this on release. This is strictly because passwords are a pain in the ass for developing
                     // Password settings.
-                    options.Password.RequireDigit = false;
-                    options.Password.RequireLowercase = false;
+                    options.Password.RequireDigit = true;
+                    options.Password.RequireLowercase = true;
                     options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequireUppercase = false;
+                    options.Password.RequireUppercase = true;
                     options.Password.RequiredLength = 6;
                     options.Password.RequiredUniqueChars = 1;
 

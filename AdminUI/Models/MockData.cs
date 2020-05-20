@@ -11,12 +11,8 @@ namespace AdminUI.Models
 {
     public static class MockData
     {
-        public static void InitializeSubmissionDB(IServiceProvider serviceProvider)
+        public static void InitializeSubmissionDb(SubmissionContext context)
         {
-            using var context = new SubmissionContext(
-                serviceProvider.GetRequiredService<
-                    DbContextOptions<SubmissionContext>>());
-
             if (context.Submissions.Any())
             {
                 return;   // DB has been seeded

@@ -76,7 +76,7 @@
         <input type="hidden" name="perPage" value =@Model.PerPage>
         <input type="hidden" name="sortOrder" value =@Model.SortOrder>
         <input role="button" class="btn btn-info" type="submit" value="Apply Filters"/>
-        @Html.ActionLink("Download CSV", "DownloadCSV", new
+        <!--comment@Html.ActionLink("Download CSV", "DownloadCSV", new
         {
             formType = Model.FormType,
             pname = Model.PName,
@@ -88,8 +88,8 @@
             status = Model.Status
         }, new
         {
-            @class = "btn btn-secondary "
-        })
+            <!--comment@class = "btn btn-secondary "-->
+        <!--}) -->
         @Html.ActionLink("Download PDFs", "DownloadPDFs", new
         {
             formType = Model.FormType,

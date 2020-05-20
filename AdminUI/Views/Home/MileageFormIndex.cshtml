@@ -432,6 +432,16 @@
                         <input class="btn btn-primary" name="Status" value="Approve" type="submit" formnovalidate>
                         <input class="btn btn-danger" name="Status" value="Reject" type="submit">
                         <input type="text" name="RejectionReason" placeholder="Rejection Reason" required/>
+                        @Html.HiddenFor(Model=>Model.SortOrder)
+                        @Html.HiddenFor(Model=>Model.DateTo)
+                        @Html.HiddenFor(Model=>Model.DateFrom)
+                        @Html.HiddenFor(Model=>Model.PName)
+                        @Html.HiddenFor(Model=>Model.CName)
+                        @Html.HiddenFor(Model=>Model.Prime)
+                        @Html.HiddenFor(Model=>Model.Status)
+                        @Html.HiddenFor(Model=>Model.FormType)
+                        @Html.HiddenFor(Model=>Model.Page)
+                        @Html.HiddenFor(Model=>Model.ProviderId)
                     </form>
                 </div>
             </div>

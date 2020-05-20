@@ -68,14 +68,14 @@ namespace AdminUITest
         public async Task ModalProcess_SubmissionNotFound()
         {
             var tc = new SubmissionController(_logger, _scontext);
-            var result = await tc.ModalProcess(-1, "Accept", "Nah");
+            var result = await tc.ModalProcess(-1, "Accept", "Nah", "id", "04/01/2020", "04/15/2020", "pName", "cName", "PRIME", "timesheetIndex", 1, "providerId");
             Assert.IsInstanceOf(typeof(NotFoundResult), result);
         }
         [Test]
         public async Task ModalProcess_LockNotFound()
         { 
             var tc = new SubmissionController(_logger, _scontext);
-            var result = await tc.ModalProcess(2, "Accept", "Nah") as ViewResult;
+            var result = await tc.ModalProcess(2, "Accept", "Nah", "id", "04/01/2020", "04/15/2020", "pName", "cName", "PRIME", "timesheetIndex", 1, "providerId") as ViewResult;
             Assert.AreEqual("NoPermission", result.ViewName);
         }
         [Test]
@@ -95,7 +95,7 @@ namespace AdminUITest
                 }
             };
 
-            var result = await tc.ModalProcess(1, "Accept", "Nah") as ViewResult;
+            var result = await tc.ModalProcess(1, "Accept", "Nah", "id", "04/01/2020", "04/15/2020", "pName", "cName", "PRIME", "timesheetIndex", 1, "providerId") as ViewResult;
             Assert.AreEqual("NoPermission", result.ViewName);
         }
         [Test]
@@ -115,7 +115,7 @@ namespace AdminUITest
                 }
             };
 
-            var result = await tc.ModalProcess(1, "Accept", "Nah") as RedirectToActionResult;
+            var result = await tc.ModalProcess(1, "Accept", "Nah", "id", "04/01/2020", "04/15/2020", "pName", "cName", "PRIME", "timesheetIndex", 1, "providerId") as RedirectToActionResult;
             Assert.AreEqual("Index", result.ActionName);
         }
 

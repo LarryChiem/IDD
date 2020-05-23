@@ -230,7 +230,7 @@
     computed: {
       url: function () {
         //URL for the AppServer
-        if (this.formChoice === FORM.OR004_MILEAGE)
+        if (FORM[this.formChoice] === FORM.OR004_MILEAGE)
           return process.env.VUE_APP_SERVER_URL.concat("Timesheet/SubmitMileage");
         else
           return process.env.VUE_APP_SERVER_URL.concat("Timesheet/Submit");

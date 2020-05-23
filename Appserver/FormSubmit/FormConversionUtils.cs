@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-
+using Common.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace IDD
 {
@@ -219,6 +221,59 @@ namespace IDD
                 phour = (double.Parse(stime[1]) / 60.0) + double.Parse(stime[0]);
             }
             return string.Format("{0:0.00}", phour);
+        }
+
+
+        // Given a PWAmodel, return bool reflecting if
+        // the form was edited as all.
+        public static bool wasPWAedited(PWAsubmission submission)
+        {
+            // Keys that could be edited
+            var keyList = new List<string>();
+            keyList.Add("clientName");
+            keyList.Add("prime");
+            keyList.Add("submissionDate");
+            keyList.Add("providerName");
+            keyList.Add("providerNum");
+            keyList.Add("serviceAuthorized");
+            keyList.Add("serviceGoal");
+            keyList.Add("progressNotes");
+            keyList.Add("employerSignDate");
+            keyList.Add("employerSignature");
+            keyList.Add("providerSignDate");
+            keyList.Add("providerSignature");
+            keyList.Add("authorization");
+            keyList.Add("approval");
+            keyList.Add("scpaName");
+            keyList.Add("brokerage");
+            keyList.Add("totalHours");
+            keyList.Add("totalMiles");
+
+            // Convert submission to JSON object
+            string jsonString = JsonConvert.SerializeObject(submission);
+            JObject obj = JObject.Parse(jsonString);
+
+            // Iterate over obj with keys
+            for (int i = 0; i < keyList.Count; i++)
+            {
+                // Exit early on first instance of true
+                try
+                {
+                    string s = keyList[i];
+                    bool x = (bool)obj[s]["wasEdited"];
+                    if(x == true)
+                    {
+                        return true;
+                    }
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+            }
+
+            // Default case
+            return false;
         }
     }
 }

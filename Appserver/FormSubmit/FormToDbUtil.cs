@@ -53,6 +53,7 @@ namespace IDD
             tsheet.Submitted = DateTime.UtcNow; //
             tsheet.LockInfo = null;
             tsheet.UserActivity = ""; //
+            tsheet.Edited = convUtil.wasPWAedited(tsf);
             
             tsheet.UriString = _sscontext.Stagings.Find(tsf.id).UriString;
             PopulateTimesheetEntries(tsf, tsheet);
@@ -64,6 +65,12 @@ namespace IDD
         {
             tsheet.TotalHours = Convert.ToDouble(convUtil.TimeToDecimal(tsf.totalHours.value));
             var tl = new List<TimeEntry>();
+
+            // Only update if true
+            if(tsf.timesheet.wasEdited == true)
+            {
+                tsheet.Edited = true;
+            }
 
             foreach (var row in tsf.timesheet.value)
             {
@@ -152,6 +159,7 @@ namespace IDD
             mf.Submitted       = DateTime.UtcNow; //
             mf.LockInfo        = null;
             mf.UserActivity    = ""; //
+            mf.Edited = convUtil.wasPWAedited(m);
 
             mf.UriString = _sscontext.Stagings.Find(m.id).UriString;
             PopulateMileageEntries(m, mf);
@@ -163,6 +171,12 @@ namespace IDD
         {
             mf.TotalMiles = Convert.ToDouble(convUtil.TimeToDecimal(m.totalMiles.value));
             var tl = new List<MileageEntry>();
+
+            // Only update if true
+            if(m.mileagesheet.wasEdited == true)
+            {
+                mf.Edited = true;
+            }
 
             foreach (var row in m.mileagesheet.value)
             {

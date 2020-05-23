@@ -118,13 +118,13 @@ namespace Common.Models
     public class PWAMileage : PWAsubmission
     {
         public PWAsubmissionVals totalMiles { get; set; }
-        public PWAmileageEntries mileage { get; set; }
+        public PWAmileageEntries mileagesheet { get; set; }
         protected override void ConvertForm(AbstractFormObject form)
         {
             Appserver.FormSubmit.MileageForm m = (Appserver.FormSubmit.MileageForm)form;
             totalMiles = new PWAsubmissionVals(m.totalMiles);
 
-            mileage = new PWAmileageEntries();
+            mileagesheet = new PWAmileageEntries();
             var entries = new List<PWAmileageVals>();
             foreach (var entry in m.Mileage)
             {
@@ -138,7 +138,7 @@ namespace Common.Models
                 });
             }
 
-            mileage.value = entries;
+            mileagesheet.value = entries;
         }
     }
     public class PWAmileageEntries

@@ -112,14 +112,7 @@ public abstract class AbstractFormObject{
         }
         form.AddTables(tables);
         // Populate back form objects
-        formitems = backpages[0].GetFormItems();
-
-        form.serviceGoal = formitems[6].Value.ToString().Trim();
-        form.progressNotes = formitems[7].Value.ToString().Trim();
-        form.employerSignDate = formitems[8].Value.ToString().Trim();
-        form.employerSignature = !string.IsNullOrEmpty(form.employerSignDate);
-        form.providerSignDate = formitems[10].Value.ToString().Trim();
-        form.providerSignature = !string.IsNullOrEmpty(form.providerSignDate);
+        form.AddBackForm(backpages[0]);
 
         return form;
     }
@@ -136,5 +129,18 @@ public abstract class AbstractFormObject{
         return 0;
     }
 
+    public static string ConvertDate(string s)
+    {
+        string date;
+        try
+        {
+            return DateTime.Parse(s).ToString("yyyy-MM-dd");
+        }
+        catch (FormatException)
+        {
+            return s;
+        }
+    }
     protected abstract void AddTables(List<Table> tables);
+    protected abstract void AddBackForm(Page page);
 }

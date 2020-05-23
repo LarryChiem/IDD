@@ -17,10 +17,12 @@
             >
 
             <v-card-text>
-              This field was parsed by AWS Textrack, based on the IDD timesheet
-              that was uploaded. If you edit this field, the employer and
-              provider <em>must</em> re-sign this form at the bottom before
-              submission.
+              This text was created based on the IDD timesheet that was
+              uploaded. Sometimes, the app can't quite read your handwritting
+              correctly, and you will need to edit before sumbitting. This will
+              ensure that your timesheet is not returned as incorrect. Please
+              make any corrections to match your timesheet exactly by selecting
+              "Edit Field". submission.
             </v-card-text>
 
             <v-card-actions>
@@ -196,56 +198,56 @@
   import { TIME } from "@/components/Utility/Enums.js";
   import {
     subtractTime,
-    milliToFormat,
+    milliToFormat
   } from "@/components/Utility/TimeFunctions.js";
   var moment = require("moment");
 
   export default {
     name: "ServicesDeliveredTable",
     components: {
-      FormField,
+      FormField
     },
     props: {
       // A .json file that is a section from the parsed uploaded IDD timesheet data
       value: {
         type: Array,
-        default: null,
+        default: null
       },
       cols: {
         type: Array,
-        default: null,
+        default: null
       },
       disabled: {
         type: Boolean,
-        default: false,
+        default: false
       },
       modified: {
         type: Boolean,
-        default: true,
+        default: true
       },
       parsed: {
         type: Boolean,
-        default: false,
+        default: false
       },
       parsed_value: {
         type: Array,
-        default: null,
+        default: null
       },
       // Reset to default props or no
       reset: {
         type: Boolean,
-        default: false,
+        default: false
       },
       totalHours: {
         type: String,
-        default: "00:00",
+        default: "00:00"
       },
       willResign: {
         type: Boolean,
-        default: false,
-      },
+        default: false
+      }
     },
-    data: function () {
+    data: function() {
       return {
         // Specify rules and hints for adding a new row to the table
         colValidation: JSON.parse(
@@ -282,7 +284,7 @@
           group: "No",
           disabled: false,
           parsed: false,
-          errors: {},
+          errors: {}
         },
 
         // Helper object for holding changes to a row in the table before
@@ -295,24 +297,24 @@
           group: "No",
           disabled: false,
           parsed: false,
-          errors: {},
+          errors: {}
         },
 
         // The last focused element before a dialog/popup appears
         // This allows for resuming tabbing after the dialog/popup closes
-        focusedElement: null,
+        focusedElement: null
       };
     },
 
     computed: {
-      editedItemTotalHours: function () {
+      editedItemTotalHours: function() {
         var start = this.editedItem["starttime"];
         var end = this.editedItem["endtime"];
         var timeDiff = subtractTime(start, end, TIME.TIME_12);
         var formatTimeDiff = milliToFormat(timeDiff, TIME.TIME_24);
         this.$set(this.editedItem, "totalHours", formatTimeDiff);
         return formatTimeDiff;
-      },
+      }
     },
 
     watch: {
@@ -320,17 +322,17 @@
       reset() {
         this.initialize();
         this.validate();
-      },
+      }
     },
 
-    created: function () {
+    created: function() {
       // Bind validation rules to each field that has a 'rules' string
       // specified
       Object.entries(this.colValidation).forEach(([key, value]) => {
         if ("rules" in value) {
           const _rules = value.rules;
           let _transRules = [];
-          _rules.forEach((fieldRule) => {
+          _rules.forEach(fieldRule => {
             if (typeof fieldRule === "string") {
               _transRules.push(rules[fieldRule]());
               this.colValidation[key].rules.push(rules[fieldRule]());
@@ -362,7 +364,7 @@
         // For each parsed entry from props, create a new table row
         if (this.parsed_value !== null) {
           // For each timesheet table entry, create a new set 'obj'
-          this.parsed_value.forEach((row) => {
+          this.parsed_value.forEach(row => {
             let obj = {};
 
             // Only add attributes that fit an existing column header
@@ -573,15 +575,15 @@
         // The columns to check for validation (ex. exclude action, group)
 
         // First check that each field has a valid value
-        this.allEntries.forEach((entry) => {
-          this.cols.forEach((col) => {
+        this.allEntries.forEach(entry => {
+          this.cols.forEach(col => {
             // Reset the list of validation errors for this field for this row
             entry["errors"][col] = [];
 
             // Run the validation functions associated w/ this field
             if ("rules" in this.colValidation[col]) {
               var wasInvalid = false;
-              this.colValidation[col]["rules"].forEach((rule) => {
+              this.colValidation[col]["rules"].forEach(rule => {
                 // If the validation function fails, add an error to field
                 if (rule(entry[col]) !== true) {
                   wasInvalid = true;
@@ -595,7 +597,7 @@
         });
 
         // Next, check that the end time is after the start time
-        this.allEntries.forEach((entry) => {
+        this.allEntries.forEach(entry => {
           // If the start and end times are valid, begin parsing
           if (
             entry["errors"]["starttime"].length === 0 &&
@@ -709,7 +711,7 @@
           }
         }
         return ret;
-      },
-    },
+      }
+    }
   };
 </script>

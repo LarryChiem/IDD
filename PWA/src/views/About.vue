@@ -2,24 +2,31 @@
   <v-col>
     <v-card>
       <v-card-title class="headline blue white--text" primary-title>
-        Privacy Policy
+        Learn more
       </v-card-title>
 
-      <v-card-text>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-        mollit anim id est laborum.
-      </v-card-text>
+      <div class="text-center">
+        <v-card-text>
+          To learn more about the Multnomah County Intellectual and
+          Developmental Disabilites department, you can visit our website.
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+            text
+            color="deep-purple accent-4"
+            href="https://multco.us/dd"
+            target="_blank"
+          >
+            Learn More
+          </v-btn>
+        </v-card-actions>
+      </div>
     </v-card>
   </v-col>
 </template>
 
 <script>
   export default {
-    name: "about",
+    name: "about"
   };
 </script>

@@ -13,14 +13,15 @@
             </v-card-title>
 
             <v-card-text>
-              Some text talking about how this submission is final unless
-              something is wrong with it.
+              Please ensure your timesheet is correct and mathces your time in
+              eXPRS. If it does not, it will be returned to you and may not be
+              processed in this pay period.
             </v-card-text>
 
             <v-card-text v-if="this.totalEdited > 0">
               <em>
-                There were {{ totalEdited }} edited fields. Provider and
-                Employer must resign the form.
+                There were {{ totalEdited }} edited fields. Please confirm these
+                edit(s).
               </em>
 
               <!-- 
@@ -46,13 +47,13 @@
                 color="red lighten-2"
                 v-if="!reSigned.includes('Employer')"
               >
-                Employer must re-sign form!
+                Employer should confirm these edit(s).
               </v-card>
               <v-card
                 color="red lighten-2"
                 v-if="!reSigned.includes('Provider')"
               >
-                Provider must re-sign form!
+                Provider should confirm these edit(s).
               </v-card>
             </v-card-text>
 
@@ -97,9 +98,24 @@
             <div v-else>
               <!-- Display submission status -->
               <div v-if="submissionStatus">
-                <v-card-title class="headline text-center" id="submited">
+                <v-dialog value="true" hide-overlay persistent width="300">
+                  <v-card color="primary" dark>
+                    <v-card-title class="headline text-center" id="submited">
+                      Your form has been submitted!
+                    </v-card-title>
+                    <v-card-text class="text-center" id="submission-complete">
+                      Thank you for submitting your timesheet. Please keep your
+                      copy for your records. If there are any issues, IDD staff
+                      will contact you via email.
+                      <v-btn color="success" outlined to="/">
+                        Return home
+                      </v-btn>
+                    </v-card-text>
+                  </v-card>
+                </v-dialog>
+                <!--v-card-title class="headline text-center" id="submited">
                   Your form has been submitted!
-                </v-card-title>
+                </v-card-title-->
 
                 <v-card-text class="text-center" id="submissionError">
                   Some text on what will come next for the employee.
@@ -173,32 +189,32 @@
       // The cols in the datatable
       cols: {
         type: Array,
-        default: null,
+        default: null
       },
 
       //If the information is valid.
       valid: {
         type: Boolean,
-        default: false,
+        default: false
       },
 
       // Signal that parent form has completed validation
       validationSignal: {
         type: Boolean,
-        default: false,
+        default: false
       },
 
       // The list of errors from the parent's validation function
       errors: {
         type: Array,
-        default: null,
+        default: null
       },
 
       // The amount of errors from the parent's validation function
       numErrors: {
         type: Number,
-        default: 0,
-      },
+        default: 0
+      }
     },
 
     data() {
@@ -223,37 +239,38 @@
         waitingOnParent: false,
 
         // Provider and employer re-signed the form
-        reSigned: [],
+        reSigned: []
       };
     },
 
     computed: {
-      url: function () {
+      url: function() {
         //URL for the AppServer
         if (FORM[this.formChoice] === FORM.OR004_MILEAGE)
-          return process.env.VUE_APP_SERVER_URL.concat("Timesheet/SubmitMileage");
-        else
-          return process.env.VUE_APP_SERVER_URL.concat("Timesheet/Submit");
+          return process.env.VUE_APP_SERVER_URL.concat(
+            "Timesheet/SubmitMileage"
+          );
+        else return process.env.VUE_APP_SERVER_URL.concat("Timesheet/Submit");
       },
-      canSubmit: function () {
+      canSubmit: function() {
         return (
           this.totalEdited > 0 && !(this.reSigned.length === 2) && this.isValid
         );
       },
       ...mapFields(["formChoice", "formId", "onlineStatus"]),
-      formType: function () {
+      formType: function() {
         return FORM_TYPE[this.formChoice];
       },
-      totalEdited: function () {
+      totalEdited: function() {
         if (this.formType !== undefined && store.getters !== undefined)
           return store.getters[this.formType + "/getField"]("totalEdited");
         else return 0;
       },
-      formFields: function () {
+      formFields: function() {
         if (this.formType !== undefined && store.getters !== undefined)
           return store.getters[this.formType + "/getField"]("formFields");
         else return null;
-      },
+      }
     },
 
     watch: {
@@ -271,7 +288,7 @@
           this.waitingOnParent = false;
           this.displaySubmit = true;
         }
-      },
+      }
     },
 
     methods: {
@@ -304,7 +321,7 @@
               key;
               var row = {};
 
-              this.cols.forEach((col) => {
+              this.cols.forEach(col => {
                 row[col] = value[col];
               });
               row["wasEdited"] = !value["disabled"];
@@ -350,10 +367,10 @@
           axios
             .post(this.url, this.submitData, {
               headers: {
-                "content-type": "application/json",
-              },
+                "content-type": "application/json"
+              }
             })
-            .then(function (response) {
+            .then(function(response) {
               if (response["data"]["response"] == "ok") {
                 console.log("Finished posting!");
                 self.submissionStatus = true;
@@ -362,11 +379,11 @@
                 self.returnHome = true;
               }
             })
-            .catch(function (error) {
+            .catch(function(error) {
               console.log(error);
             });
         }
-      },
-    },
+      }
+    }
   };
 </script>

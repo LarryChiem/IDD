@@ -19,9 +19,11 @@
           >
 
           <v-card-text>
-            This field was parsed by AWS Textrack, based on the IDD timesheet
-            that was uploaded. If you edit this field, the employer and provider
-            <em>must</em> re-sign this form at the bottom before submission.
+            This text was created based on the IDD timesheet that was uploaded.
+            Sometimes, the app can't quite read your handwritting correctly, and
+            you will need to edit before sumbitting. This will ensure that your
+            timesheet is not returned as incorrect. Please make any corrections
+            to match your timesheet exactly by selecting "Edit Field".
           </v-card-text>
 
           <v-card-actions>
@@ -104,68 +106,68 @@
       // does the text field grow in size as more text is entered
       auto_grow: {
         type: Boolean,
-        Default: false,
+        Default: false
       },
       // max strlen for text field
       counter: {
-        default: 25,
+        default: 25
       },
       // 0 - text-field/textarea
       // 1 - checkbox
       field_type: {
         type: Number,
-        default: 0,
+        default: 0
       },
       // appears below text field
       hint: {
         type: String,
-        default: "",
+        default: ""
       },
       // appears above text field
       label: {
         type: String,
-        default: "",
+        default: ""
       },
       // value parsed from .json
       parsed_value: {
-        default: null,
+        default: null
       },
       // Reset to default props or no
       reset: {
         type: Boolean,
-        default: false,
+        default: false
       },
       // size of this text field
       rows: {
         type: Number,
-        Default: 1,
+        Default: 1
       },
       // validation rules for text field
       rules: {
         type: Array,
-        Default: null,
+        Default: null
       },
       // value entered in text field
       value: {
         type: [String, Boolean, Number],
-        Default: null,
+        Default: null
       },
       willResign: {
         type: Boolean,
-        Default: false,
+        Default: false
       },
       disabled: {
         type: Boolean,
-        Default: false,
-      },
+        Default: false
+      }
     },
 
     // Manage fields that change on this page
-    data: function () {
+    data: function() {
       return {
         isDisabled: this.disabled,
         editDialog: false,
-        focusedElement: null,
+        focusedElement: null
       };
     },
 
@@ -179,7 +181,7 @@
       },
       disabled(val) {
         this.isDisabled = val;
-      },
+      }
     },
 
     // Do an action or communicate info to parent component upon a certain
@@ -216,7 +218,7 @@
         } else {
           this.$emit("disable-change", 1);
         }
-      },
-    },
+      }
+    }
   };
 </script>

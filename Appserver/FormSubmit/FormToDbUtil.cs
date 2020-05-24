@@ -61,85 +61,61 @@ namespace IDD
         }
         // Convert the timesheet form row items into timesheet time entries. Makes
         // certain assumptions about start times, end times, and group. 
-        private void PopulateTimesheetEntries(PWATimesheet tsf, Timesheet tsheet)
+        private void PopulateTimesheetEntries(PWATimesheet timesheetForm, Timesheet timesheet)
         {
-            tsheet.TotalHours = Convert.ToDouble(convUtil.TimeToDecimal(tsf.totalHours.value));
-            var tl = new List<TimeEntry>();
+            timesheet.TotalHours = Convert.ToDouble(convUtil.TimeToDecimal(timesheetForm.totalHours.value));
+            var timeEntryList = new List<TimeEntry>();
 
-            // Only update if true
-            if(tsf.timesheet.wasEdited == true)
-            {
-                tsheet.Edited = true;
-            }
+            if (timesheetForm.timesheet.wasEdited)
+                timesheet.Edited = true;
 
-            foreach (var row in tsf.timesheet.value)
+            foreach (var row in timesheetForm.timesheet.value)
             {
-                var x = new TimeEntry();
+                var timeEntry = new TimeEntry();
                 try
                 {
-                    x.Date = Convert.ToDateTime(row.date);
+                    timeEntry.Date = Convert.ToDateTime(row.date);
                 }
                 catch (FormatException)
                 {
-                    x.Date = DateTime.Now;
+                    Console.WriteLine("Hey, {0} is not a valid Date!", row.date);
+                    timeEntry.Date = DateTime.Parse("1/1/1900");
                 }
                 try
                 {
-                    x.Hours = float.Parse(row.totalHours);
+                    timeEntry.Hours = double.Parse(convUtil.TimeToDecimal(row.totalHours));
                 }
                 catch (FormatException)
                 {
-                    x.Hours = 0;
+                    Console.WriteLine("Hey, {0} is not a valid Time!", row.totalHours);
+                    timeEntry.Hours = -1;
                 }
 
-                // Assume Group field is 'N'
-                x.Group = false;
+                timeEntry.Group = row.group.Equals("Yes", StringComparison.CurrentCultureIgnoreCase);
 
-                // Assume starttime is AM, pad with leading zero if necessary
-                string sdf = convUtil.TimeFormatterPadding(row.starttime);
-                string sd;
-                if (!sdf.Contains("AM"))
-                {
-                    sd = row.date + " " + sdf + " AM";
-                }
-                else
-                {
-                    sd = row.date + " " + sdf;
-
-                }
                 try
                 {
-                    x.In = DateTime.ParseExact(sd, "yyyy-MM-dd HH:mm tt", null);
+                    timeEntry.In = DateTime.Parse(row.starttime);
                 }
                 catch ( FormatException) 
                 {
-                    x.In = DateTime.Now;
+                    Console.WriteLine("Hey, {0} is not a valid Time!", row.starttime);
+                    timeEntry.In = DateTime.Parse("12:00 AM");
                 }
 
-                // Assume endtime is PM, convert to 24hr.
-                string edf = convUtil.TimeFormatter24(row.endtime);
-                string ed;
-                if (!sdf.Contains("AM"))
-                {
-                    ed = row.date + " " + edf + " PM";
-                }
-                else
-                {
-                    ed = row.date + " " + edf;
-
-                }
                 try
                 {
-                    x.Out = DateTime.ParseExact(ed, "yyyy-MM-dd HH:mm tt", null);
+                    timeEntry.Out = DateTime.Parse(row.endtime);
                 }
                 catch (FormatException)
                 {
-                    x.Out = DateTime.Now;
+                    Console.WriteLine("Hey, {0} is not a valid Time!", row.endtime);
+                    timeEntry.Out = DateTime.Parse("12:00 AM");
                 }
 
-                tl.Add(x);
+                timeEntryList.Add(timeEntry);
             }
-            tsheet.TimeEntries = tl;   
+            timesheet.TimeEntries = timeEntryList;   
         }
 
         // Give a timesheetform obj, get back a partially populated timesheet obj.

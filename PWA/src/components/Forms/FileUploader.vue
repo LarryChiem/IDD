@@ -73,14 +73,16 @@
 
               <div v-if="files.length">
                 <ul class="file-list">
-                  <li v-for="file in files" :key="file.id">
-                    <span data-testid="name">{{ file.name }}</span> -
-                    <!--span>{{ file.size | formatSize }}</span-->
-                    <span v-if="file.error">{{ file.error }}</span>
-                    <span v-else-if="file.success" class="text-success">success</span>
-                    <span v-else-if="file.active" class="text-primary">active</span>
-                    <span v-else></span>
-                  </li>
+                    <li v-for="file in files" :key="file.id">
+                        <span data-testid="name">{{ file.name }}</span> -
+                        <!--span>{{ file.size | formatSize }}</span-->
+                        <span v-if="file.error">{{ file.error }}</span>
+                        <span v-else-if="file.success" class="text-success">success</span>
+                        <div v-else-if="file.active" class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <span v-else></span>
+                    </li>
                 </ul>
               </div>
             </v-col>

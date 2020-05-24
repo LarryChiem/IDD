@@ -77,8 +77,8 @@
                     <span data-testid="name">{{ file.name }}</span> -
                     <!--span>{{ file.size | formatSize }}</span-->
                     <span v-if="file.error">{{ file.error }}</span>
-                    <span v-else-if="file.success">success</span>
-                    <span v-else-if="file.active">active</span>
+                    <span v-else-if="file.success" class="text-success">success</span>
+                    <span v-else-if="file.active" class="text-primary">active</span>
                     <span v-else></span>
                   </li>
                 </ul>

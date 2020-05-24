@@ -149,17 +149,15 @@ namespace Appserver.Controllers
 
 
             // Upload images to container and save UriStrings
-            var uriString ="";
+            var uriString = new List<string>();
             foreach (var f in files)
             {
-                if (!string.IsNullOrEmpty(uriString))
-                    uriString += ',';
                 var blockBlob = container.GetBlockBlobReference(DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fffffff") + "_" + f.FileName);
-                uriString += blockBlob.Uri.AbsoluteUri;
+                uriString.Add(blockBlob.Uri.AbsoluteUri);
                 await blockBlob.UploadFromStreamAsync(f.OpenReadStream());
             }
 
-            return uriString;
+            return System.Text.Json.JsonSerializer.Serialize(uriString);
         }
 
         private async Task<int> saveSubmissionStage<T>(string uriString, List<T> responses, AbstractFormObject.FormType formType)

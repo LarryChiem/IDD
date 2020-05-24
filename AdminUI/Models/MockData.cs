@@ -18,6 +18,11 @@ namespace AdminUI.Models
                 return;   // DB has been seeded
             }
 
+            var uris = new List<string>();
+            uris.Add("https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/2020-05-14-07-19-41-5642367_OR507_526_front.png");
+            uris.Add("https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/2020-05-14-07-19-41-5431700_OR507_526_back.png");
+            uri_string = System.Text.Json.JsonSerializer.Serialize(uris);
+
             context.Submissions.AddRange(
                 new Timesheet
                 {
@@ -33,8 +38,8 @@ namespace AdminUI.Models
                     Submitted = DateTime.Parse("4/2/20 2:03PM"),
                     RejectionReason = "",
                     Status = "Pending",
-                    UriString = "https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/2020-05-14-07-19-41-5642367_OR507_526_front.png," +
-                                "https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/2020-05-14-07-19-41-5431700_OR507_526_back.png",
+                    UriString = uri_string;
+
                     TimeEntries = new List<TimeEntry>
                     {
                             new TimeEntry{
@@ -93,8 +98,8 @@ namespace AdminUI.Models
                     Submitted = DateTime.Parse("4/2/20 1:45PM"),
                     RejectionReason = "",
                     Status = "Pending",
-                    UriString = "https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/2020-05-14-07-19-41-5642367_OR507_526_front.png," +
-                                "https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/2020-05-14-07-19-41-5431700_OR507_526_back.png",
+                    UriString = uri_string;
+
                     TimeEntries = new List<TimeEntry>
                     {
                             new TimeEntry{
@@ -137,8 +142,7 @@ namespace AdminUI.Models
                     Submitted = DateTime.Parse("4/3/20 8:06AM"),
                     RejectionReason = "",
                     Status = "Pending",
-                    UriString = "https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/2020-05-14-07-19-41-5642367_OR507_526_front.png," +
-                                "https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/2020-05-14-07-19-41-5431700_OR507_526_back.png",
+                    UriString = uri_string
                     TimeEntries = new List<TimeEntry>
                     {
                             new TimeEntry{
@@ -189,8 +193,8 @@ namespace AdminUI.Models
                     Submitted = DateTime.Parse("4/4/20 5:13PM"),
                     RejectionReason = "",
                     Status = "Pending",
-                    UriString = "https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/2020-05-14-07-19-41-5642367_OR507_526_front.png," +
-                                "https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/2020-05-14-07-19-41-5431700_OR507_526_back.png",
+                    UriString = uri_string;
+
                     TimeEntries = new List<TimeEntry>
                     {
                             new TimeEntry{
@@ -241,8 +245,8 @@ namespace AdminUI.Models
                     Submitted = DateTime.Parse("4/2/20 10:20AM"),
                     RejectionReason = "",
                     Status = "Pending",
-                    UriString = "https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/2020-05-14-07-19-41-5642367_OR507_526_front.png," +
-                                "https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/2020-05-14-07-19-41-5431700_OR507_526_back.png",
+                    UriString = uri_string;
+
                     TimeEntries = new List<TimeEntry>
                     {
                             new TimeEntry{
@@ -281,8 +285,8 @@ namespace AdminUI.Models
                         Submitted = DateTime.Parse("4/1/20 10:20AM"),
                         RejectionReason = "",
                         Status = "Pending",
-                        UriString = "https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/2020-05-14-07-19-41-5642367_OR507_526_front.png," +
-                                    "https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/2020-05-14-07-19-41-5431700_OR507_526_back.png",
+                        UriString = uri_string;
+
                         TimeEntries = new List<TimeEntry>
                         {
                                 new TimeEntry
@@ -350,8 +354,8 @@ namespace AdminUI.Models
                        Submitted = DateTime.Parse("5/" + rand.Next(1,30) + "/20 " + rand.Next(1,12) + ":00AM"),
                        RejectionReason = "",
                        Status = "Pending",
-                       UriString = "https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/2020-05-14-07-19-41-5642367_OR507_526_front.png," +
-                                   "https://iddstorageaccountdev.blob.core.windows.net/submissionfiles/2020-05-14-07-19-41-5431700_OR507_526_back.png",
+                       UriString = uri_string;
+                       
                        MileageEntries = new List<MileageEntry>
                        {
                                 new MileageEntry

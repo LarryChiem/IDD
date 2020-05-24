@@ -29,8 +29,10 @@ namespace Common.Models
         public IList<string> UriList { get; set; }
         public string UriString
         {
-            get => string.Join(",", UriList); 
-            set => UriList = value.Split(',').ToList();
+            //get => string.Join(",", UriList);
+            //set => UriList = value.Split(',').ToList();
+            get => System.Text.Json.JsonSerializer.Serialize(UriList);
+            set => UriList = System.Text.Json.JsonSerializer.Deserialize<List<string>>(value);
         }
 
         public abstract PdfDocument ToPdf();

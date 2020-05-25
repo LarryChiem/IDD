@@ -52,6 +52,7 @@ namespace Appserver.TextractDocument
 
         public List<KeyValuePair<KeyValueSet, KeyValueSet>> GetFormItems() => _keyvaluepairs;
         public List<Table> GetTables() => _tables;
+        public List<Line> GetLines() => _lines;
 
         /*******************************************************************************
         /// Methods

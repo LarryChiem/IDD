@@ -74,12 +74,28 @@ public abstract class AbstractFormObject{
         bool frontfound = false;
         List<Page> backpages = new List<Page>();
 
+        // Improve front page detection
         foreach (var page in doc.Pages)
         {
-            if (page.GetTables().Count >= 1 && page.GetFormItems().Count < 8)
+            if (!frontfound)
             {
-                frontpage = page;
-                frontfound = true;
+                // Search for Service Delivered On:
+                foreach (var line in page.GetLines())
+                {
+                    // Ever form has "Service Delivered On:" on the front page, so we use
+                    // this to determine if this is the front or back.
+                    frontfound = line.ToString().Contains("vice Delivered O");
+                    if (frontfound)
+                        break;
+                }
+                if (frontfound)
+                {
+                    frontpage = page;
+                }
+                else
+                {
+                    backpages.Add(page);
+                }
             }
             else
             {

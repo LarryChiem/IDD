@@ -18,6 +18,11 @@ namespace Common.Models
         public double TotalMiles { get; set; }
         public ICollection<MileageEntry> MileageEntries { get; set; }
 
+        /*
+         *  Creates a PDF representation of the MileageForm
+         *  No Parameters
+         *  Returns a PDF
+         */
         public override PdfDocument ToPdf()
         {
             //http://www.pdfsharp.net/wiki/Unicode-sample.ashx
@@ -91,7 +96,6 @@ namespace Common.Models
             row.Cells[3].AddParagraph("Purpose of Trip/Service Goal");
             row.Cells[3].Format.Alignment = ParagraphAlignment.Center;
 
-            double totalMiles = 0;
             foreach (var entry in MileageEntries)
             {
                 row = table.AddRow();
@@ -102,7 +106,6 @@ namespace Common.Models
                 row.Cells[0].Format.Alignment = ParagraphAlignment.Center;
                 row.Cells[1].AddParagraph(entry.Miles.ToString(CultureInfo.CurrentCulture));
                 row.Cells[1].Format.Alignment = ParagraphAlignment.Center;
-                totalMiles += entry.Miles;
                 row.Cells[2].AddParagraph(entry.Group ? "Yes" : "No");
                 row.Cells[2].Format.Alignment = ParagraphAlignment.Center;
                 row.Cells[3].AddParagraph(entry.PurposeOfTrip);
@@ -116,7 +119,7 @@ namespace Common.Models
             row.Format.Font.Bold = true;
             row.Cells[0].AddParagraph("Total");
             row.Cells[0].Format.Alignment = ParagraphAlignment.Right;
-            row.Cells[1].AddParagraph(totalMiles + " Miles");
+            row.Cells[1].AddParagraph(TotalMiles + " Miles");
             row.Cells[1].MergeRight = 2;
             row.Cells[1].Format.Alignment = ParagraphAlignment.Left;
 

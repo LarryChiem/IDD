@@ -22,6 +22,12 @@ namespace Common.Models
     {
         public double TotalHours { get; set; }
         public ICollection<TimeEntry> TimeEntries { get; set; }
+
+        /*
+         *  Creates a PDF representation of the Timesheet
+         *  No Parameters
+         *  Returns a PDF
+         */
         public override PdfDocument ToPdf()
         {
             var watch = new Stopwatch();
@@ -102,7 +108,6 @@ namespace Common.Models
             row.Cells[4].AddParagraph("Group? (yes/no)");
             row.Cells[4].Format.Alignment = ParagraphAlignment.Left;
 
-            double totalHours = 0;
             foreach (var entry in TimeEntries)
             {
                 row = table.AddRow();
@@ -115,7 +120,6 @@ namespace Common.Models
                 row.Cells[1].Format.Alignment = ParagraphAlignment.Left;
                 row.Cells[2].AddParagraph(entry.Out.ToShortTimeString());
                 row.Cells[2].Format.Alignment = ParagraphAlignment.Left;
-                totalHours += entry.Hours;
                 row.Cells[3].AddParagraph(entry.Hours.ToString(CultureInfo.CurrentCulture));
                 row.Cells[3].Format.Alignment = ParagraphAlignment.Left;
 
@@ -130,7 +134,7 @@ namespace Common.Models
             row.Cells[0].AddParagraph("Total");
             row.Cells[0].MergeRight = 2;
             row.Cells[0].Format.Alignment = ParagraphAlignment.Right;
-            row.Cells[3].AddParagraph(totalHours + " Hours");
+            row.Cells[3].AddParagraph(TotalHours + " Hours");
             row.Cells[3].MergeRight = 1;
             row.Cells[3].Format.Alignment = ParagraphAlignment.Left;
 

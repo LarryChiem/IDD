@@ -13,6 +13,8 @@ using System.Security.Principal;
 using Microsoft.AspNetCore.Http;
 using Common.Models;
 using Common.Data;
+using System.Collections.Generic;
+using System.Json;
 
 namespace AdminUITest
 {
@@ -24,9 +26,13 @@ namespace AdminUITest
         
         public SubmissionControllerTests()
         {
+            var uriList = new List<string>();
+            uriList.Add("hi");
+            uriList.Add("hello");
+            uriList.Add("how are you");
             _scontext = new InMemoryDbContextFactory().GetSubmissionContext();
             _logger = new NullLogger<SubmissionController>();
-            _scontext.Add(new Timesheet{ 
+            _scontext.Add(new Timesheet {
                 ClientName = "client",
                 ClientPrime = "prime",
                 ProviderName = "provider",
@@ -38,14 +44,14 @@ namespace AdminUITest
                 Submitted = DateTime.Parse("4/2/20 2:03PM"),
                 RejectionReason = "",
                 Status = "Pending",
-                UriString = "hi,hello,how are you",
+                UriString = System.Text.Json.JsonSerializer.Serialize(uriList),
                 LockInfo = new Lock
                 {
                     User = "steve",
                     LastActivity = DateTime.Now
                 }
-                }
-            );
+            }
+            ) ;
             _scontext.Add(new Timesheet{ 
                 ClientName = "client",
                 ClientPrime = "prime",
@@ -58,7 +64,7 @@ namespace AdminUITest
                 Submitted = DateTime.Parse("4/2/20 2:03PM"),
                 RejectionReason = "",
                 Status = "Pending",
-                UriString = "hi,hello,how are you"
+                UriString = System.Text.Json.JsonSerializer.Serialize(uriList)
                 }
             );
             _scontext.SaveChanges();

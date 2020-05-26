@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "@vue/cli-service": "^4.2.3",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
@@ -40,7 +41,7 @@
     "@vue/cli-plugin-babel": "~4.2.0",
     "@vue/cli-plugin-eslint": "~4.2.0",
     "@vue/cli-plugin-pwa": "^4.3.1",
-    "@vue/cli-service": "~4.2.0",
+    "@vue/cli-service": "^4.2.3",
     "@vue/test-utils": "^1.0.2",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.0.3",

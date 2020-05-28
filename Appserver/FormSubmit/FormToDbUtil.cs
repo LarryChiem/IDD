@@ -91,7 +91,7 @@ namespace IDD
                     timeEntry.Hours = -1;
                 }
 
-                timeEntry.Group = row.group.Equals("Yes", StringComparison.CurrentCultureIgnoreCase);
+                timeEntry.Group = row.group.Equals("1", StringComparison.CurrentCultureIgnoreCase);
 
                 try
                 {
@@ -174,8 +174,7 @@ namespace IDD
                     x.Miles = 0;
                 }
 
-                // Assume Group field is 'N'
-                x.Group = false;
+                x.Group = row.group.Equals("1", StringComparison.CurrentCultureIgnoreCase);
 
                 // Assume starttime is AM, pad with leading zero if necessary
                 x.PurposeOfTrip = row.purpose;

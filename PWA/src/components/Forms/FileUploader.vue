@@ -2,23 +2,34 @@
   <div class="example-drag">
     <template v-if="onlineStatus">
       <div class="upload">
-        <ul v-if="!files.length">
-          <td colspan="7">
-            <div class="text-center p-5">
-              <h4>Drop files anywhere to upload<br />or</h4>
-              <label for="file" class="btn btn-lg btn-primary"
-                >Select Files</label
+        <v-container v-if="!files.length" class="pa-0 mx-0" fluid>
+          <v-row class="pa-0 ma-0">
+            <v-col class="text-center pa-0 ma-0">
+              <v-alert
+                class="text-center title px-3 py-5 ma-0"
+                width=80vw
+                color="info"
+                outlined
+                dense
+                text
               >
-            </div>
-          </td>
-        </ul>
-
-        <div
-          v-show="$refs.upload && $refs.upload.dropActive"
-          class="drop-active"
-        >
-          <h3>Drop files to upload</h3>
-        </div>
+                Drop files anywhere to upload<br/>
+                or<br/>
+                <label for="file" class="btn btn-primary">
+                    Select Files or Take a Picture
+                </label>
+              </v-alert>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col
+              v-show="$refs.upload && $refs.upload.dropActive"
+              class="drop-active"
+            >
+              <h3>Drop files to upload</h3>
+            </v-col>
+          </v-row>
+        </v-container>
 
         <v-container>
           <v-row>
@@ -33,7 +44,7 @@
                     :drop-directory="true"
                     :maximum="2"
                     :size="1024 * 1024 * 10"
-                    accept="image/*, application/pdf"
+                    accept="image/*, application/pdf, image/heic"
                     @input-file="inputFile"
                     v-model="files"
                     ref="upload"
@@ -65,7 +76,8 @@
               </div>
               <div v-else>
                 <div class="text-center">
-                  <v-btn color="red" ref="files" @click="reset">
+                  <v-btn class="white--text"
+                  color="red" ref="files" @click="reset">
                     Reset Files
                   </v-btn>
                 </div>
@@ -78,7 +90,28 @@
                     <!--span>{{ file.size | formatSize }}</span-->
                     <span v-if="file.error">{{ file.error }}</span>
                     <span v-else-if="file.success">success</span>
-                    <span v-else-if="file.active">active</span>
+                    <span v-else-if="file.active">
+                      <v-dialog
+                        value="true"
+                        hide-overlay
+                        persistent
+                        width="300"
+                      >
+                        <v-card
+                          color="primary"
+                          dark
+                        >
+                          <v-card-text>
+                            Processing your files...
+                            <v-progress-linear
+                              indeterminate
+                              color="white"
+                              class="mb-0"
+                            ></v-progress-linear>
+                          </v-card-text>
+                        </v-card>
+                      </v-dialog>
+                    </span>
                     <span v-else></span>
                   </li>
                 </ul>
@@ -92,8 +125,8 @@
                     :loading="loading"
                     :disabled="loading"
                     color="success"
-                    class="ma-2 white-text"
-                    @click="loader = loading"
+                    class="ma-2 white--text"
+                    @click="completeForm()"
                   >
                     Complete Form
                     <v-icon right dark>mdi-cloud-upload</v-icon>
@@ -106,7 +139,7 @@
       </div>
     </template>
     <template v-else>
-      OFFLINE: can't upload file unless you are online :(
+      OFFLINE: Can't upload file unless you are online.
     </template>
   </div>
 </template>
@@ -149,7 +182,7 @@
     z-index: 9999;
     opacity: 0.6;
     text-align: center;
-    background: #000;
+    color: red;
   }
   .example-drag.drop-active h3 {
     margin: -0.5em 0 0;
@@ -161,7 +194,7 @@
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);
     font-size: 40px;
-    color: #fff;
+    color: red;
     padding: 0;
   }
   .custom-loader {
@@ -223,6 +256,28 @@
       },
     },
     methods: {
+      completeForm() {
+        this.loading = true;
+        const l = this.loader;
+        this[l] = !this[l];
+        let self = this;
+        //Retrieves json response from timesheet.
+        if (!this.getUpdated) {
+          this.urlGet = this.urlGet.concat(this.formId);
+          this.getUpdated = true;
+          axios
+            .get(this.urlGet)
+            .then(function (response) {
+              self.$emit("success", response["data"]);
+            })
+            .catch(function (error) {
+              console.log(error);
+              self.$emit("error", error);
+            });
+        }
+        setTimeout(() => (this[l] = false), 30000);
+        this.loader = null;
+      },
       //Checks if all of the files are ready to be submitted.
       check() {
         if (!this.files.length) return false;
@@ -240,6 +295,9 @@
       reset() {
         this.files = [];
         this.submitted = false;
+        this.loader = null;
+        this.loading = false;
+        this.getUpdated = false;
         this.$emit("reset");
       },
       customAction() {
@@ -257,7 +315,7 @@
             },
           })
           .then(function (response) {
-            console.log(response);
+            console.log("Response from Appserver, FileUploader:293", response);
             for (let i = 0; i < self.files.length; i++) {
               self.files[i].active = false;
               self.files[i].success = true;
@@ -304,30 +362,6 @@
     },
     computed: {
       ...mapFields(["formChoice", "formId", "onlineStatus"]),
-    },
-    //Watches for the user to press submit. BAD!
-    watch: {
-      loader() {
-        const l = this.loader;
-        this[l] = !this[l];
-        let self = this;
-        //Retrieves json response from timesheet.
-        if (!this.getUpdated) {
-          this.urlGet = this.urlGet.concat(this.formId);
-          this.getUpdated = true;
-          axios
-            .get(this.urlGet)
-            .then(function (response) {
-              self.$emit("success", response["data"]);
-            })
-            .catch(function (error) {
-              console.log(error);
-              self.$emit("error", error);
-            });
-        }
-        setTimeout(() => (this[l] = false), 30000);
-        this.loader = null;
-      },
     },
   };
 </script>

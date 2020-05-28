@@ -90,7 +90,7 @@
     "label": "I authorize the CDDP/Brokerage/CIIS staff to enter the data reported on this form into eXPRS on my behalf for claims creation and payment."
   },
   "approval": {
-    "counter": 3,
+    "counter": 10,
     "label": "Provider Initials",
     "rules": ["required", "alpha"]
   }

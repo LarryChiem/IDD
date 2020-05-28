@@ -48,7 +48,7 @@
               <!-- Lock/unlock addding a row to the table -->
               <v-btn @click="askTableEdit($event)">
                 <v-icon color="primary" v-if="amtEdited < 1">mdi-lock</v-icon>
-                <v-icon v-else>mdi-lock-open</v-icon>
+                <v-icon v-else>refresh</v-icon>
               </v-btn>
 
               <!-- Add a row button -->
@@ -100,8 +100,8 @@
 
                 <v-checkbox
                   label="Group? (y/n)"
-                  true-value="Yes"
-                  false-value="No"
+                  true-value="1"
+                  false-value="0"
                   :input-value="editedItem.group"
                   @change="flipGroup(editedItem)"
                   @keyup.native.enter.stop="flipGroup(editedItem)"
@@ -142,6 +142,12 @@
         {{ item.totalMiles }}
       </v-container>
     </template>
+    
+    <template v-slot:item.group="{ item }">
+      <v-container flat :class="getColor(item.errors, 'group')">
+        {{ item.group == "1" ? "Yes" : "No" }}
+      </v-container>
+    </template>
 
     <template v-slot:item.purpose="{ item }">
       <v-container flat :class="getColor(item.errors, 'purpose')">
@@ -158,7 +164,7 @@
           class="ma-0 ma-0"
           color="primary"
           hide-details
-          off-icon="lock_open"
+          off-icon="refresh"
           on-icon="lock"
           tabindex="0"
           v-if="item.parsed === true"
@@ -266,7 +272,7 @@
           date: "",
           totalMiles: "",
           purpose: "",
-          group: "No",
+          group: "0",
           disabled: false,
           parsed: false,
           errors: {}
@@ -278,7 +284,7 @@
           date: "",
           totalMiles: "",
           purpose: "",
-          group: "No",
+          group: "0",
           disabled: false,
           parsed: false,
           errors: {}
@@ -389,10 +395,10 @@
 
       // Flip the true/false value of the 'group' for a given item
       flipGroup(item) {
-        if (item.group === "Yes") {
-          item.group = "No";
+        if (item.group === "1") {
+          item.group = "0";
         } else {
-          item.group = "Yes";
+          item.group = "1";
         }
       },
 

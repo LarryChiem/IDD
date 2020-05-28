@@ -4,7 +4,7 @@
       <!-- Lock/Unlock icon to enable editing or reset & lock a parsed field -->
       <v-checkbox
         hide-details
-        off-icon="lock_open"
+        off-icon="refresh"
         on-icon="lock"
         v-model.lazy="isDisabled"
         @click.stop="askEdit($event)"

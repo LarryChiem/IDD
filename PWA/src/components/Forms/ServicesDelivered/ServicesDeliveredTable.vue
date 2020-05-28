@@ -48,7 +48,7 @@
               <!-- Lock/unlock addding a row to the table -->
               <v-btn @click="askTableEdit($event)">
                 <v-icon color="primary" v-if="amtEdited < 1">mdi-lock</v-icon>
-                <v-icon v-else>mdi-lock-open</v-icon>
+                <v-icon v-else>refresh</v-icon>
               </v-btn>
 
               <!-- Add a row button -->
@@ -104,8 +104,8 @@
 
                 <v-checkbox
                   label="Group? (y/n)"
-                  true-value="Yes"
-                  false-value="No"
+                  true-value="1"
+                  false-value="0"
                   :input-value="editedItem.group"
                   @change="flipGroup(editedItem)"
                   @keyup.native.enter.stop="flipGroup(editedItem)"
@@ -158,6 +158,12 @@
         {{ item.totalHours }}
       </v-container>
     </template>
+    
+    <template v-slot:item.group="{ item }">
+      <v-container flat :class="getColor(item.errors, 'group')">
+        {{ item.group == "1" ? "Yes" : "No" }}
+      </v-container>
+    </template>
 
     <!-- The action column of the table -->
     <template v-slot:item.actions="{ item }">
@@ -168,7 +174,7 @@
           class="ma-0 ma-0"
           color="primary"
           hide-details
-          off-icon="lock_open"
+          off-icon="refresh"
           on-icon="lock"
           tabindex="0"
           v-if="item.parsed === true"
@@ -198,7 +204,8 @@
   import { TIME } from "@/components/Utility/Enums.js";
   import {
     subtractTime,
-    milliToFormat
+    milliToFormat,
+    isValid
   } from "@/components/Utility/TimeFunctions.js";
   var moment = require("moment");
 
@@ -281,7 +288,7 @@
           starttime: "",
           endtime: "",
           totalHours: "",
-          group: "No",
+          group: "0",
           disabled: false,
           parsed: false,
           errors: {}
@@ -294,7 +301,7 @@
           starttime: "",
           endtime: "",
           totalHours: "",
-          group: "No",
+          group: "0",
           disabled: false,
           parsed: false,
           errors: {}
@@ -428,10 +435,10 @@
 
       // Flip the true/false value of the 'group' for a given item
       flipGroup(item) {
-        if (item.group === "Yes") {
-          item.group = "No";
+        if (item.group === "1") {
+          item.group = "0";
         } else {
-          item.group = "Yes";
+          item.group = "1";
         }
       },
 
@@ -661,12 +668,15 @@
           var end = entry["date"] + " " + entry["endtime"];
 
           if (index !== 0) {
-            // If the start is before the end of the prev's end, there is an overlap
-            var timeDiff = subtractTime(prev_end, start, TIME.FULL_DATE);
-            if (timeDiff <= 0) {
-              ret += 1;
-              entry["errors"]["starttime"].push("Invalid time interval");
-              entry["errors"]["endtime"].push("Invalid time interval");
+            if (isValid(prev_end, TIME.FULL_DATE) &&
+              isValid(start, TIME.FULL_DATE)) {
+              // If the start is before the end of the prev's end, there is an overlap
+              var timeDiff = subtractTime(prev_end, start, TIME.FULL_DATE);
+              if (timeDiff <= 0) {
+                ret += 1;
+                entry["errors"]["starttime"].push("Overlapping time interval");
+                entry["errors"]["endtime"].push("Overlapping time interval");
+              }
             }
           }
 

@@ -4,24 +4,11 @@
     <v-app-bar-nav-icon @click.stop="onInput" />
 
     <!-- Application name -->
-    <v-toolbar-title>
-      <v-btn x-large title text link to="/">
-        IDD Timesheet Submission
-      </v-btn>
+    <v-toolbar-title class="btn-indigo" @click="goHome()">
+      IDD Timesheet Submission
     </v-toolbar-title>
 
     <v-spacer></v-spacer>
-
-    <!-- Link to user help manuals -->
-    <v-btn
-      color="indigo lighten-1"
-      depressed
-      href="https://github.com/Capstone-Team-C/IDD"
-      target="_blank"
-    >
-      Help
-      <v-icon>mdi-open-in-new</v-icon>
-    </v-btn>
   </v-app-bar>
 </template>
 
@@ -52,6 +39,11 @@
       // Change 'isOpen' upon pressing the app-bar-nav-icon
       onInput() {
         this.$emit("drawer-change", !this.drawerOpen);
+      },
+      goHome() {
+        if(this.$router.history.current.path !== '/') {
+          this.$router.push('/') 
+        }
       },
     },
   };

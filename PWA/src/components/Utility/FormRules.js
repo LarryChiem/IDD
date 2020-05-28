@@ -27,12 +27,12 @@ const rules = {
   },
   timeOfDay() {
     return (v) =>
-      /^[0-1][0-9]:[0-6][0-9] [AaPp][Mm]$/.test(v) ||
+      /^[0-1][0-9]:[0-5][0-9] [AaPp][Mm]$/.test(v) ||
       "This field must be in format HH:mm AM/PM";
   },
   time() {
     return (v) =>
-      /^[0-9][0-9]:[0-6][0-9]$/.test(v) || "This field must be in format HH:mm";
+      /^[0-9][0-9]:[0-5][0-9]$/.test(v) || "This field must be in format HH:mm";
   },
   monthYear() {
     return (v) =>

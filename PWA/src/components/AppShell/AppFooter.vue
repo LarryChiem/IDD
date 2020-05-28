@@ -1,25 +1,27 @@
 <template>
   <v-footer color="indigo darken-2" padless>
-    <v-row justify="center" no-gutters>
-      <!-- Use a for loop to create buttons in the footer -->
-      <v-btn
-        class
-        color="white"
-        rounded
-        text
-        v-for="(link, title) in links"
-        :key="title"
-        :href="link"
-      >{{ title }}</v-btn>
-
-      <!-- On a new line (12 cols per line), add copyright and contact info -->
-      <v-col class="indigo py-1 text-center white--text" cols="12">
-        <v-row justify="center">
-          ©{{ new Date().getFullYear() }} | Multnomah County General Information
-          Line: 503.823.4000
-        </v-row>
-      </v-col>
-    </v-row>
+    <v-container class="pa-0 mx-0" fluid>
+      <v-row class="pa-0 ma-0">
+        <v-col class="text-center pa-0 ma-0">
+          <!-- Use a for loop to create buttons in the footer -->
+          <v-btn
+            class
+            color="white"
+            rounded
+            text
+            v-for="(link, title) in links"
+            :key="title"
+            :href="link"
+          >{{ title }}</v-btn>
+        </v-col>
+      </v-row>
+      <v-row class="pa-0 ma-0">
+        <v-col class="indigo py-1 text-center white--text">
+            ©{{ new Date().getFullYear() }} | Multnomah County General Information
+            Line: 503.823.4000
+        </v-col>
+      </v-row>
+    </v-container >
   </v-footer>
 </template>
 
@@ -36,6 +38,6 @@ export default {
           "https://multco.us/diversity-equity/ada-policy-notice-and-disability-complaint-process"
       }
     };
-  }
+  },
 };
 </script>

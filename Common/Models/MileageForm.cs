@@ -19,45 +19,12 @@ namespace Common.Models
         public ICollection<MileageEntry> MileageEntries { get; set; }
 
         /*
-         *  Creates a PDF representation of the MileageForm
-         *  No Parameters
-         *  Returns a PDF
+         *  Adds the MileageEntries to the specified XGraphics
+         *  Parameters: XGraphics
+         *  Returns nothing
          */
-        public override PdfDocument ToPdf()
+        protected override void AddEntriesToPdf(XGraphics gfx)
         {
-            //http://www.pdfsharp.net/wiki/Unicode-sample.ashx
-            // Create new document
-            var document = new PdfDocument();
-
-            var pdfString = "eXPRS Plan of Care - Services Delivered Report Form\n\n" +
-                               "Timesheet ID: " + Id + "\n" +
-                               "Status of Timesheet: " + Status + "\n" +
-                               "Customer Name: " + ClientName + "\n" +
-                               "Prime: " + ClientPrime + "\n" +
-                               "Provider Name: " + ProviderName + "\n" +
-                               "Provider Num: " + ProviderId + "\n" +
-                               "CM Organization: Multnomah Case Management\n" +
-                               "Form Type: " + FormType + "\n\n" +
-                               "Service Goal: " + ServiceGoal + "\n\n" +
-                               "Progress Notes: " + ProgressNotes + "\n\n" +
-                               "Submitted on: " + Submitted + "\n";
-
-            // Set font encoding to unicode
-            var options = new XPdfFontOptions(PdfFontEncoding.Unicode, PdfFontEmbedding.Always);
-
-            var font = new XFont("Times New Roman", 12, XFontStyle.Regular, options);
-
-
-            var page = document.AddPage();
-            var gfx = XGraphics.FromPdfPage(page);
-            var tf = new XTextFormatter(gfx)
-            {
-                Alignment = XParagraphAlignment.Left
-            };
-
-            tf.DrawString(pdfString, font, XBrushes.Black,
-                new XRect(100, 100, page.Width - 200, 600), XStringFormats.TopLeft);
-
             // TABLE
             var doc = new Document();
             var section = doc.AddSection();
@@ -133,31 +100,30 @@ namespace Common.Models
             docRenderer.RenderObject(gfx, XUnit.FromCentimeter(5), XUnit.FromCentimeter(13), "12cm", table);
 
             //END OF TABLE
-
-            // TODO: Adding images takes far too long. It takes about ~0.7s per image
-            // This means download ~1,600 PDFs with 2 images each takes ~45 minutes just to render : (
-            // Make this faster
-            //This code section will add new pages with images.
-            foreach (var uri in UriList)
-            {
-
-                using var wc = new WebClient();
-                using var objImage = XImage.FromStream(new MemoryStream(wc.DownloadData(uri)));
-                //do stuff with the image
-                var newPage = document.AddPage();
-                var gfx2 = XGraphics.FromPdfPage(newPage);
-                gfx2.DrawImage(objImage, 0, 0, newPage.Width, newPage.Height);
-            }
-            return document;
         }
+        /*
+         *  Loads all MileageEntries from the database
+         *  Parameters: DbContext
+         *  Returns nothing
+         */
         public override void LoadEntries(DbContext context)
         {
             context.Entry(this).Collection(m => m.MileageEntries).Load();
         }
+        /*
+         *  Changes the status of a single MileageEntry
+         *  Parameters: int EntryId, string status
+         *  Returns nothing
+         */
         public override void ChangeEntryStatus(int entryId, string status)
         {
             MileageEntries.First(e => e.Id == entryId).Status = status;
         }
+        /*
+         *  Changes the status of all MileageEntries
+         *  Parameters: string status
+         *  Returns nothing
+         */
         public override void ChangeAllEntriesStatus(string status)
         {
             foreach (var e in MileageEntries)

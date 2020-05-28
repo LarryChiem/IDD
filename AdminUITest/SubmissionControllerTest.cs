@@ -68,14 +68,14 @@ namespace AdminUITest
         public async Task ModalProcess_SubmissionNotFound()
         {
             var tc = new SubmissionController(_logger, _scontext);
-            var result = await tc.ModalProcess(-1, "Accept", "Nah", "id", "04/01/2020", "04/15/2020", "pName", "cName", "PRIME", "timesheetIndex", 1, "providerId");
+            var result = await tc.Process(-1, "Accept", "Nah", "id", "04/01/2020", "04/15/2020", "pName", "cName", "PRIME", "timesheet", 1, "providerId","true");
             Assert.IsInstanceOf(typeof(NotFoundResult), result);
         }
         [Test]
         public async Task ModalProcess_LockNotFound()
         { 
             var tc = new SubmissionController(_logger, _scontext);
-            var result = await tc.ModalProcess(2, "Accept", "Nah", "id", "04/01/2020", "04/15/2020", "pName", "cName", "PRIME", "timesheetIndex", 1, "providerId") as ViewResult;
+            var result = await tc.Process(2, "Accept", "Nah", "id", "04/01/2020", "04/15/2020", "pName", "cName", "PRIME", "timesheet", 1, "providerId","true") as ViewResult;
             Assert.AreEqual("NoPermission", result.ViewName);
         }
         [Test]
@@ -95,7 +95,7 @@ namespace AdminUITest
                 }
             };
 
-            var result = await tc.ModalProcess(1, "Accept", "Nah", "id", "04/01/2020", "04/15/2020", "pName", "cName", "PRIME", "timesheetIndex", 1, "providerId") as ViewResult;
+            var result = await tc.Process(1, "Accept", "Nah", "id", "04/01/2020", "04/15/2020", "pName", "cName", "PRIME", "timesheet", 1, "providerId","true") as ViewResult;
             Assert.AreEqual("NoPermission", result.ViewName);
         }
         [Test]
@@ -115,7 +115,7 @@ namespace AdminUITest
                 }
             };
 
-            var result = await tc.ModalProcess(1, "Accept", "Nah", "id", "04/01/2020", "04/15/2020", "pName", "cName", "PRIME", "timesheetIndex", 1, "providerId") as RedirectToActionResult;
+            var result = await tc.Process(1, "Accept", "Nah", "id", "04/01/2020", "04/15/2020", "pName", "cName", "PRIME", "timesheet", 1, "providerId", "true") as RedirectToActionResult;
             Assert.AreEqual("Index", result.ActionName);
         }
 

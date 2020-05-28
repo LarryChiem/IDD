@@ -38,7 +38,7 @@ namespace AdminUI.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index(string sortOrder = "id", string pName="", string cName="", string dateFrom="", string dateTo="", string prime="", string providerId="", string status="pending", int page = 1, int perPage = 20, string formType="timesheet")
+        public IActionResult Index(string sortOrder = "id", string pName="", string cName="", string dateFrom="", string dateTo="", string prime="", string providerId="", string status="pending", int page = 1, int perPage = 20, string formType="timesheet")
         {
             var submissions = GetSubmissions(formType);
 
@@ -127,7 +127,7 @@ namespace AdminUI.Controllers
             model.Submissions = new List<Submission>(submissions);
             model.Warning = _pcontext.PayPeriods.Count() < 3;
             model.Filters = _userManager.Users.Include(u=>u.Filters).Single(u=>u.UserName == User.Identity.Name).Filters;
-            return View(formType + "Index", model);
+            return View("Index", model);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

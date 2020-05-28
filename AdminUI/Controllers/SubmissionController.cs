@@ -55,7 +55,7 @@ namespace AdminUI.Controllers
 
             submission.LoadEntries(_context);
 
-            return View(submission.GetType().Name, submission);
+            return View(submission);
         }
 
         public async Task<IActionResult> GenPDF(int id)
@@ -79,13 +79,14 @@ namespace AdminUI.Controllers
             var fileDownloadName = submission.ClientName + "_" + submission.ClientPrime + "_" + submission.ProviderId + "_" +
                                    submission.ProviderName + "_" + submission.Submitted.ToString("yyyyMMdd") + "_" + submission.FormType.Split(" ")[0] + ".pdf";
 
-            fileDownloadName = fileDownloadName.Replace(" ", String.Empty);
+            fileDownloadName = fileDownloadName.Replace(" ", string.Empty);
 
             return File(stream.ToArray(), System.Net.Mime.MediaTypeNames.Application.Pdf, fileDownloadName);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Process(int id, string status, string rejectionReason)
+        public async Task<IActionResult> Process(int id, string status, string rejectionReason, string sortOrder="", string dateFrom="", string dateTo="", string pName="", string cName="", 
+            string prime="", string formType="", int page=0, string providerId="", string modal="false")
         {
             status = status.Equals("Approve") ? "Approved" : "Rejected";
 
@@ -127,55 +128,12 @@ namespace AdminUI.Controllers
                     }
                 }
             }
+
+            if (modal.Equals("true"))
+                return RedirectToAction("Index", "Home", new { SortOrder = sortOrder, DateTo = dateTo, DateFrom = dateFrom, PName = pName, CName = cName, Prime = prime, FormType = formType, Page = page, ProviderId = providerId});
 
             var next = _context.Submissions.FirstOrDefault(s => (s.Status == null || s.Status == "Pending") && (s.LockInfo == null || s.LockInfo.User == User.Identity.Name));
             return next != null ? RedirectToAction("Index", new {Id = next.Id}) : RedirectToAction("Index", "Home");
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> ModalProcess(int id, string status, string rejectionReason, string sortOrder, string dateFrom, string dateTo, string pName, string cName, string prime, string formType, int page, string providerId)
-        {
-            status = status.Equals("Approve") ? "Approved" : "Rejected";
-            var submission = _context.Submissions.Find(id);
-
-            if (submission == null)
-                return NotFound();
-
-            _context.Entry(submission).Reference(t => t.LockInfo).Load();
-
-            if (submission.LockInfo == null || !submission.LockInfo.User.Equals(User.Identity.Name, StringComparison.CurrentCultureIgnoreCase))
-                return View("NoPermission");
-
-            submission.Status = status;
-            submission.RejectionReason = rejectionReason;
-            submission.UserActivity = status + " by " + submission.LockInfo.User + " on " + DateTime.Now;
-            submission.LockInfo = null;
-
-            submission.LoadEntries(_context);
-            submission.ChangeAllEntriesStatus(status);
-            
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(submission);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-
-                    if (!_context.Submissions.Any(e => e.Id == id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-            }
-
-            return RedirectToAction("Index", "Home", new { SortOrder = sortOrder, DateTo = dateTo, DateFrom = dateFrom, PName = pName, CName = cName, Prime = prime, FormType = formType, Page = page, ProviderId = providerId});
         }
 
         [HttpPost]

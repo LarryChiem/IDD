@@ -13,7 +13,7 @@ namespace Appserver.FormSubmit
         [JsonProperty("mileagesheet")]
         [JsonConverter(typeof(MileageRowConverter))]
         internal List<MileageRowItem> Mileage { get => miles; set => miles = value; }
-        public string totalMiles { get; set; }
+        public string totalMiles { get; set; } = "0";
         public void addMileRow(string date, string miles, string group, string purpose) =>
             this.Mileage.Add(new MileageRowItem(date, miles, group, purpose));
 

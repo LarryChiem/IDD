@@ -7,10 +7,20 @@ here: [Azure Storage Emulator](https://docs.microsoft.com/en-us/azure/storage/co
 
 ## Setting up Databases
 
-Run these commands from the Package Manager Console to setup DBs:
+### Prerequisite Updating AdminUI Database
+
+The `SubmissionContext` lives in the AdminUI assembly and will need to be updated from there. Load the
+AdminUI solution and run these commands from the Package Manager Console to setup the `SubmissionContext`:
+
+```
+Update-Database -Context SubmissionContext
+```
+
+### Updating Appserver Database
+
+Run these commands from the Package Manager Console to setup the `SubmissionStagingContext` DBs:
 
 ``` 
-Update-Database -Context SubmissionContext
 Update-Database -Context SubmissionStagingContext
 ```
 
@@ -22,7 +32,8 @@ When developing locally, add the following environment variable:
 BLOB_CONNECTION		UseDevelopmentStorage=true;
 ```
 
-When deploying, navigate to Azure Portal, click on you storage account, click on "Access keys" on the left side, and add the following environment variable:
+When deploying, navigate to Azure Portal, click on you storage account, click on "Access keys" on the 
+left side, and add the following environment variable:
 
 ```
 BLOB_CONNECTION		any of the available connection strings

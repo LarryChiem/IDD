@@ -54,10 +54,15 @@ namespace Appserver.TextractDocument
                     _childIds.Add(child.ToString());
                 }
             }
-            catch (System.ArgumentNullException e)
+            catch (System.ArgumentNullException)
             {
                 // suppress error
                 return;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                // No relationships
+                return; 
             }
         }
         /*******************************************************************************
@@ -74,6 +79,7 @@ namespace Appserver.TextractDocument
         {
             _parent = page;
         }
+        public bool GetSelectionStatus() => SelectionStatus;
 
         /*******************************************************************************
         /// Methods

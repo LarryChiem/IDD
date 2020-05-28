@@ -30,28 +30,28 @@ public abstract class AbstractFormObject {
                 "Provider Num:",
                 "SC/PA Name:"
         };
-    public static double tolerance = 0.31; // Allows for 6 edits
+    public static double tolerance = 0.25; // Allows for 5 edits
     /*******************************************************************************
     /// Properties
     *******************************************************************************/
     /// Front Fields
-    public int id { get; set; }
-    public string clientName { get; set; }
-    public string prime { get; set; }
-    public string providerName { get; set; }
-    public string providerNum { get; set; }
-    public string brokerage { get; set; }
-    public string scpaName { get; set; }
-    public string serviceAuthorized { get; set; }
+    public int id { get; set; } = -1;
+    public string clientName { get; set; } = "";
+    public string prime { get; set; } = "";
+    public string providerName { get; set; } = "";
+    public string providerNum { get; set; } = "";
+    public string brokerage { get; set; } = "";
+    public string scpaName { get; set; } = "";
+    public string serviceAuthorized { get; set; } = "";
     /// Back Fields
-    public string serviceGoal { get; set; }
-    public string progressNotes { get; set; }
-    public bool employerSignature { get; set; }
-    public string employerSignDate { get; set; }
-    public bool providerSignature { get; set; }
-    public string providerSignDate { get; set; }
-    public bool authorization { get; set; }
-    public bool approval { get; set; }
+    public string serviceGoal { get; set; } = "";
+    public string progressNotes { get; set; } = "";
+    public bool employerSignature { get; set; } = false;
+    public string employerSignDate { get; set; } = "";
+    public bool providerSignature { get; set; } = false;
+    public string providerSignDate { get; set; } = "";
+    public bool authorization { get; set; } = false;
+    public string approval { get; set; } = "";
     public string review_status { get; set; } = "Pending";
 
     /*******************************************************************************
@@ -93,18 +93,28 @@ public abstract class AbstractFormObject {
         {
             if (!frontfound)
             {
+                bool servicefound = false;
                 // Search for Service Delivered On:
                 foreach (var line in page.GetLines())
                 {
                     // Ever form has "Service Delivered On:" on the front page, so we use
                     // this to determine if this is the front or back.
-                    // We check if the distance of the string si within 0.2 NGLD.
-                    frontfound = NGLD("Service Delivered On:", line.ToString()) < 0.3;
-                    if (frontfound)
-                        break;
+                    // We check if the distance of the string is within tolerance of NGLD.
+                    if( !servicefound )
+                        servicefound = NGLD("Service Delivered On:", line.ToString()) < tolerance;
+
+                    // To protect against accidentally finding service delivered on the back we check
+                    // if this is the back also. We take the first 14 characters as this is common on
+                    // all versions of the back sheet.
+                    if( NGLD("PROGRESS NOTES", Substring( line.ToString(),0,13)) < tolerance)
+                    {
+                        servicefound = false;
+                        break; // Quit the loop as we found something on the back page.
+                    }
                 }
-                if (frontfound)
+                if (servicefound)
                 {
+                    frontfound = true;
                     frontpage = page;
                 }
                 else
@@ -133,7 +143,9 @@ public abstract class AbstractFormObject {
         {
             formDict.Add(item.Key.ToString(), item.Value.ToString().Trim());
         }
-        formDict.Add("", ""); // Add in empty string match for missing items
+
+        if (!formDict.ContainsKey(""))
+            formDict.Add("", ""); // Add in empty string match for missing items
 
         form.clientName         = formDict[mapping[keys[0]]]; // Customer Name 
         form.providerName       = formDict[mapping[keys[1]]]; // Provider Name 
@@ -328,7 +340,9 @@ public abstract class AbstractFormObject {
                     providerSignDate = ConvertDate(item.Value.ToString().Trim());
             }
         }
-        formDict.Add("", ""); // Add in empty string match for missing items
+
+        if( !formDict.ContainsKey("") )
+            formDict.Add("", ""); // Add in empty string match for missing items
 
         serviceGoal = formDict[mapping[keys[0]]];
         progressNotes = formDict[mapping[keys[1]]];
@@ -336,5 +350,31 @@ public abstract class AbstractFormObject {
         employerSignature = !string.IsNullOrEmpty(employerSignDate);
         // Provider Sign Date taken care of above
         providerSignature = !string.IsNullOrEmpty(providerSignDate);
+    }
+
+    // This returns a substring starting at start and ending at either end
+    // or Count.
+    public static string Substring(string s, int start, int end)
+    {
+        if( start < 0 || end < 0)
+        {
+            throw new ArgumentException();
+        }
+        if( s.Length < start)
+        {
+            throw new IndexOutOfRangeException();
+        }
+
+        if( end == 0)
+        {
+            return "";
+        }
+        if( start + end >= s.Length)
+        {
+            return s.Substring(start, s.Length - start);
+        }
+        return s.Substring(start, end);
+
+        // Calculate end
     }
 }

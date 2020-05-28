@@ -12,13 +12,13 @@ public class TimesheetForm: AbstractFormObject{
     }
 
     public int units { get; set; }
-    public string type { get; set; }
-    public string frequency { get; set; }
+    public string type { get; set; } = "";
+    public string frequency { get; set; } = "";
     
     [JsonProperty("timesheet")]
     [JsonConverter(typeof(TimesheetRowConverter))]
     internal List<TimesheetRowItem> Times { get => times; set => times = value; }
-    public string totalHours { get; set; }
+    public string totalHours { get; set; } = "";
     
     public void addTimeRow(string date, string start, string end, string total, string group) => 
         this.Times.Add(new TimesheetRowItem(date, start, end, total, group));

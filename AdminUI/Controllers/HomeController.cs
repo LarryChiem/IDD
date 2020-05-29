@@ -27,71 +27,44 @@ namespace AdminUI.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly SubmissionContext _context;
-        private readonly PayPeriodContext _pcontext;
+        private readonly bool _payPeriodWarning;
         private readonly UserManager<AdminUIUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger, SubmissionContext context, PayPeriodContext pcontext, UserManager<AdminUIUser> userManager)
+        public HomeController(ILogger<HomeController> logger, SubmissionContext submissionContext, PayPeriodContext payPeriodContext, UserManager<AdminUIUser> userManager)
         {
             _logger = logger;
-            _context = context;
-            _pcontext = pcontext;
+            _context = submissionContext;
+            _payPeriodWarning = payPeriodContext.PayPeriods.Count() < 3;
             _userManager = userManager;
         }
 
-        public IActionResult Index(string sortOrder = "id", string pName="", string cName="", string dateFrom="", string dateTo="", string prime="", string providerId="", string status="pending", int page = 1, int perPage = 20, string formType="timesheet")
+        public IActionResult Index(string sortOrder = "id", string pName="", string cName="", string dateFrom="", string dateTo="", string prime="", string providerId="", 
+            string status="pending", int page = 1, int perPage = 20, string formType="timesheet")
         {
-            var submissions = GetSubmissions(formType);
+            var submissions = GetSubmissions(formType, pName, providerId, cName, prime, dateFrom, dateTo, status);
 
-            var model = new HomeModel{FormType = formType};
-            
-            //filter the timesheets 
-            if (!string.IsNullOrEmpty(pName))
+            var model = new HomeModel
             {
-                model.PName = pName;
-                submissions = submissions.Where(t => t.ProviderName.ToLower().Contains(pName.ToLower()));
-            }
-            if (!string.IsNullOrEmpty(providerId))
-            {
-                model.ProviderId = providerId;
-                submissions = submissions.Where(t => t.ProviderId.ToLower().Contains(providerId.ToLower()));
-            }
+                FormType = formType,
+                PName = pName,
+                ProviderId = providerId,
+                CName = cName,
+                Prime = prime,
+                Status = status,
+                SortOrder = sortOrder,
+                Page = page,
+                PerPage = perPage
+            };
 
-            if (!string.IsNullOrEmpty(cName))
-            {
-                model.CName = cName;
-                submissions = submissions.Where(t => t.ClientName.ToLower().Contains(cName.ToLower()));
-            }
-            if (!string.IsNullOrEmpty(prime))
-            {
-                model.Prime = prime;
-                submissions = submissions.Where(t => t.ClientPrime.Contains(prime, StringComparison.CurrentCultureIgnoreCase));
-            }
             if (!string.IsNullOrEmpty(dateFrom))
-            {
                 model.DateFrom = dateFrom;
-                submissions = submissions.Where(t => t.Submitted >= DateTime.Parse(dateFrom));
-            }
             else if (GlobalVariables.CurrentPayPeriod != null)
-            {
                 model.DateFrom = GlobalVariables.CurrentPayPeriod.DateFrom.ToString("yyyy-MM-dd");
-                submissions = submissions.Where(t => t.Submitted >= GlobalVariables.CurrentPayPeriod.DateFrom);
-            }
+
             if (!string.IsNullOrEmpty(dateTo))
-            {
                 model.DateTo = dateTo;
-                submissions = submissions.Where(t => t.Submitted <= DateTime.Parse(dateTo).AddDays(1));
-            }
             else if (GlobalVariables.CurrentPayPeriod != null)
-            {
                 model.DateTo = GlobalVariables.CurrentPayPeriod.DateTo.ToString("yyyy-MM-dd");
-                submissions = submissions.Where(t => t.Submitted <= GlobalVariables.CurrentPayPeriod.DateTo.AddDays(1));
-            }
-
-            if(!string.Equals(status,"all",StringComparison.CurrentCultureIgnoreCase))
-                submissions = submissions.Where(t => t.Status.Equals(status,StringComparison.CurrentCultureIgnoreCase));
-
-            
-            model.Status = status;
 
             //big ol' switch statement determines how to sort the data in the table
             submissions = sortOrder switch
@@ -111,21 +84,17 @@ namespace AdminUI.Controllers
                 _ => submissions.OrderBy(t => t.Id),
             };
 
-            model.SortOrder = sortOrder;
             model.TotalSubmissions = submissions.Count();
             model.TotalPages = model.TotalSubmissions / perPage + (model.TotalSubmissions % perPage == 0 ? 0 : 1);
-            submissions = submissions.Skip((page - 1) * perPage).Take(perPage);
-            model.PerPage = perPage;
-            model.Page = page;
+            model.Submissions = new List<Submission>(submissions.Skip((page - 1) * perPage).Take(perPage));
 
-            foreach (var sub in submissions)
+            foreach (var sub in model.Submissions)
             {
                 _context.Entry(sub).Reference(s => s.LockInfo).Load();
                 sub.LoadEntries(_context);
             }
 
-            model.Submissions = new List<Submission>(submissions);
-            model.Warning = _pcontext.PayPeriods.Count() < 3;
+            model.Warning = _payPeriodWarning;
             model.Filters = _userManager.Users.Include(u=>u.Filters).Single(u=>u.UserName == User.Identity.Name).Filters;
             return View("Index", model);
         }
@@ -136,11 +105,47 @@ namespace AdminUI.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        private IEnumerable<Submission> GetSubmissions(string formType)
+        /*
+         * This function queries the submission database with the provided filters. Only the Form Type is required
+         * Parameters: The 8 different filters
+         * Returns: The list of submissions matching the query
+         */
+        private IEnumerable<Submission> GetSubmissions(string formType, string providerName ="", string providerId ="", string clientName ="",
+            string clientPrime ="", string dateFrom ="", string dateTo ="", string status ="")
         {
-            if (formType.Equals("timesheet"))
-                return _context.Timesheets.ToList();
-            return _context.MileageForms.ToList();
+            IQueryable<Submission> submissions;
+            
+            if (formType.Equals("timesheet",StringComparison.CurrentCultureIgnoreCase))
+                submissions = _context.Timesheets;
+            else
+                submissions = _context.MileageForms;
+            
+            if (!string.IsNullOrEmpty(providerName))
+                submissions = submissions.Where(s => s.ProviderName.Contains(providerName));
+
+            if (!string.IsNullOrEmpty(providerId))
+                submissions = submissions.Where(s => s.ProviderId.Contains(providerId));
+
+            if (!string.IsNullOrEmpty(clientName))
+                submissions = submissions.Where(s => s.ClientName.Contains(clientName));
+            
+            if (!string.IsNullOrEmpty(clientPrime))
+                submissions = submissions.Where(s => s.ClientPrime.Contains(clientPrime));
+            
+            if (!string.IsNullOrEmpty(dateFrom))
+                submissions = submissions.Where(s => s.Submitted >= DateTime.Parse(dateFrom));
+            else if (GlobalVariables.CurrentPayPeriod != null)
+                submissions = submissions.Where(s => s.Submitted >= GlobalVariables.CurrentPayPeriod.DateFrom);
+            
+            if (!string.IsNullOrEmpty(dateTo))
+                submissions = submissions.Where(s => s.Submitted <= DateTime.Parse(dateTo).AddDays(1));
+            else if (GlobalVariables.CurrentPayPeriod != null)
+                submissions = submissions.Where(s => s.Submitted <= GlobalVariables.CurrentPayPeriod.DateTo.AddDays(1));
+
+            if(!string.Equals(status,"all",StringComparison.CurrentCultureIgnoreCase))
+                submissions = submissions.Where(s => s.Status == status);
+
+            return submissions.ToList();
         }
 
         public bool GetLockInfo(int id)
@@ -181,34 +186,10 @@ namespace AdminUI.Controllers
         }
 
         //TODO: Work with Gloria to figure out exactly what the CSV should look like, then fix this and re-enable button
-        public FileContentResult DownloadCSV(string pName, string cName, string dateFrom, string dateTo, string prime, string id, string status, string formType, string providerId)
+        public FileContentResult DownloadCSV(string pName, string cName, string dateFrom, string dateTo, string prime, string status, string formType, string providerId)
         {
-            var submissions = GetSubmissions(formType);
+            var submissions = GetSubmissions(formType, pName, providerId, cName, prime, dateFrom, dateTo, status);
 
-            //filter the submissions 
-            if (!string.IsNullOrEmpty(pName))
-                submissions = submissions.Where(t => t.ProviderName.ToLower().Contains(pName.ToLower()));
-
-            if (!string.IsNullOrEmpty(cName))
-                submissions = submissions.Where(t => t.ClientName.ToLower().Contains(cName.ToLower()));
-
-            if (!string.IsNullOrEmpty(dateFrom))
-                submissions = submissions.Where(t => t.Submitted >= DateTime.Parse(dateFrom));
-
-            if (!string.IsNullOrEmpty(dateTo))
-                submissions = submissions.Where(t => t.Submitted <= DateTime.Parse(dateTo));
-
-            if (!string.IsNullOrEmpty(prime))
-                submissions = submissions.Where(t => t.ClientPrime == prime);
-            
-            if (!string.IsNullOrEmpty(providerId))
-                submissions = submissions.Where(t => t.ClientPrime == providerId);
-
-            if (!string.IsNullOrEmpty(id))
-                submissions = submissions.Where(t => t.Id == int.Parse(id));
-
-            if (string.IsNullOrEmpty(status))
-                status = "pending";
 
             if(!string.Equals(status,"all",StringComparison.CurrentCultureIgnoreCase))
                 submissions = submissions.Where(t => t.Status.Equals(status,StringComparison.CurrentCultureIgnoreCase));
@@ -235,39 +216,9 @@ namespace AdminUI.Controllers
             return File(new System.Text.UTF8Encoding().GetBytes(csv), "text/csv", name);
         }
 
-        public FileContentResult DownloadPDFs(string pName, string cName, string dateFrom, string dateTo, string prime,
-            string id, string status, string formType, string providerId)
+        public FileContentResult DownloadPDFs(string pName, string cName, string dateFrom, string dateTo, string prime, string status, string formType, string providerId)
         {
-
-            var submissions = GetSubmissions(formType);
-
-            //filter the submissions 
-            if (!string.IsNullOrEmpty(pName))
-                submissions = submissions.Where(t => t.ProviderName.ToLower().Contains(pName.ToLower()));
-
-            if (!string.IsNullOrEmpty(cName))
-                submissions = submissions.Where(t => t.ClientName.ToLower().Contains(cName.ToLower()));
-
-            if (!string.IsNullOrEmpty(dateFrom))
-                submissions = submissions.Where(t => t.Submitted >= DateTime.Parse(dateFrom));
-
-            if (!string.IsNullOrEmpty(dateTo))
-                submissions = submissions.Where(t => t.Submitted <= DateTime.Parse(dateTo));
-
-            if (!string.IsNullOrEmpty(prime))
-                submissions = submissions.Where(t => t.ClientPrime == prime);
-
-            if (!string.IsNullOrEmpty(providerId))
-                submissions = submissions.Where(t => t.ClientPrime == providerId);
-            
-            if (!string.IsNullOrEmpty(id))
-                submissions = submissions.Where(t => t.Id == int.Parse(id));
-
-            if (string.IsNullOrEmpty(status))
-                status = "pending";
-
-            if (!string.Equals(status, "all", StringComparison.CurrentCultureIgnoreCase))
-                submissions = submissions.Where(t => t.Status.Equals(status, StringComparison.CurrentCultureIgnoreCase));
+            var submissions = GetSubmissions(formType, pName, providerId, cName, prime, dateFrom, dateTo, status);
 
             var ms = new MemoryStream();
             using (var archive = new ZipArchive(ms, ZipArchiveMode.Create, true))

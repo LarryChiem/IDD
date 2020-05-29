@@ -7,7 +7,7 @@
           <v-icon>mdi-home</v-icon>
         </v-list-item-action>
         <v-list-item-content>
-          <v-list-item-title>Home</v-list-item-title>
+          <v-list-item-title>{{ $t('components_AppShell_NavigationDrawer_home') }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
 
@@ -17,7 +17,7 @@
           <v-icon>mdi-note-plus</v-icon>
         </v-list-item-action>
         <v-list-item-content>
-          <v-list-item-title>Upload Timesheet</v-list-item-title>
+          <v-list-item-title>{{ $t('components_AppShell_NavigationDrawer_upload') }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
 
@@ -27,7 +27,7 @@
           <v-icon>mdi-information-outline</v-icon>
         </v-list-item-action>
         <v-list-item-content>
-          <v-list-item-title>About</v-list-item-title>
+          <v-list-item-title>{{ $t('components_AppShell_NavigationDrawer_about') }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
 
@@ -39,11 +39,11 @@
               <v-icon>mdi-bug</v-icon>
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>Report a bug</v-list-item-title>
+              <v-list-item-title>{{ $t('components_AppShell_NavigationDrawer_bug') }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </template>
-        <span>Report a bug</span>
+        <span>{{ $t('components_AppShell_NavigationDrawer_bug') }}</span>
       </v-tooltip>
     </v-list>
   </v-navigation-drawer>

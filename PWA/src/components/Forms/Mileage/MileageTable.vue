@@ -4,7 +4,7 @@
     <template v-slot:top>
       <v-toolbar flat>
         <v-toolbar-title>
-          Service Delivered On:
+          {{ $t('components_Forms_ServicesDelivered_ServicesDeliveredTable_title') }}
         </v-toolbar-title>
 
         <v-spacer></v-spacer>
@@ -12,28 +12,23 @@
         <!-- Warning dialog upon editing a parsed field -->
         <v-dialog max-width="500px" v-model="displayWarning">
           <v-card>
-            <v-card-title class="headline"
-              >Do you want to edit this field?</v-card-title
-            >
+            <v-card-title class="headline">
+              {{ $t('components_Forms_FormField_edit') }}
+            </v-card-title>
 
             <v-card-text>
-              This text was created based on the IDD timesheet that was
-              uploaded. Sometimes, the app can't quite read your handwritting
-              correctly, and you will need to edit before sumbitting. This will
-              ensure that your timesheet is not returned as incorrect. Please
-              make any corrections to match your timesheet exactly by selecting
-              "Edit Field".
+              {{ $t('components_Forms_FormField_edit_desc') }}
             </v-card-text>
 
             <v-card-actions>
               <v-spacer></v-spacer>
 
               <v-btn color="red white--text" @click="closeWarning()">
-                Cancel edit
+                {{ $t('components_Forms_FormField_cancel') }}
               </v-btn>
 
               <v-btn color="green white--text" @click="warnContinue()">
-                Edit field
+                {{ $t('components_Forms_FormField_editbtn') }}
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -81,7 +76,7 @@
           <!-- The dialog box title -->
           <v-card>
             <v-card-title>
-              <span class="headline">{{ formTitle }}</span>
+              <span class="headline">{{ $t('components_Forms_ServicesDelivered_ServicesDeliveredTable_table_title') }}</span>
             </v-card-title>
 
             <!-- The form area -->
@@ -95,11 +90,13 @@
                   <FormField
                     v-bind="colValidation[field]"
                     v-model="editedItem[field]"
+                    :label="$t(colValidation[field].label)"
+                    :hint="$t(colValidation[field].hint)"
                   />
                 </v-row>
 
                 <v-checkbox
-                  label="Group? (y/n)"
+                  :label="$t('components_Forms_ServicesDelivered_ServicesDeliveredTable_group')"
                   true-value="1"
                   false-value="0"
                   :input-value="editedItem.group"
@@ -115,10 +112,10 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="red white--text" @click="close">
-                Cancel
+                {{ $t('components_Forms_FormField_cancel') }}
               </v-btn>
               <v-btn color="green white--text" @click="save">
-                Save
+                {{ $t('components_Forms_ServicesDelivered_ServicesDeliveredTable_save') }}
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -145,7 +142,7 @@
     
     <template v-slot:item.group="{ item }">
       <v-container flat :class="getColor(item.errors, 'group')">
-        {{ item.group == "1" ? "Yes" : "No" }}
+        {{ item.group == "1" ? $t('yes') : $t('no') }}
       </v-container>
     </template>
 
@@ -188,6 +185,7 @@
 </template>
 
 <script>
+  import i18n from '@/plugins/i18n';
   import FormField from "@/components/Forms/FormField";
   import fieldPropsFile from "@/components/Forms/Mileage/MileageTableFields.json";
   import rules from "@/components/Utility/FormRules.js";
@@ -246,9 +244,6 @@
           JSON.stringify(fieldPropsFile["colValidation"])
         ),
 
-        // Column headers and associated values for the table
-        headers: fieldPropsFile["headers"],
-
         // Record the amount of edited parsed fields and added rows
         amtEdited: false,
         allTotalMiles: this.totalMiles,
@@ -259,7 +254,6 @@
 
         // Hide the dialog popup for adding/editing a row
         displayEditDialog: false,
-        formTitle: "Add/Edit Row",
 
         // All entries of the data table
         allEntries: [],
@@ -327,6 +321,19 @@
       });
       this.initialize();
       this.validate();
+    },
+
+    computed: {
+      // Column headers and associated values for the table
+      headers: function() {
+        return [
+          { "text": i18n.t('ServicesDeliveredTable_date_label'), "align": "start", "value": "date", "sortable": false }, 
+          { "text": i18n.t('Mileage_totalMiles_label'), "value": "totalMiles", "sortable": false },
+          { "text": i18n.t('components_Forms_ServicesDelivered_ServicesDeliveredTable_group'), "value": "group", "sortable": false },
+          { "text": i18n.t('MileageTable_purpose_label'), "value": "purpose", "sortable": false },
+          { "text": i18n.t('MileageTable_actions'), "value": "actions", "sortable": false }
+        ];
+      },
     },
 
     methods: {
@@ -405,7 +412,7 @@
       // Delete a single row of the table
       deleteItem(item) {
         const index = this.allEntries.indexOf(item);
-        if (confirm("Are you sure you want to delete this item?")) {
+        if (confirm(i18n.t('components_Forms_Mileage_delete'))) {
           this.allEntries.splice(index, 1);
           this.validate();
           this.$emit("input", this.allEntries);
@@ -557,7 +564,7 @@
                 }
               });
               if (wasInvalid === true) {
-                entry["errors"][col].push("Invalid input");
+                entry["errors"][col].push(i18n.t('components_Forms_ServicesDelivered_err0'));
               }
             }
           });
@@ -609,7 +616,7 @@
           // For each error col in an entry, check the amount of errors
           Object.entries(entry["errors"]).forEach(([col, errors]) => {
             if (errors.length > 0) {
-              console.log("Row", index, "[", col, "]: ", errors);
+              console.log(i18n.t('components_forms_servicesdelivered_row'), index, "[", col, "]: ", errors);
             }
           });
         });

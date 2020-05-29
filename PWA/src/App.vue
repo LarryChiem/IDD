@@ -15,7 +15,7 @@
       <v-offline @detected-condition="handleConnectivityChange"></v-offline>
       <v-container v-if="onlineStatus === false" fluid>
         <v-alert type="error" class="my-0">
-          No Internet connection! Some features may be unavailable at this time.
+          {{ $t('App_nointernet') }}
         </v-alert>
       </v-container>
 

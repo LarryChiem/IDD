@@ -12,27 +12,28 @@
             value="true"
             hide-overlay
             persistent
-            width="50%"
           >
             <v-card>
               <v-card-title class="indigo white--text">
-                Continue existing form?
+                {{ $t('views_Timesheet_continue') }}
               </v-card-title>
               <v-card-text class="text-center subtitle-1 mt-3">
-                Form already exists! You are working on form <strong>id #{{ formId }}</strong><br />
-                Do you want to continue or start a new form? <br />
+                {{ $t('views_Timesheet_continue_desc0') }}
+                <strong> #{{ formId }}</strong><br />
+                {{ $t('views_Timesheet_continue_desc1') }}
               </v-card-text>
+              <v-divider></v-divider>
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn class="white--text" color="red" @click="resetForm()">
-                  reset
+                  {{ $t('views_Timesheet_continue_btn0') }}
                 </v-btn>
                 <v-btn
                   class="white--text"
                   color="green"
                   @click="setWillContinue()"
                 >
-                  continue
+                  {{ $t('views_Timesheet_continue_btn1') }}
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -45,7 +46,7 @@
       <v-row class="mt-9 mx-9">
         <v-col align="center">
           <p class="title">
-            Select the type of form that you would like to submit
+            {{ $t('views_Timesheet_select') }}
           </p>
         </v-col>
       </v-row>
@@ -68,7 +69,7 @@
           <v-select
             :items="Object.keys(FORM)"
             :disabled="!newForm"
-            label="Timesheet"
+            :label="$t('views_Timesheet_timesheet')"
             v-model="formChoice"
             outlined
           >
@@ -85,7 +86,7 @@
             text 
             outlined
           >
-            Warning: We couldn’t read the text from the file you uploaded. You will have to manually enter all of the form fields.
+            {{ $t('views_Timesheet_invalid') }}
           </v-alert>
         </v-col>
       </v-row>
@@ -106,12 +107,12 @@
           </v-alert>
           <v-alert 
             class="headline pa-5 mx-9" 
-            type="warning"
+            color="warning"
             text 
             outlined
             v-else
           >
-            Please select a form type above.
+            {{ $t('views_Timesheet_select_form') }}
           </v-alert>
         </v-col>
       </v-row> 
@@ -126,9 +127,9 @@
           />
 
           <v-card v-if="fileStatus === FILE.FAILURE" class="ma-5">
-            <v-card-title class="error white--text"
-              >FILE UPLOAD ERROR!</v-card-title
-            >
+            <v-card-title class="error white--text">
+              {{ $t('views_Timesheet_upload_error') }}
+            </v-card-title>
             <v-card-text>
               {{ errors }}
             </v-card-text>
@@ -214,7 +215,11 @@
       }
     },
     methods: {
-      ...mapMutations(["resetState"]),
+      ...mapMutations({
+        resetState: "resetState",
+        resetServiceDelivered: "ServiceDelivered/resetState",
+        resetMileage: "Mileage/resetState",
+      }),
 
       // Successfully received parsed .json from the backend
       fillForm(response) {
@@ -236,6 +241,8 @@
       resetForm() {
         // Reset the vuex store
         this.resetState();
+        this.resetServiceDelivered();
+        this.resetMileage();
         this.parsedFileData = null;
         this.fileStatus = FILE.INIT;
         this.array = [];

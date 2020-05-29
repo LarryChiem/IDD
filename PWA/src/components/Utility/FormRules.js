@@ -1,50 +1,50 @@
 // Generic form validation rules
-// NOTE: When adding rules to a required field, put the 'required' rule
-// at the end, or else form validation will display the wrong error
-// message for an empty field
+
+import i18n from '@/plugins/i18n';
+
 const rules = {
   required() {
-    return (v) => !!v || "This field is required";
+    return (v) => !!v || i18n.t('rules_required');
   },
   maxLength(max) {
     return (v) =>
       (v && v.toString().length <= max) ||
-      "This field can't be over " + max + " characters";
+      i18n.t('rules_max0') + max + i18n.t('rules_max1')
   },
   alpha() {
-    return (v) => /^[a-zA-Z]+$/.test(v) || "This field must be letters only";
+    return (v) => /^[a-zA-Z]+$/.test(v) || i18n.t('rules_alpha');
   },
   alphanumeric() {
     return (v) =>
-      /^[a-zA-Z0-9]+$/.test(v) || "This field must be letters or numbers";
+      /^[a-zA-Z0-9]+$/.test(v) || i18n.t('rules_alphanumeric');
   },
   numeric() {
-    return (v) => /^[0-9]+(.[0-9]+)?$/.test(v) || "This field must be a number";
+    return (v) => /^[0-9]+(.[0-9]+)?$/.test(v) || i18n.t('rules_numeric');
   },
   name() {
     return (v) =>
-      /^([a-zA-Z.',]+( [a-zA-Z.',]+)+)$/.test(v) || "Firstname Lastname";
+      /^([a-zA-Z.',]+( [a-zA-Z.',]+)+)$/.test(v) || i18n.t('rules_name');
   },
   timeOfDay() {
     return (v) =>
       /^[0-1][0-9]:[0-5][0-9] [AaPp][Mm]$/.test(v) ||
-      "This field must be in format HH:mm AM/PM";
+        i18n.t('rules_timeOfDay');
   },
   time() {
     return (v) =>
-      /^[0-9][0-9]:[0-5][0-9]$/.test(v) || "This field must be in format HH:mm";
+      /^[0-9][0-9]:[0-5][0-9]$/.test(v) || i18n.t('rules_time');
   },
   monthYear() {
     return (v) =>
-      /^[0-9]{4}-[01][0-9]$/.test(v) || "This field must be in format YYYY-MM";
+      /^[0-9]{4}-[01][0-9]$/.test(v) || i18n.t('rules_monthYear');
   },
   date() {
     return (v) =>
       /^[0-9]{4}-[01][0-9]-[0123][0-9]$/.test(v) ||
-      "This field must be in format YYYY-MM-DD";
+      i18n.t('rules_date');
   },
   email() {
-    return (v) => /.+@.+\..+/.test(v) || "E-mail must be valid";
+    return (v) => /.+@.+\..+/.test(v) || i18n.t('rules_date');
   },
 };
 

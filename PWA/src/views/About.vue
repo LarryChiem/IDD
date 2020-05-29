@@ -8,12 +8,11 @@
       <v-col cols="6" md="6" sm="12">
         <v-card elevation="1" height="100%">
           <v-card-title class="headline purple darken-4 white--text justify-content-center" primary-title>
-              Learn more
+            {{ $t('views_About_learn') }}
           </v-card-title>
-          <v-card-content>
+          <div>
             <v-card-text class="subtitle-1">
-                To learn more about the Multnomah County Intellectual and
-                Developmental Disabilites department, you can visit our website.
+              {{ $t('views_About_learn_desc') }}
             </v-card-text>
             <v-card-actions class="d-flex justify-content-center">
               <v-btn 
@@ -22,43 +21,43 @@
                 target="_blank"
                 dark
               >
-                  Learn More
+                {{ $t('views_About_learn') }}
               </v-btn>
             </v-card-actions>
-          </v-card-content>
+          </div>
         </v-card>
       </v-col>
 
       <v-col cols="6" md="6" sm="12">
         <v-card elevation="1" height="100%">
           <v-card-title class="headline purple darken-2 white--text justify-content-center" primary-title>
-              How to Install
+            {{ $t('views_About_install') }}
           </v-card-title>
-          <v-card-content>
+          <div>
             <v-card-text class="text-center title">
-                To install this app onto your mobile device:
+              {{ $t('views_About_install_desc') }}
             </v-card-text>
             <v-card-text class="subtitle-1">
               <ol class="text-left">
-                  <li>Open the settings of the browser</li>
-                  <li>Click 'Add to Home screen'</li>
-                  <li>Navigate to the home screen of your phone</li>
-                  <li>Open the 'IDD App'</li>
-                  <li>Installation completed</li>
+                <li>{{ $t('views_About_install_li0') }}</li>
+                <li>{{ $t('views_About_install_li1') }}</li>
+                <li>{{ $t('views_About_install_li2') }}</li>
+                <li>{{ $t('views_About_install_li3') }}</li>
+                <li>{{ $t('views_About_install_li4') }}</li>
               </ol>
             </v-card-text>
-          </v-card-content>
+          </div>
         </v-card>
       </v-col>
 
       <v-col cols="12">
         <v-card elevation="1" height="100%">
           <v-card-title class="headline purple white--text justify-content-center" primary-title>
-              Contributors
+            {{ $t('views_About_contributors') }}
           </v-card-title>
-          <v-card-content>
+          <div>
             <v-card-text  class="text-center title">
-                    Built in Collaboration with the Portland State University Capstone Program and Multnomah County.
+              {{ $t('views_About_contributors_desc') }}
             </v-card-text>
             <v-container fluid>
               <v-row align="center" justify="center">
@@ -83,19 +82,21 @@
                         {{ student.name }}
                       </v-card-title>
                       <v-card-subtitle>
-                        {{ student.position }}
+                        {{ text_position(student.position) }}
                       </v-card-subtitle>
                     </v-card>
                   </v-col>
               </v-row>
             </v-container>
-          </v-card-content>
+          </div>
         </v-card>
       </v-col>
     </v-row>
   </v-container>
 </template>
 <script>
+  import i18n from '@/plugins/i18n';
+  
   export default {
     name: "about",
     data: function() {
@@ -105,47 +106,56 @@
           {
             name: "Curtis Lewis", 
             link: "https://www.linkedin.com/in/curtis-james-lewis/",
-            position: "Team Lead",
+            position: 0,
             color: "dark pink",
           },
           {
             name: "Larry Chiem", 
             link: "https://www.linkedin.com/in/larrychiem/",
-            position: "Admin UI",
+            position: 1, 
             color: "red",
           },
           {
             name: "John Brusaw", 
             link: "https://www.linkedin.com/in/johnbrusaw/",
-            position: "Admin UI",
+            position: 1,
             color: "red",
           },
           {
             name: "Keaton Kraiger", 
             link: "https://www.linkedin.com/in/keaton-kraiger/",
-            position: "Provider UI",
+            position: 2,
             color: "orange",
           },
           {
             name: "Yves Wienecke", 
             link: "https://www.linkedin.com/in/yves-wienecke/",
-            position: "Provider UI",
+            position: 2,
             color: "orange",
           },
           {
             name: "David Post", 
             link: "https://www.linkedin.com/in/ohyonghao/",
-            position: "Backend",
+            position: 3,
             color: "yellow darken-1",
           },
           {
             name: "Brian Lee", 
             link: "https://www.linkedin.com/in/brian-lee-pdx/",
-            position: "Backend",
+            position: 3,
             color: "yellow darken-1",
           },
         ],
       };
-    }
+    },
+    methods: {
+      text_position(id) {
+        if (id == 0) return i18n.t('views_About_contributors_position0');
+        else if (id == 1) return i18n.t('views_About_contributors_position1');
+        else if (id == 2) return i18n.t('views_About_contributors_position2');
+        else if (id == 3) return i18n.t('views_About_contributors_position3');
+        return i18n.t('translate_error');
+      },
+    },
   };
 </script>

@@ -3,7 +3,7 @@
     <v-row align="center" class="ma-12" justify="center">
       <v-col>
         <v-alert type="error">
-          404 - Page Not Found
+          404 - {{ $t('views_NotFound_text') }}
         </v-alert>
       </v-col>
     </v-row>

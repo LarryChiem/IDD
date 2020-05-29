@@ -1,7 +1,7 @@
 <template>
   <v-container class="text-center">
     <v-btn color="success" dark @click.stop="signalParentValidate">
-      Submit
+      {{ $t('components_Forms_ConfirmSubmission_submit') }}
     </v-btn>
 
     <v-dialog v-model="displaySubmit" max-width="75%">
@@ -9,19 +9,16 @@
         <v-card>
           <div v-if="!loading">
             <v-card-title class="headline" id="confirm" >
-              Are you sure want to submit the form?
+              {{ $t('components_Forms_ConfirmSubmission_confirm') }}
             </v-card-title>
 
             <v-card-text>
-              Please ensure your timesheet is correct and mathces your time in
-              eXPRS. If it does not, it will be returned to you and may not be
-              processed in this pay period.
+              {{ $t('components_Forms_ConfirmSubmission_confirm_desc') }}
             </v-card-text>
 
             <v-card-text v-if="this.totalEdited > 0">
               <em>
-                There are edited fields. Please confirm these
-                edits.
+                {{ $t('components_Forms_ConfirmSubmission_edited') }}
               </em>
 
               <!-- 
@@ -32,13 +29,13 @@
                 <v-checkbox
                   color="success"
                   v-model="reSigned"
-                  label="Employer accepts all changes to the IDD form."
+                  :label="$t('components_Forms_ConfirmSubmission_employer')"
                   value="Employer"
                 ></v-checkbox>
                 <v-checkbox
                   color="success"
                   v-model="reSigned"
-                  label="Provider accepts all changes to the IDD form."
+                  :label="$t('components_Forms_ConfirmSubmission_provider')"
                   value="Provider"
                 ></v-checkbox>
               </v-container>
@@ -47,13 +44,13 @@
                 color="red lighten-2"
                 v-if="!reSigned.includes('Employer')"
               >
-                Employer should confirm these edit(s).
+                {{ $t('components_Forms_ConfirmSubmission_employer_desc') }}
               </v-card>
               <v-card
                 color="red lighten-2"
                 v-if="!reSigned.includes('Provider')"
               >
-                Provider should confirm these edit(s).
+                {{ $t('components_Forms_ConfirmSubmission_provider_desc') }}
               </v-card>
             </v-card-text>
 
@@ -65,7 +62,7 @@
                 class="white--text"
                 color="red" 
                 @click="displaySubmit = false">
-                Cancel
+                {{ $t('components_Forms_ConfirmSubmission_cancel') }}
               </v-btn>
 
               <template v-if="onlineStatus">
@@ -75,11 +72,11 @@
                   :disabled="canSubmit"
                   @click="submit"
                 >
-                  Submit
+                  {{ $t('components_Forms_ConfirmSubmission_submit') }}
                 </v-btn>
               </template>
               <template v-else>
-                Offline! Please connect to the internet to submit.
+                {{ $t('components_Forms_ConfirmSubmission_offline') }}
               </template>
             </v-card-actions>
           </div>
@@ -107,7 +104,7 @@
                     ></v-progress-circular>
                   </v-card-text>
                   <v-card-text class="text-center">
-                    Submitting form...
+                    {{ $t('components_Forms_ConfirmSubmission_submitting') }}
                   </v-card-text>
                 </v-card>
               </v-dialog>
@@ -127,17 +124,14 @@
                       class="headline text-center success white--text" 
                       id="submited"
                     >
-                      Your form has been submitted!
+                      {{ $t('components_Forms_ConfirmSubmission_submitted') }}
                     </v-card-title>
                     <v-card-text>
                       <v-card-text 
                         class="text-center" 
                         id="submission-complete"
                       >
-                        Thank you for submitting your timesheet. Please keep your
-                        copy for your records. If there are any issues, IDD staff
-                        will contact you via email.
-                        
+                        {{ $t('components_Forms_ConfirmSubmission_submitted_desc') }}
                       </v-card-text>
                       <v-card-actions>
                         <v-spacer></v-spacer>
@@ -147,7 +141,7 @@
                           @click="resetForm()" 
                           dark
                         >
-                          Return home
+                          {{ $t('components_Forms_ConfirmSubmission_home') }}
                         </v-btn>
                       </v-card-actions>
                     </v-card-text>
@@ -160,11 +154,11 @@
                   id="failure"
                   type="error"
                 >
-                  Something has gone wrong
+                  {{ $t('components_Forms_ConfirmSubmission_error') }}
                 </v-alert>
 
                 <v-card-text>
-                  Please try again.
+                  {{ $t('components_Forms_ConfirmSubmission_error_desc') }}
                 </v-card-text>
               </div>
             </div>
@@ -176,14 +170,12 @@
       <template v-else>
         <v-card>
           <v-card-title class="headline text-danger" id="invalid">
-            Your form is not valid.
+            {{ $t('components_Forms_ConfirmSubmission_invalid') }}
           </v-card-title>
 
           <v-card-text>
-            Please fix the invalid parts of the form and then retry submitting
-            your form.
-            <hr />
-            Errors:
+            <div v-html="$t('components_Forms_ConfirmSubmission_invalid_desc')">
+            </div>
             <v-card
               color="red lighten-2"
               v-for="(error, index) in errors"

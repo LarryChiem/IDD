@@ -13,10 +13,9 @@
                 dense
                 text
               >
-                Drop files anywhere to upload<br/>
-                or<br/>
+                <div v-html="$t('components_Forms_FileUploader_dropfiles')"></div>
                 <label for="file" class="btn btn-primary">
-                    Select Files or Take a Picture
+                  {{ $t('components_Forms_FileUploader_selectfiles') }}
                 </label>
               </v-alert>
             </v-col>
@@ -26,7 +25,9 @@
               v-show="$refs.upload && $refs.upload.dropActive"
               class="drop-active"
             >
-              <h3>Drop files to upload</h3>
+              <h3>
+                {{ $t('components_Forms_FileUploader_drop') }}
+              </h3>
             </v-col>
           </v-row>
         </v-container>
@@ -50,7 +51,7 @@
                     ref="upload"
                   >
                     <i class="fa fa-plus"></i>
-                    Select files
+                    {{ $t('components_Forms_FileUploader_select') }}
                   </file-upload>
 
                   <button
@@ -60,7 +61,7 @@
                     @click.prevent="$refs.upload.active = true"
                   >
                     <i class="fa fa-arrow-up" aria-hidden="true"></i>
-                    Start Upload
+                    {{ $t('components_Forms_FileUploader_startupload') }}
                   </button>
 
                   <button
@@ -70,7 +71,7 @@
                     @click.prevent="$refs.upload.active = false"
                   >
                     <i class="fa fa-stop" aria-hidden="true"></i>
-                    Stop Upload
+                    {{ $t('components_Forms_FileUploader_stopupload') }}
                   </button>
                 </div>
               </div>
@@ -78,7 +79,7 @@
                 <div class="text-center">
                   <v-btn class="white--text"
                   color="red" ref="files" @click="reset">
-                    Reset Files
+                    {{ $t('components_Forms_FileUploader_resetfiles') }}
                   </v-btn>
                 </div>
               </div>
@@ -89,7 +90,7 @@
                     <span data-testid="name">{{ file.name }}</span> -
                     <!--span>{{ file.size | formatSize }}</span-->
                     <span v-if="file.error">{{ file.error }}</span>
-                    <span v-else-if="file.success">success</span>
+                    <span v-else-if="file.success">{{ $t('components_Forms_FileUploader_success') }}</span>
                     <span v-else-if="file.active">
                       <v-dialog
                         value="true"
@@ -102,7 +103,7 @@
                           dark
                         >
                           <v-card-text>
-                            Processing your files...
+                            {{ $t('components_Forms_FileUploader_processing') }}
                             <v-progress-linear
                               indeterminate
                               color="white"
@@ -128,7 +129,7 @@
                     class="ma-2 white--text"
                     @click="completeForm()"
                   >
-                    Complete Form
+                    {{ $t('components_Forms_FileUploader_continue') }}
                     <v-icon right dark>mdi-cloud-upload</v-icon>
                   </v-btn>
                 </div>
@@ -139,7 +140,7 @@
       </div>
     </template>
     <template v-else>
-      OFFLINE: Can't upload file unless you are online.
+      {{ $t('components_Forms_FileUploader_offline') }}
     </template>
   </div>
 </template>

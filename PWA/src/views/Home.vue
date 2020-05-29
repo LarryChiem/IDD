@@ -42,7 +42,7 @@
                 <v-img :src="card.src" height="200px"> </v-img>
                 <v-card-text>
                   <h4>
-                    {{ card.title }}
+                    {{ text_title(card.title) }}
                   </h4>
                   <v-icon x-large :color="card.iconColor">{{
                     card.icon
@@ -113,7 +113,8 @@
 
 <script>
   import { VuePwaInstallMixin } from "vue-pwa-install";
-  
+  import i18n from '@/plugins/i18n';
+
   const pic_timesheet = require("@/assets/card_timesheet.jpg");
   const pic_burnside = require("@/assets/card_burnside.jpg");
   const pic_logo = require('@/assets/icons/logo_short.svg');
@@ -127,14 +128,14 @@
     data: () => ({
       cards: [
         {
-          title: "Upload Timesheet",
+          title: 0,
           src: pic_timesheet,
           link: "/timesheet",
           icon: "add_circle",
           iconColor: "success",
         },
         {
-          title: "About",
+          title: 1,
           src: pic_burnside,
           link: "/about",
           icon: "info",
@@ -156,6 +157,11 @@
       });
     },
     methods: {
+      text_title(id) {
+        if (id === 0) return i18n.t('views_Home_upload');
+        else if (id === 1) return i18n.t('views_Home_about');
+        return i18n.t('translate_error');
+      },
       promptInstall() {
         // Show the prompt:
         this.deferredPrompt.prompt();

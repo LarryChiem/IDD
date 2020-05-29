@@ -58,12 +58,9 @@ namespace Appserver
             app.UseStaticFiles();
 
             app.UseCors(builder =>
-              builder.WithOrigins("http://localhost:8080"));
-
+              builder.WithOrigins("http://localhost:8080").AllowAnyHeader().AllowAnyMethod());
 
             app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

@@ -21,7 +21,6 @@ if (process.env.NODE_ENV === "production") {
     },
     updated () {
       console.log('New content is available: Please refresh.')
-      window.location.reload(true);
     },
     offline() {
       console.log(
@@ -31,12 +30,5 @@ if (process.env.NODE_ENV === "production") {
     error(error) {
       console.error("Error during service worker registration:", error);
     },
-  });
-  
-  var refreshing;
-  navigator.serviceWorker.addEventListener("controllerchange", function() {
-    if (refreshing) return;
-    window.location.reload();
-    refreshing = true;
   });
 }

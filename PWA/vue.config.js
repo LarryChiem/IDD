@@ -21,6 +21,9 @@ module.exports = {
       ]
     },
     "manifestPath": "manifest.json",
+    workboxOptions: {
+      navigateFallback: 'index.html'
+    }
   },
   "transpileDependencies": [
     "vuetify"

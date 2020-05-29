@@ -194,6 +194,62 @@ public abstract class AbstractFormObject {
         }
     }
 
+    // Returns true if the timesheet row is likely to be empty.
+    // Not concerned with Group value.
+    public static bool isEmptyTimesheetRow(List<Cell> row)
+    {
+        var subdate = ConvertDate(row[0].ToString().Trim());
+        var starttime = FixHours(row[1].ToString()).ToString().Trim();
+        var endtime = FixHours(row[2].ToString()).ToString().Trim();
+        var totalHours = FixHours(row[3].ToString()).ToString().Trim();
+
+        bool emptyDate = (subdate == "");
+        bool emptyStart = (starttime == "AM PM" || starttime == "PM AM");
+        bool emptyEnd = (endtime == "AM PM" || endtime == "PM AM");
+        bool emptyHours = (totalHours == "");
+
+        int count = 0;
+
+        if (emptyDate) { count++; }
+        if (emptyStart) { count++; }
+        if (emptyEnd) { count++; }
+        if (emptyHours) { count++; }
+
+        // It's possible someone forget to write the total hours,
+        // or the starting date for the row. But, too many misses (>1)
+        // and it's likely to be an empty row
+        if(count >=3) { return true; }
+
+        // Default Case
+        return false;
+    }
+
+
+    // Returns true if the mileage form row is likely to be empty.
+    // Not concerned with the Group value.
+    public static bool isEmptyMileageRow(List<Cell> row)
+    {
+        var subdate = ConvertDate(row[0].ToString().Trim());
+        var miles = row[1].ToString().Trim();
+        var purpose = row[3].ToString().Trim();
+
+        bool emptyDate = (subdate == "");
+        bool emptyMiles = (miles == "");
+        bool emptyPurpose = (purpose == "");
+
+        int count = 0;
+
+        if (emptyDate) { count++; };
+        if (emptyMiles) { count++; }
+        if (emptyPurpose) { count++; }
+
+        // Leave some room for error
+        if(count >= 2) { return true; }
+
+        // Default Case
+        return false;
+    }
+
     public static int minimum(params int[] rest)
     {
         int min = int.MaxValue;

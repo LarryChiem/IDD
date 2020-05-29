@@ -36,12 +36,16 @@ public class TimesheetForm: AbstractFormObject{
 
         foreach (var row in table)
         {
-            addTimeRow(
-              ConvertDate(row[0].ToString().Trim()),
-              FixHours(row[1].ToString()).ToString().Trim(),
-              FixHours(row[2].ToString()).ToString().Trim(),
-              FixHours(row[3].ToString()).ToString().Trim(),
-              ConvertInt(row[4].ToString()).ToString().Trim());
+            // Check for empty rows
+            if (!isEmptyTimesheetRow(row))
+            {
+                addTimeRow(
+                  ConvertDate(row[0].ToString().Trim()),
+                  FixHours(row[1].ToString()).ToString().Trim(),
+                  FixHours(row[2].ToString()).ToString().Trim(),
+                  FixHours(row[3].ToString()).ToString().Trim(),
+                  ConvertInt(row[4].ToString()).ToString().Trim());
+            }
         }
 
         if (lastrow.Count > 3)

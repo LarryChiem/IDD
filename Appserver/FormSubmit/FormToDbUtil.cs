@@ -37,7 +37,6 @@ namespace IDD
         }
 
         // Give a timesheetform obj, get back a partially populated timesheet obj.
-        // TODO fix UriString, confirm vals for // marks
         public Timesheet PopulateTimesheet(PWATimesheet tsf, Timesheet tsheet=null)
         {
             if(tsheet == null){tsheet = new Timesheet();}
@@ -49,10 +48,10 @@ namespace IDD
             tsheet.ServiceGoal = tsf.serviceGoal.value;
             tsheet.ProgressNotes = tsf.progressNotes.value;
             tsheet.FormType = tsf.serviceAuthorized.value;
-            tsheet.RejectionReason = ""; //
-            tsheet.Submitted = DateTime.UtcNow; //
+            tsheet.RejectionReason = "";
+            tsheet.Submitted = DateTime.UtcNow;
             tsheet.LockInfo = null;
-            tsheet.UserActivity = ""; //
+            tsheet.UserActivity = "";
             tsheet.Edited = convUtil.wasPWAedited(tsf);
             
             tsheet.UriString = _sscontext.Stagings.Find(tsf.id).UriString;
@@ -119,68 +118,67 @@ namespace IDD
         }
 
         // Give a timesheetform obj, get back a partially populated timesheet obj.
-        // TODO fix UriString, confirm vals for // marks
-        public MileageForm PopulateMileage(PWAMileage m, MileageForm mf = null)
+        public MileageForm PopulateMileage(PWAMileage pwaForm, MileageForm mileageForm = null)
         {
-            if (mf == null) { mf = new MileageForm(); }
+            if (mileageForm == null) { mileageForm = new MileageForm(); }
 
-            mf.ClientName      = m.clientName.value;
-            mf.ClientPrime     = m.prime.value;
-            mf.ProviderName    = m.providerName.value;
-            mf.ProviderId      = m.providerNum.value;
-            mf.ServiceGoal     = m.serviceGoal.value;
-            mf.ProgressNotes   = m.progressNotes.value;
-            mf.FormType        = m.serviceAuthorized.value;
-            mf.RejectionReason = ""; //
-            mf.Submitted       = DateTime.UtcNow; //
-            mf.LockInfo        = null;
-            mf.UserActivity    = ""; //
-            mf.Edited = convUtil.wasPWAedited(m);
+            mileageForm.ClientName      = pwaForm.clientName.value;
+            mileageForm.ClientPrime     = pwaForm.prime.value;
+            mileageForm.ProviderName    = pwaForm.providerName.value;
+            mileageForm.ProviderId      = pwaForm.providerNum.value;
+            mileageForm.ServiceGoal     = pwaForm.serviceGoal.value;
+            mileageForm.ProgressNotes   = pwaForm.progressNotes.value;
+            mileageForm.FormType        = pwaForm.serviceAuthorized.value;
+            mileageForm.RejectionReason = "";
+            mileageForm.Submitted       = DateTime.UtcNow;
+            mileageForm.LockInfo        = null;
+            mileageForm.UserActivity    = "";
+            mileageForm.Edited = convUtil.wasPWAedited(pwaForm);
 
-            mf.UriString = _sscontext.Stagings.Find(m.id).UriString;
-            PopulateMileageEntries(m, mf);
-            return mf;
+            mileageForm.UriString = _sscontext.Stagings.Find(pwaForm.id).UriString;
+            PopulateMileageEntries(pwaForm, mileageForm);
+            return mileageForm;
         }
         // Convert the timesheet form row items into timesheet time entries. Makes
         // certain assumptions about start times, end times, and group. 
-        private void PopulateMileageEntries(PWAMileage m, MileageForm mf)
+        private void PopulateMileageEntries(PWAMileage pwaForm, MileageForm mileageForm)
         {
-            mf.TotalMiles = Convert.ToDouble(convUtil.TimeToDecimal(m.totalMiles.value));
+            mileageForm.TotalMiles = Convert.ToDouble(convUtil.TimeToDecimal(pwaForm.totalMiles.value));
             var tl = new List<MileageEntry>();
 
             // Only update if true
-            if(m.mileagesheet.wasEdited == true)
+            if(pwaForm.mileagesheet.wasEdited == true)
             {
-                mf.Edited = true;
+                mileageForm.Edited = true;
             }
 
-            foreach (var row in m.mileagesheet.value)
+            foreach (var row in pwaForm.mileagesheet.value)
             {
-                var x = new MileageEntry();
+                var entry = new MileageEntry();
                 try
                 {
-                    x.Date = Convert.ToDateTime(row.date);
+                    entry.Date = Convert.ToDateTime(row.date);
                 }
                 catch (FormatException)
                 {
-                    x.Date = DateTime.Now;
+                    entry.Date = DateTime.Now;
                 }
                 try
                 {
-                    x.Miles = float.Parse(row.totalMiles);
+                    entry.Miles = float.Parse(row.totalMiles);
                 }
                 catch (FormatException)
                 {
-                    x.Miles = 0;
+                    entry.Miles = 0;
                 }
 
-                x.Group = row.group.Equals("1", StringComparison.CurrentCultureIgnoreCase);
+                entry.Group = row.group.Equals("1", StringComparison.CurrentCultureIgnoreCase);
 
                 // Assume starttime is AM, pad with leading zero if necessary
-                x.PurposeOfTrip = row.purpose;
-                tl.Add(x);
+                entry.PurposeOfTrip = row.purpose;
+                tl.Add(entry);
             }
-            mf.MileageEntries = tl;
+            mileageForm.MileageEntries = tl;
         }
 
     }

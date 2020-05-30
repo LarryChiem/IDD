@@ -1,16 +1,9 @@
 using System;
-using Newtonsoft.Json.Linq;
 using Common.Models;
 using Common.Data;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Collections;
 using Appserver.Data;
-using Microsoft.EntityFrameworkCore.SqlServer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using convUtil = IDD.FormConversionUtils;
-using System.Linq;
 
 namespace IDD
 {
@@ -25,16 +18,6 @@ namespace IDD
             _sscontext = sscontext;
         }
 
-
-        // Use EF core to send data to DB
-        public int TimesheetEFtoDB(Timesheet ts)
-        {
-            _scontext.Add(ts);
-            _scontext.SaveChanges();
-            _sscontext.Remove(ts.Id);
-            _sscontext.SaveChanges();
-            return ts.Id;
-        }
 
         // Give a timesheetform obj, get back a partially populated timesheet obj.
         public Timesheet PopulateTimesheet(PWATimesheet tsf, Timesheet tsheet=null)

@@ -45,13 +45,18 @@ namespace Appserver.Controllers
         [HttpGet]
         public IActionResult ReadyTest(int id)
         {
-            return Ready(id);
+            var result = _context.Stagings.FirstOrDefault(m=> m.Id == id );
+            if( result == null)
+            {
+                return Json(new JsonResponse("not ready"));
+            }
+            return Ready(id, result.Guid);
         }
         [Produces("application/json")]
         [HttpGet]
-        public IActionResult Ready(int id)
+        public IActionResult Ready(int id, string guid)
         {
-            var stage = _context.Stagings.FirstOrDefault(m => m.Id == id);
+            var stage = _context.Stagings.FirstOrDefault(m => m.Id == id && m.Guid == guid);
 
             if (stage == null)
             {
@@ -79,6 +84,7 @@ namespace Appserver.Controllers
             }
 
             ts.id = id;
+            ts.guid = guid;
 
             return Json(ts);
         }
@@ -105,9 +111,11 @@ namespace Appserver.Controllers
             var ts = AbstractFormObject.FromTextract(textractform, stage.formType);
 
             ts.id = id;
+            ts.guid = stage.Guid;
 
             var PWAForm = PWAsubmission.FromForm(ts, stage.formType);
             switch (stage.formType) {
+                case AbstractFormObject.FormType.OR526_ATTENDANT:
                 case AbstractFormObject.FormType.OR507_RELIEF:
                     return SubmitTimesheet((PWATimesheet)PWAForm);
                 case AbstractFormObject.FormType.OR004_MILEAGE:
@@ -126,6 +134,15 @@ namespace Appserver.Controllers
         [Produces("application/json")]
         public IActionResult SubmitTimesheet([FromBody] PWATimesheet submittedform)
         {
+            // Check correct authorization
+            var result = _context.Stagings.FirstOrDefault(m => m.Id == submittedform.id && m.Guid == submittedform.guid);
+            if( result == null)
+            {
+                return Json(new
+                {
+                    response = "invalid"
+                });
+            }
             var dbutil = new FormToDbUtil(_subcontext, _context);
             Timesheet ts = dbutil.PopulateTimesheet(submittedform);
 

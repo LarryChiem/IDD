@@ -36,6 +36,7 @@ public abstract class AbstractFormObject {
     *******************************************************************************/
     /// Front Fields
     public int id { get; set; } = -1;
+    public string guid { get; set; } = "";
     public string clientName { get; set; } = "";
     public string prime { get; set; } = "";
     public string providerName { get; set; } = "";

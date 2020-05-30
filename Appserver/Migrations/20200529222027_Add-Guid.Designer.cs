@@ -3,14 +3,16 @@ using Appserver.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Appserver.Migrations
 {
     [DbContext(typeof(SubmissionStagingContext))]
-    partial class SubmissionStagingContextModelSnapshot : ModelSnapshot
+    [Migration("20200529222027_Add-Guid")]
+    partial class AddGuid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

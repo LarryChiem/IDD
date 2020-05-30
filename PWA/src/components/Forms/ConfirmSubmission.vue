@@ -287,7 +287,7 @@
           this.totalEdited > 0 && !(this.reSigned.length === 2) && this.isValid
         );
       },
-      ...mapFields(["formChoice", "formId", "onlineStatus"]),
+      ...mapFields(["formChoice", "formId", "guid", "onlineStatus"]),
       formType: function() {
         return FORM_TYPE[this.formChoice];
       },
@@ -398,6 +398,7 @@
         this.submitData = this.formatData();
         if (this.errors.length === 0) {
           this.submitData["id"] = this.formId;
+          this.submitData["guid"] = this.guid;
           this.submitData["formChoice"] = FORM[this.formChoice];
           console.log("submitData form ConfirmSubmission:410", this.submitData);
           axios

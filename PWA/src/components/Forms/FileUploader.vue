@@ -264,7 +264,7 @@
         let self = this;
         //Retrieves json response from timesheet.
         if (!this.getUpdated) {
-          this.urlGet = this.urlGet.concat(this.formId);
+          this.urlGet = this.urlGet.concat(this.formId).concat("&guid=").concat(this.guid);
           this.getUpdated = true;
           axios
             .get(this.urlGet)
@@ -324,6 +324,7 @@
             self.files.active = false;
             self.files.success = true;
             self.formId = response["data"]["id"];
+            self.guid = response["data"]["guid"];
             self.submitted = true;
           })
           .catch(function (error) {
@@ -337,6 +338,7 @@
           if (!newFile.active) {
             jsonResponse = JSON.parse(newFile.xhr.response);
             this.formId = jsonResponse["id"];
+            this.guid = jsonResponse["guid"];
           }
         }
         if (newFile && oldFile && !newFile.active && oldFile.active)
@@ -344,6 +346,7 @@
             if (!newFile.active) {
               jsonResponse = JSON.parse(newFile.xhr.response);
               this.formId = jsonResponse["id"];
+              this.guid = jsonResponse["guid"];
             }
           }
       },
@@ -356,13 +359,13 @@
         submitted: false,
         getUpdated: false,
         urlGet: process.env.VUE_APP_SERVER_URL.concat(
-          "Timesheet/ReadyTest?id="
+          "Timesheet/Ready?id="
         ), //Retrieve timesheet
         urlPost: process.env.VUE_APP_SERVER_URL.concat("ImageUpload/DocAsForm"), //Post AppServer
       };
     },
     computed: {
-      ...mapFields(["formChoice", "formId", "onlineStatus"]),
+      ...mapFields(["formChoice", "formId", "guid", "onlineStatus"]),
     },
   };
 </script>

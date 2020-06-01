@@ -1,12 +1,13 @@
 import Vue from "vue";
 import Vuetify from "vuetify";
+import i18n from '@/plugins/i18n';
 import ServicesDeliveredTable from "@/components/Forms/ServicesDelivered/ServicesDeliveredTable.vue";
 import valid_timesheet from "./valid_timesheet.json";
 import conflicting_timesheet from "./conflicting_timesheet.json";
 
 import { mount, createLocalVue } from "@vue/test-utils";
 
-Vue.use(Vuetify);
+Vue.use(Vuetify, i18n);
 
 const valCols = ["date", "starttime", "endtime", "totalHours"];
 let amtErrors = 0;
@@ -23,6 +24,7 @@ describe("ServicesDeliveredTable.js", () => {
     const localVue = createLocalVue();
     let wrapper = mount(ServicesDeliveredTable, {
       localVue,
+      i18n,
       vuetify: new Vuetify(),
       propsData: { cols: valCols },
     });
@@ -37,6 +39,7 @@ describe("ServicesDeliveredTable.js", () => {
     const localVue = createLocalVue();
     let wrapper = mount(ServicesDeliveredTable, {
       localVue,
+      i18n,
       vuetify: new Vuetify(),
       propsData: valid_props,
     });
@@ -55,6 +58,7 @@ describe("ServicesDeliveredTable.js", () => {
     const localVue = createLocalVue();
     let wrapper = mount(ServicesDeliveredTable, {
       localVue,
+      i18n,
       vuetify: new Vuetify(),
       propsData: {
         parsed_value: [
@@ -92,6 +96,7 @@ describe("ServicesDeliveredTable.js", () => {
     const localVue = createLocalVue();
     let wrapper = mount(ServicesDeliveredTable, {
       localVue,
+      i18n,
       vuetify: new Vuetify(),
       propsData: conflicting_props,
     });

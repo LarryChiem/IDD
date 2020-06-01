@@ -145,7 +145,7 @@
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss"  scoped>
   .example-drag.drop-space {
     padding-inline-start: 0;
     background: #000;

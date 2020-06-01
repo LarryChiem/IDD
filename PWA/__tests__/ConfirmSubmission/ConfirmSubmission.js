@@ -2,16 +2,18 @@ import { mount } from "@vue/test-utils";
 import { shallowMount } from "@vue/test-utils";
 import Vue from "vue";
 import Vuetify from "vuetify";
+import i18n from '@/plugins/i18n';
 import store from "@/store/index.js";
 import ConfirmSubmission from "@/components/Forms/ConfirmSubmission.vue";
 
-Vue.use(Vuetify);
+Vue.use(Vuetify, i18n);
 
 describe("ConfirmSubmission", () => {
   //Given a valid form, the user should not get an error.
   it("Should not load message saying invalid form", () => {
     const wrapper = mount(ConfirmSubmission, {
       store,
+      i18n,
       propsData: {
         valid: true,
         formFields: null,
@@ -25,6 +27,7 @@ describe("ConfirmSubmission", () => {
   it("Should load message saying invalid form", () => {
     const wrapper = shallowMount(ConfirmSubmission, {
       store,
+      i18n,
       propsData: {
         valid: false,
         formFields: null,
@@ -40,6 +43,7 @@ describe("ConfirmSubmission", () => {
   it("Should ask if user is sure they want to submit given valid form", () => {
     const wrapper = shallowMount(ConfirmSubmission, {
       store,
+      i18n,
       propsData: {
         valid: true,
         formFields: null,

@@ -1,38 +1,36 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using Common.Data;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Collections.Generic;
+using Appserver.Data;
 
-namespace AdminUI.Migrations
+namespace Common.MigrationUtilities
 {
-    public partial class DbContext : Migration
+    public class ModelUtils
     {
-        private readonly SubmissionContext subContext;
-
-        // Update all comma separated lists to json lists
-        protected override void Up()
+        // Convert from comma to json formatting
+        public static void UpgradeCommaFixStaging(SubmissionStagingContext subcontext)
         {
-            var entries = subContext.Submissions.ToList();
+            var entries = subcontext.Stagings;
             foreach(var entry in entries)
             {
-                // Failure indicates old formatting
                 var currentString = entry.UriString;
+                // Fail on old formatting
                 try
                 {
                     var undone = System.Text.Json.JsonSerializer.Deserialize<List<string>>(currentString);
                 }
-                catch (System.Exception ex)
+                catch(System.Exception ex)
                 {
                     var uList = currentString.Split(',').ToList();
                     entry.UriString = System.Text.Json.JsonSerializer.Serialize(uList);
                 }
             }
+
         }
 
-        // Revert json serialized list to comma separated
-        protected override void Down()
+
+        public static void DowngradeCommaFixStaging(SubmissionStagingContext subcontext)
         {
-            var entries = subContext.Submissions.ToList();
+            var entries = subcontext.Stagings;
             foreach(var entry in entries)
             {
                 var currentString = entry.UriString;

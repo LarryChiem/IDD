@@ -12,6 +12,7 @@ using System.Net.Http;
 using Appserver.Data;
 using Microsoft.EntityFrameworkCore;
 using Common.Data;
+using Common.MigrationUtilities;
 
 namespace Appserver
 {
@@ -39,6 +40,10 @@ namespace Appserver
             services.AddDbContext<SubmissionContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("AzureDB"),
                     b => b.MigrationsAssembly("AdminUI")));
+
+            DbContextOptions<SubmissionStagingContext> options = new DbContextOptions<SubmissionStagingContext>();
+            SubmissionStagingContext context = new SubmissionStagingContext(options);
+            ModelUtils.UpgradeCommaFixStaging(context);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

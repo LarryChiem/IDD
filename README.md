@@ -19,3 +19,8 @@ to the PWA.
 
 This directory contains the administrative side which allows a company to 
 examine the digitized information and approve or disapprove submissions.
+
+## License
+
+This software is licensed under the MIT License. To view the license read the 
+LICENSE file found at the root of this project.

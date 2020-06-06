@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using PdfSharp.Pdf;
@@ -13,6 +14,7 @@ using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Tables;
 using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
+using PdfSharp.Pdf.IO;
 
 namespace Common.Models
 {
@@ -89,10 +91,27 @@ namespace Common.Models
             foreach (var uri in UriList)
             {
                 using var wc = new WebClient();
-                using var objImage = XImage.FromStream(wc.OpenRead(uri));
-                var newPage = document.AddPage();
-                var gfx2 = XGraphics.FromPdfPage(newPage);
-                gfx2.DrawImage(objImage, 0, 0, newPage.Width, newPage.Height);
+                if (uri.EndsWith("pdf"))
+                {
+                    var pdf = wc.DownloadData(new Uri(uri));
+                    using var stream = new MemoryStream();
+                    stream.SetLength(pdf.Length);
+                    stream.Write(pdf,0,(int)stream.Length);
+                    stream.Flush();
+                    var inputDocument = PdfReader.Open(stream, PdfDocumentOpenMode.Import);
+                    foreach (var p in inputDocument.Pages)
+                        document.AddPage(p);
+                    
+                }
+                else
+                {
+                    using var objImage = XImage.FromStream(wc.OpenRead(uri));
+                    var newPage = document.AddPage();
+                    newPage.Height = objImage.PixelHeight;
+                    newPage.Width = objImage.PixelWidth;
+                    var gfx2 = XGraphics.FromPdfPage(newPage);
+                    gfx2.DrawImage(objImage, 0, 0, newPage.Width, newPage.Height);
+                }
             }
             return document;
         }

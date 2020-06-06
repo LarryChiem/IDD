@@ -81,12 +81,19 @@
     {
         <div class="column">
             <div class="container">
-                <a target="_blank" href=@uri>
-                    <img src=@uri alt="Image Thumbnail" class="img-thumbnail image"/>
-                    <div class="overlay">
-                        <div class="textoverlay">Click to view full size</div>
-                    </div>
-                </a>
+                @if (uri.EndsWith("pdf"))
+                {
+                    <div class="alert alert-primary"><h6>Provider uploaded image(s) as PDF. Click <a href="@uri">here</a> to download raw image(s)</h6></div>
+                }
+                else
+                {
+                    <a target="_blank" href=@uri>
+                        <img src=@uri alt="Image Thumbnail" class="img-thumbnail image"/>
+                        <div class="overlay">
+                            <div class="textoverlay">Click to view full size</div>
+                        </div>
+                    </a>
+                }
             </div>
         </div>
     }

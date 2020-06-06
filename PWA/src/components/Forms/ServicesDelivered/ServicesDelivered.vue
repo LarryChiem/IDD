@@ -35,6 +35,8 @@
         :cols="valCols"
         :value="formFields.timesheet.value"
         :reset="resetChild"
+        :editTable="willResign"
+        :amountEdited="totalEdited"
         :totalHours="formFields['totalHours']['value']"
         :willResign="willResign"
         @update-totalHours="

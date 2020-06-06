@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuetify from "vuetify";
+import store from "@/store/index.js";
 import i18n from '@/plugins/i18n';
 import ServicesDeliveredTable from "@/components/Forms/ServicesDelivered/ServicesDeliveredTable.vue";
 import valid_timesheet from "./valid_timesheet.json";
@@ -25,6 +26,7 @@ describe("ServicesDeliveredTable.js", () => {
     let wrapper = mount(ServicesDeliveredTable, {
       localVue,
       i18n,
+      store,
       vuetify: new Vuetify(),
       propsData: { cols: valCols },
     });
@@ -40,6 +42,7 @@ describe("ServicesDeliveredTable.js", () => {
     let wrapper = mount(ServicesDeliveredTable, {
       localVue,
       i18n,
+      store,
       vuetify: new Vuetify(),
       propsData: valid_props,
     });
@@ -59,6 +62,7 @@ describe("ServicesDeliveredTable.js", () => {
     let wrapper = mount(ServicesDeliveredTable, {
       localVue,
       i18n,
+      store,
       vuetify: new Vuetify(),
       propsData: {
         parsed_value: [
@@ -97,6 +101,7 @@ describe("ServicesDeliveredTable.js", () => {
     let wrapper = mount(ServicesDeliveredTable, {
       localVue,
       i18n,
+      store,
       vuetify: new Vuetify(),
       propsData: conflicting_props,
     });

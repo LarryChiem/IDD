@@ -31,8 +31,18 @@ public class TimesheetForm: AbstractFormObject{
 
         // Grab last row for total
         var lastrow = table.Last();
-        // Now remove it
-        table.RemoveAt(table.Count - 1);
+
+        // Check if lastrow is a total hours row.
+        // If so, remove it.
+        if (isTotalTimeRow(lastrow))
+        {
+            table.RemoveAt(table.Count - 1);
+        }
+
+        if (lastrow.Count < 3)
+        {
+            table.RemoveAt(table.Count - 1);
+        }
 
         foreach (var row in table)
         {

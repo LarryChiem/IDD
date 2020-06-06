@@ -25,8 +25,18 @@ namespace Appserver.FormSubmit
 
             // Grab last row for total
             var lastrow = table.Last();
-            // Now remove it
-            table.RemoveAt(table.Count - 1);
+
+            // If lastrow is a total mileage row, remove it
+            if (isTotalMilesRow(lastrow))
+            {
+                table.RemoveAt(table.Count - 1);
+            }
+
+            // Only remove last row if it's a total Miles
+            if (lastrow.Count < 3)
+            {
+                table.RemoveAt(table.Count - 1);
+            }
 
             foreach (var row in table)
             {

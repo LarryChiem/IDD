@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 public abstract class AbstractFormObject{
 
@@ -157,6 +158,84 @@ public abstract class AbstractFormObject{
             return s;
         }
     }
+
+    // If one of the rows in the cell matches the regex
+    // and there is also a row that can be parsed into hours,
+    // then we probably have a total hours cell. 
+    public static bool isTotalTimeRow(List<Cell> lastrow)
+    {
+        // The letters of "total/unit/hours" without
+        // "yes/no" for group field.
+        Regex rxTotal = new Regex(@"([uthrli])+");
+        Regex rxTime = new Regex(@"([0-9])+");
+        bool matchRex = false;
+        bool matchTime = false;
+
+        foreach(var entry in lastrow)
+        {
+            // TotalHours match?
+            var s = entry.ToString().Trim().ToLower();
+            var totalmatches = rxTotal.Matches(s);
+            if(totalmatches.Count >= 1){ matchRex = true; }
+
+            // Time match?
+            var time = FixHours(entry.ToString()).ToString().Trim();
+            var timeMatches = rxTime.Matches(time.ToLower());
+            if(timeMatches.Count >=1) { matchTime = true; }
+        }
+
+        return matchRex && matchTime;
+    }
+
+
+    public static bool isTotalMilesRow(List<Cell> lastrow)
+    {
+        Regex rxNumberGroup = new Regex(@"([0-9])+");
+        int confidence = 0;
+        bool foundDate = false;
+
+        foreach(var entry in lastrow)
+        {
+            var s = entry.ToString().Trim().ToLower();
+
+            // If we can parse the entry into a valid
+            // DateTime format, probably areen't dealing
+            // with a total miles row.
+            try
+            {
+                var date = DateTime.Parse(s).ToString("yyyy-MM-dd");
+                foundDate = true;           
+            }
+            catch (FormatException){}
+
+            // Increase confidence we have a total miles row
+            if (s.Contains("total"))
+            {
+                confidence++;
+            }
+
+            if (s.Contains("miles"))
+            {
+                confidence++;
+            }
+
+            var matches = rxNumberGroup.Matches(s);
+            confidence += matches.Count;
+        }
+
+        // Most likely a mileage entry
+        if (foundDate)
+        {
+            return false;
+        }
+
+        // Did we at least find a contains words
+        // and at least one group of numbers that could
+        // be a mileage total?
+        return confidence >= 2;
+    }
+
+
     protected abstract void AddTables(List<Table> tables);
     protected abstract void AddBackForm(Page page);
 }

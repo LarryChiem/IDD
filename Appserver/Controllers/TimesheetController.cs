@@ -188,14 +188,19 @@ namespace Appserver.Controllers
         public IActionResult SubmitMileage([FromBody] PWAMileage submittedform)
         {
             var dbutil = new FormToDbUtil(_subcontext, _context);
-            MileageForm mf = dbutil.PopulateMileage(submittedform);
-
+            MileageForm mf = dbutil.PopulateMileage(submittedform); 
+            
             var submission = _subcontext;
-            submission.Add(mf);
-            submission.SaveChanges();
+            using (var transaction = submission.Database.BeginTransaction())
+            {
+                submission.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Submissions ON");
+                submission.Add(mf);
+                submission.SaveChanges();
+                transaction.Commit();
+            }
 
-            // Do something with form
-            Response.Headers.Add("Access-Control-Allow-Origin", "*");
+        // Do something with form
+        Response.Headers.Add("Access-Control-Allow-Origin", "*");
             Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             return Json(new { response = "ok" });
         }

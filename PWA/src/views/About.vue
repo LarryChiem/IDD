@@ -5,7 +5,7 @@
     fluid
   >
     <v-row justify="center">
-      <v-col cols="6" md="6" sm="12">
+      <v-col md="6" sm="12" xs="12">
         <v-card elevation="1" height="100%">
           <v-card-title class="headline purple darken-4 white--text justify-content-center" primary-title>
             {{ $t('views_About_learn') }}
@@ -28,7 +28,7 @@
         </v-card>
       </v-col>
 
-      <v-col cols="6" md="6" sm="12">
+      <v-col md="6" sm="12" xs="12">
         <v-card elevation="1" height="100%">
           <v-card-title class="headline purple darken-2 white--text justify-content-center" primary-title>
             {{ $t('views_About_install') }}

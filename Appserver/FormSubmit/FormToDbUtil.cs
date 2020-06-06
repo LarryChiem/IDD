@@ -24,6 +24,7 @@ namespace IDD
         {
             if(tsheet == null){tsheet = new Timesheet();}
 
+            tsheet.Id = tsf.id;
             tsheet.ClientName = tsf.clientName.value;
             tsheet.ClientPrime = tsf.prime.value;
             tsheet.ProviderName = tsf.providerName.value;
@@ -105,6 +106,7 @@ namespace IDD
         {
             if (mileageForm == null) { mileageForm = new MileageForm(); }
 
+            mileageForm.Id              = pwaForm.id;
             mileageForm.ClientName      = pwaForm.clientName.value;
             mileageForm.ClientPrime     = pwaForm.prime.value;
             mileageForm.ProviderName    = pwaForm.providerName.value;

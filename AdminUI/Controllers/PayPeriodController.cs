@@ -82,6 +82,8 @@ namespace AdminUI.Controllers
             {
                 pp.DateFrom = dateFrom;
                 pp.DateTo = dateTo;
+                if (pp.Current)
+                    GlobalVariables.CurrentPayPeriod = pp;
                 _context.Update(pp);
                 _context.SaveChanges();
 

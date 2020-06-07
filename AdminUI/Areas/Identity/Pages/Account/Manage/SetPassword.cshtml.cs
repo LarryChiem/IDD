@@ -34,7 +34,7 @@ namespace AdminUI.Areas.Identity.Pages.Account.Manage
             [Required]
             [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W]).{6,}$", ErrorMessage = "{0} does not meet requirements.")]
             [DataType(DataType.Password)]
-            [Display(Name = "Password")]
+            [Display(Name = "New Password")]
             public string NewPassword { get; set; }
 
             [DataType(DataType.Password)]

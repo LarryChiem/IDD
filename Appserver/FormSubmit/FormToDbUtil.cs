@@ -9,14 +9,27 @@ namespace IDD
 {
     public class FormToDbUtil
     {
+
+        /*******************************************************************************
+        /// Fields
+        *******************************************************************************/
         private SubmissionContext _scontext;
         private SubmissionStagingContext _sscontext;
 
+
+        /*******************************************************************************
+        /// Constructor
+        *******************************************************************************/
         public FormToDbUtil(SubmissionContext context, SubmissionStagingContext sscontext)
         {
             _scontext = context;
             _sscontext = sscontext;
         }
+
+
+        /*******************************************************************************
+        /// Methods
+        *******************************************************************************/
 
 
         // Give a timesheetform obj, get back a partially populated timesheet obj.
@@ -42,6 +55,7 @@ namespace IDD
             PopulateTimesheetEntries(tsf, tsheet);
             return tsheet;
         }
+
         // Convert the timesheet form row items into timesheet time entries. Makes
         // certain assumptions about start times, end times, and group. 
         private void PopulateTimesheetEntries(PWATimesheet timesheetForm, Timesheet timesheet)
@@ -124,6 +138,7 @@ namespace IDD
             PopulateMileageEntries(pwaForm, mileageForm);
             return mileageForm;
         }
+
         // Convert the timesheet form row items into timesheet time entries. Makes
         // certain assumptions about start times, end times, and group. 
         private void PopulateMileageEntries(PWAMileage pwaForm, MileageForm mileageForm)

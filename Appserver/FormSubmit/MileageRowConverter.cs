@@ -7,7 +7,7 @@ namespace Appserver.FormSubmit
 {
     public class MileageRowConverter: JsonConverter
     {
-        public override bool CanConvert(System.Type objectType) { return false; }
+        public override bool CanConvert(Type objectType) { return false; }
         public override bool CanWrite { get { return false; } }
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {

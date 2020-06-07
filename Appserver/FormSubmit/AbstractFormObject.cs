@@ -1,10 +1,8 @@
 using Appserver.FormSubmit;
 using Appserver.TextractDocument;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 
 public abstract class AbstractFormObject {
 

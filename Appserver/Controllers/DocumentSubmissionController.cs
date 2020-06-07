@@ -1,21 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Appserver.Data;
 using Appserver.Models;
-using Newtonsoft.Json;
-using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
-using Appserver.TextractDocument;
 using Newtonsoft.Json.Linq;
 using Common.Models;
 using IDD;
 using Common.Data;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Appserver.Controllers
 {
@@ -41,6 +34,8 @@ namespace Appserver.Controllers
         /// Methods
         *******************************************************************************/
 
+
+        // Takes the staging id from a previous upload operation. 
         [Produces("application/json")]
         [Route("Timesheet/ReadyTest")]
         [HttpGet]
@@ -53,6 +48,9 @@ namespace Appserver.Controllers
             }
             return Ready(id, result.Guid);
         }
+
+        // A previous upload is considered ready when the response from textract has
+        // been received. When ready, a json repersentation of the appropriate form is returned.
         [Produces("application/json")]
         [HttpGet]
         public IActionResult Ready(int id, string guid)
@@ -73,23 +71,25 @@ namespace Appserver.Controllers
                 textractform.AddPages(childform);
             }
 
-            AbstractFormObject ts;
+            AbstractFormObject form;
 
             try
             {
-                ts = AbstractFormObject.FromTextract(textractform, stage.formType);
+                form = AbstractFormObject.FromTextract(textractform, stage.formType);
             }
             catch (Exception)
             {
                 return Json(new JsonResponse("invalid"));
             }
 
-            ts.id = id;
-            ts.guid = guid;
+            form.id = id;
+            form.guid = guid;
 
-            return Json(ts);
+            return Json(form);
         }
 
+
+        // Used primarily for testing and validation
         [Route("Timesheet/SubmitTest")]
         [HttpGet]
         [Produces("application/json")]
@@ -149,6 +149,11 @@ namespace Appserver.Controllers
             }
         }
 
+
+        // Takes a Timesheet submitted by the PWA after the user has had a chance
+        // to review the processed upload and possibly make edits. Converts the
+        // PWATimesheet model into a Timesheet model which can be placed into the submissions
+        // table. 
         [Route("Timesheet/Submit")]
         [HttpPost("Submit")]
         [Produces("application/json")]
@@ -163,6 +168,7 @@ namespace Appserver.Controllers
                     response = "invalid"
                 });
             }
+
             var dbutil = new FormToDbUtil(_subcontext, _context);
             Timesheet ts = dbutil.PopulateTimesheet(submittedform);
 
@@ -175,21 +181,23 @@ namespace Appserver.Controllers
                 transaction.Commit();
             }
 
-            // Do something with form
             Response.Headers.Add("Access-Control-Allow-Origin", "*");
             Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             return Json(new {response="ok"});
         }
 
 
+        // Takes a submission from the PWA modeled by PWAMileage, converts that
+        // into a MileageForm (the model used the DB), and saves it to
+        // the Submissions table.
         [Route("Timesheet/SubmitMileage")]
         [HttpPost("Submit")]
         [Produces("application/json")]
         public IActionResult SubmitMileage([FromBody] PWAMileage submittedform)
         {
             var dbutil = new FormToDbUtil(_subcontext, _context);
-            MileageForm mf = dbutil.PopulateMileage(submittedform); 
-            
+            MileageForm mf = dbutil.PopulateMileage(submittedform);
+
             var submission = _subcontext;
             using (var transaction = submission.Database.BeginTransaction())
             {
@@ -199,8 +207,7 @@ namespace Appserver.Controllers
                 transaction.Commit();
             }
 
-        // Do something with form
-        Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            Response.Headers.Add("Access-Control-Allow-Origin", "*");
             Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             return Json(new { response = "ok" });
         }

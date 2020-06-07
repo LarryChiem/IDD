@@ -5,6 +5,10 @@ namespace Common.Models
 {
     public abstract class PWAsubmission
     {
+
+        /*******************************************************************************
+        /// Shared Fields
+        *******************************************************************************/
         public int id { get; set; }
         public string guid { get; set; }
         public int formChoice { get; set; }
@@ -25,6 +29,10 @@ namespace Common.Models
         public PWAsubmissionVals scpaName { get; set; }
         public PWAsubmissionVals brokerage { get; set; }
 
+
+        /*******************************************************************************
+        /// Shared Methods
+        *******************************************************************************/
         public static PWAsubmission FromForm(AbstractFormObject form, AbstractFormObject.FormType formType)
         {
             PWAsubmission submission;
@@ -65,6 +73,9 @@ namespace Common.Models
         protected abstract void ConvertForm(AbstractFormObject form);
     }
 
+    /*******************************************************************************
+    /// Shared Class
+    *******************************************************************************/
     public class PWAsubmissionVals
     {
         public string value { get; set; }
@@ -73,10 +84,23 @@ namespace Common.Models
         public PWAsubmissionVals( string s, bool edited=false) => (value, wasEdited) = (s, edited);
     }
 
+
+
+    /*******************************************************************************
+    /// PWA Model and supporting code for Timesheets
+    *******************************************************************************/
     public class PWATimesheet : PWAsubmission
     {
+
+        /*******************************************************************************
+        /// Unique Fields
+        *******************************************************************************/
         public PWAsubmissionVals totalHours { get; set; }
         public PWAtimesheetEntries timesheet { get; set; }
+
+        /*******************************************************************************
+        /// Methods
+        *******************************************************************************/
         protected override void ConvertForm(AbstractFormObject form)
         {
             TimesheetForm ts = (TimesheetForm)form;
@@ -101,6 +125,9 @@ namespace Common.Models
         }
     }
 
+    /*******************************************************************************
+    /// Timesheet Specific Classes
+    *******************************************************************************/
     public class PWAtimesheetEntries
     {
         public bool wasEdited { get; set; }
@@ -117,10 +144,24 @@ namespace Common.Models
         public bool wasEdited { get; set; }
     }
 
+
+
+
+    /*******************************************************************************
+    /// PWA Model and supporting code for Mileage forms
+    *******************************************************************************/
     public class PWAMileage : PWAsubmission
     {
+
+        /*******************************************************************************
+        /// Unique Fields
+        *******************************************************************************/
         public PWAsubmissionVals totalMiles { get; set; }
         public PWAmileageEntries mileagesheet { get; set; }
+
+        /*******************************************************************************
+        /// Methods
+        *******************************************************************************/
         protected override void ConvertForm(AbstractFormObject form)
         {
             Appserver.FormSubmit.MileageForm m = (Appserver.FormSubmit.MileageForm)form;
@@ -143,6 +184,10 @@ namespace Common.Models
             mileagesheet.value = entries;
         }
     }
+
+    /*******************************************************************************
+    /// Mileage specific classes
+    *******************************************************************************/
     public class PWAmileageEntries
     {
         public bool wasEdited { get; set; }

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using System.Diagnostics;
 using Amazon.Textract.Model;
 using System;
 using Appserver.Data;
@@ -17,17 +16,30 @@ namespace Appserver.Controllers
 {
     public class ImageUploadController : Controller
     {
+
+        /*******************************************************************************
+        /// Fields
+        *******************************************************************************/
         private readonly SubmissionStagingContext _context;
-        private readonly SubmissionContext _scontext;
 
-
-        public ImageUploadController(SubmissionStagingContext context, SubmissionContext scontext)
+        /*******************************************************************************
+        /// Constructor
+        *******************************************************************************/
+        public ImageUploadController(SubmissionStagingContext context)
         {
             _context = context;
-            _scontext = scontext;
         }
 
+
+        /*******************************************************************************
+        /// Methods
+        *******************************************************************************/
+
         // POST: /home/timesheet/
+        // Handle the initial processing of document uploads. Currently, the only accepted
+        // formats are jpg/png/pdf. Valid documents are sent to AWS Textract for processing
+        // with the results being stored in a staging table. The documents themselves are
+        // stored in Azure Blob upon being uploaded. 
         [HttpPost("ImageUpload")]
         public async Task<IActionResult> PostImage(List<IFormFile> files, AbstractFormObject.FormType formType)
         {
@@ -35,7 +47,6 @@ namespace Appserver.Controllers
             var image_responses = new List<AnalyzeDocumentResponse>();
             var pdf_responses = new List<GetDocumentAnalysisResponse>();
             var skipped_files = new List<string>();
-            var stats = new List<string>();
 
             // MIME types we can send to textract
             var accepted_types = new List<string>
@@ -57,10 +68,6 @@ namespace Appserver.Controllers
                 // Only process files that have acceptable types
                 if (accepted_types.Contains(file.ContentType))
                 {
-                    //Time how long it takes Textract to process image
-                    Stopwatch stopwatch = new Stopwatch();
-                    stopwatch.Start();
-
                     // Process PDF
                     if(file.ContentType == "application/pdf")
                     {
@@ -71,12 +78,6 @@ namespace Appserver.Controllers
                     {
                         image_responses.Add(process_image(file));
                     }
-
-                    stopwatch.Stop();
-                    TimeSpan ts = stopwatch.Elapsed;
-                    string s = String.Format("{0:00}:{1:00}", ts.Minutes, ts.Seconds);
-                    stopwatch.Reset();
-                    stats.Add(file.FileName + " " + s);
                 }
                 else
                 {
@@ -99,7 +100,6 @@ namespace Appserver.Controllers
             }
 
 
-
             return Json(new
             {
                 file_count = c,
@@ -111,7 +111,8 @@ namespace Appserver.Controllers
         }
 
 
-        // Controller to accept images POSTed as bytes in the body
+        // Document upload controller that is compatible with the format
+        // being sent from the PWA.
         [Route("ImageUpload/DocAsForm")]
         [HttpPost("ImageList")]
         public async Task<IActionResult> ImageList(IFormCollection file_collection)
@@ -128,6 +129,7 @@ namespace Appserver.Controllers
             return await PostImage(file_collection.Files.ToList(), formType);
         }
 
+        // Store user submissions in Azure and get back the file's bucket handle.
         private async Task<string> UploadToBlob(List<IFormFile> files)
         {
             // Get Blob Container
@@ -136,7 +138,6 @@ namespace Appserver.Controllers
                 .GetContainerReference("submissionfiles");
             await container.CreateIfNotExistsAsync();
             await container.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Container });
-
 
             // Upload images to container and save UriStrings
             var uriString ="";
@@ -152,6 +153,8 @@ namespace Appserver.Controllers
             return uriString;
         }
 
+        // Place yet-to-be-submitted documents, in the form of a reference to a bucket file
+        // and the response from textract, into a staging table.
         private async Task<int> saveSubmissionStage<T>(string uriString, List<T> responses, AbstractFormObject.FormType formType, string guid)
         {
             // Create a SubmissionStaging to upload to SubmissionStaging table
@@ -169,17 +172,13 @@ namespace Appserver.Controllers
             return ss.Id;
         }
 
+        // Method to handle image format uploads
         private AnalyzeDocumentResponse process_image(IFormFile file)
         {
             return new TextractHandler().HandleAsyncJob(file.OpenReadStream());
         }
 
-
-        // Method to handle PDF uploads. Pages from PDF uploads
-        // needs to be turned into bytes to send to Textract.
-        // We could do this by page in the PDF, but how would we know
-        // what type of page we're sending? Milage, hours, etc.?
-        // Method argument is file sent with an HTTP Request (IFormFile)
+        // Method to handle PDF uploads.
         private GetDocumentAnalysisResponse process_pdf(IFormFile file)
         {
             return new TextractHandler().HandlePDFasync(file);

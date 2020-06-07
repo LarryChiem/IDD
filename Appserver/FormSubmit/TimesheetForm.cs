@@ -4,22 +4,33 @@ using Appserver.TextractDocument;
 using System;
 using System.Linq;
 
-public class TimesheetForm: AbstractFormObject{
+public class TimesheetForm: AbstractFormObject
+{
     
-    private List<TimesheetRowItem> times = new List<TimesheetRowItem>();
+    /*******************************************************************************
+    /// Constructor
+    *******************************************************************************/
+    public TimesheetForm(){}
 
-    public TimesheetForm(){
-    }
 
+    /*******************************************************************************
+    /// Fields
+    *******************************************************************************/
     public int units { get; set; }
     public string type { get; set; } = "";
     public string frequency { get; set; } = "";
+    private List<TimesheetRowItem> times = new List<TimesheetRowItem>();
     
     [JsonProperty("timesheet")]
     [JsonConverter(typeof(TimesheetRowConverter))]
     internal List<TimesheetRowItem> Times { get => times; set => times = value; }
     public string totalHours { get; set; } = "";
-    
+
+
+    /*******************************************************************************
+    /// Methods
+    *******************************************************************************/
+
     public void addTimeRow(string date, string start, string end, string total, string group) => 
         this.Times.Add(new TimesheetRowItem(date, start, end, total, group));
 

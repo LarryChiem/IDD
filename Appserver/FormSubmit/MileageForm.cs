@@ -1,21 +1,32 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 
 namespace Appserver.FormSubmit
 {
     public class MileageForm : AbstractFormObject
     {
-        private List<MileageRowItem> miles = new List<MileageRowItem>();
+        /*******************************************************************************
+        /// Constructor
+        *******************************************************************************/
         public MileageForm() { }
 
+
+        /*******************************************************************************
+        /// Properties
+        *******************************************************************************/
         [JsonProperty("mileagesheet")]
         [JsonConverter(typeof(MileageRowConverter))]
         internal List<MileageRowItem> Mileage { get => miles; set => miles = value; }
         public string totalMiles { get; set; } = "0";
+        private List<MileageRowItem> miles = new List<MileageRowItem>();
+
+        /*******************************************************************************
+        /// Methods
+        *******************************************************************************/
         public void addMileRow(string date, string miles, string group, string purpose) =>
             this.Mileage.Add(new MileageRowItem(date, miles, group, purpose));
+
 
         protected override void AddTables(List<TextractDocument.Table> tables)
         {

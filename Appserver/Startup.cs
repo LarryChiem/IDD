@@ -1,14 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Net.Http;
 using Appserver.Data;
 using Microsoft.EntityFrameworkCore;
 using Common.Data;
@@ -77,11 +71,6 @@ namespace Appserver
                 name: "image_upload_route",
                 pattern: "{controller=Home}/{action=Timesheet}");
 
-            // Admin login route
-            endpoints.MapControllerRoute(
-                name: "admin_login_route",
-                pattern: "{controller=Admin}/{action=Login}/");
-
             // Check if Timesheet Ready
             endpoints.MapControllerRoute(
                 name: "timesheet_ready_route",
@@ -92,8 +81,8 @@ namespace Appserver
                 name: "test_timesheet_ready_route",
                 pattern: "{controller=Timesheet}/{action=ReadyTest}/");
 
-                // Validate Timesheet
-                endpoints.MapControllerRoute(
+            // Validate Timesheet
+            endpoints.MapControllerRoute(
                 name: "timesheet_validate_route",
                 pattern: "{controller=Timesheet}/{action=Validate}/");
 

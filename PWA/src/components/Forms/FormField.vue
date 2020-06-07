@@ -4,7 +4,7 @@
       <!-- Lock/Unlock icon to enable editing or reset & lock a parsed field -->
       <v-checkbox
         hide-details
-        off-icon="lock_open"
+        off-icon="refresh"
         on-icon="lock"
         v-model.lazy="isDisabled"
         @click.stop="askEdit($event)"
@@ -14,23 +14,19 @@
       <!-- Warning dialog upon editing a parsed field -->
       <v-dialog v-model="editDialog" max-width="500px">
         <v-card>
-          <v-card-title class="headline"
-            >Do you want to edit this field?</v-card-title
-          >
+          <v-card-title class="headline">
+            {{ $t('components_Forms_FormField_edit') }}
+          </v-card-title>
 
           <v-card-text>
-            This text was created based on the IDD timesheet that was uploaded.
-            Sometimes, the app can't quite read your handwritting correctly, and
-            you will need to edit before sumbitting. This will ensure that your
-            timesheet is not returned as incorrect. Please make any corrections
-            to match your timesheet exactly by selecting "Edit Field".
+            {{ $t('components_Forms_FormField_edit_desc') }}
           </v-card-text>
 
           <v-card-actions>
             <v-spacer></v-spacer>
 
             <v-btn color="red white--text" @click="closeDialog()">
-              Cancel edit
+              {{ $t('components_Forms_FormField_cancel') }}
             </v-btn>
 
             <v-btn
@@ -40,7 +36,7 @@
                 closeDialog();
               "
             >
-              Edit field
+              {{ $t('components_Forms_FormField_editbtn') }}
             </v-btn>
           </v-card-actions>
         </v-card>

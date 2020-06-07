@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AdminUI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace AdminUI.Data
 {

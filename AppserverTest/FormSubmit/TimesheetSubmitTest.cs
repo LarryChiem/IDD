@@ -1,18 +1,10 @@
 using NUnit.Framework;
 using System;
-using System.Diagnostics;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Reflection;
 using System.Collections.Generic;
-using Common.Models;
 using IDD;
-using Microsoft.EntityFrameworkCore;
-using Common.Data;
-using Appserver.Data;
-using Appserver.TextractDocument;
 
 namespace AppserverTest.FormSubmit
 {
@@ -56,6 +48,7 @@ namespace AppserverTest.FormSubmit
             string k = File.ReadAllText(path).Replace("\r", "");
             TimesheetForm obj = new TimesheetForm();
 
+            obj.id = 1;
             obj.clientName   = "Donald Duck";
             obj.prime        = "123456";
             obj.providerName = "Daughy Duck";
@@ -84,7 +77,7 @@ namespace AppserverTest.FormSubmit
             obj.employerSignature = true;
             obj.employerSignDate = "2020-04-01";
             obj.authorization = true;
-            obj.approval = true;
+            obj.approval = "";
             obj.providerSignature = true;
             obj.providerSignDate = "2020-04-01";
 

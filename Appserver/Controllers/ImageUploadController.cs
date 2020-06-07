@@ -3,26 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using System.IO;
-using System.Text;
 using System.Diagnostics;
-using System.Net.Http;
-using Amazon.Textract;
 using Amazon.Textract.Model;
 using System;
-using System.Configuration;
-using System.Data;
 using Appserver.Data;
 using Appserver.Models;
 using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.Azure;
-using Microsoft.Extensions.Configuration;
-using IDD;
-using Common.Models;
 using Common.Data;
-using Microsoft.Azure.Documents.SystemFunctions;
 using Microsoft.Extensions.Primitives;
 
 namespace Appserver.Controllers
@@ -100,13 +88,14 @@ namespace Appserver.Controllers
             }
 
             int stageId;
+            string stageGuid = Guid.NewGuid().ToString();
             if (pdf_responses.Count > 0)
             {
-                stageId = await saveSubmissionStage(await UploadToBlob(files), pdf_responses , formType);
+                stageId = await saveSubmissionStage(await UploadToBlob(files), pdf_responses, formType, stageGuid);
             }
             else
             {
-                stageId = await saveSubmissionStage(await UploadToBlob(files), image_responses, formType);
+                stageId = await saveSubmissionStage(await UploadToBlob(files), image_responses, formType, stageGuid);
             }
 
 
@@ -115,9 +104,10 @@ namespace Appserver.Controllers
             {
                 file_count = c,
                 skipped = skipped_files,
-                id = stageId
+                id = stageId,
+                guid = stageGuid
             }
-            );
+            ) ;
         }
 
 
@@ -160,11 +150,12 @@ namespace Appserver.Controllers
             return System.Text.Json.JsonSerializer.Serialize(uriString);
         }
 
-        private async Task<int> saveSubmissionStage<T>(string uriString, List<T> responses, AbstractFormObject.FormType formType)
+        private async Task<int> saveSubmissionStage<T>(string uriString, List<T> responses, AbstractFormObject.FormType formType, string guid)
         {
             // Create a SubmissionStaging to upload to SubmissionStaging table
             var ss = new SubmissionStaging
             {
+                Guid = guid,
                 ParsedTextractJSON = System.Text.Json.JsonSerializer.Serialize(responses),
                 UriString = uriString,
                 formType = formType

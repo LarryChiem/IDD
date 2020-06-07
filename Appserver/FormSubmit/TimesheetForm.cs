@@ -12,13 +12,13 @@ public class TimesheetForm: AbstractFormObject{
     }
 
     public int units { get; set; }
-    public string type { get; set; }
-    public string frequency { get; set; }
+    public string type { get; set; } = "";
+    public string frequency { get; set; } = "";
     
     [JsonProperty("timesheet")]
     [JsonConverter(typeof(TimesheetRowConverter))]
     internal List<TimesheetRowItem> Times { get => times; set => times = value; }
-    public string totalHours { get; set; }
+    public string totalHours { get; set; } = "";
     
     public void addTimeRow(string date, string start, string end, string total, string group) => 
         this.Times.Add(new TimesheetRowItem(date, start, end, total, group));
@@ -36,12 +36,16 @@ public class TimesheetForm: AbstractFormObject{
 
         foreach (var row in table)
         {
-            addTimeRow(
-              ConvertDate(row[0].ToString().Trim()),
-              FixHours(row[1].ToString()).ToString().Trim(),
-              FixHours(row[2].ToString()).ToString().Trim(),
-              FixHours(row[3].ToString()).ToString().Trim(),
-              ConvertInt(row[4].ToString()).ToString().Trim());
+            // Check for empty rows
+            if (!isEmptyTimesheetRow(row))
+            {
+                addTimeRow(
+                  ConvertDate(row[0].ToString().Trim()),
+                  FixHours(row[1].ToString()).ToString().Trim(),
+                  FixHours(row[2].ToString()).ToString().Trim(),
+                  FixHours(row[3].ToString()).ToString().Trim(),
+                  ConvertInt(row[4].ToString()).ToString().Trim());
+            }
         }
 
         if (lastrow.Count > 3)
@@ -55,16 +59,5 @@ public class TimesheetForm: AbstractFormObject{
                 totalHours = lastrow[3].ToString();
             }
         }
-    }
-    protected override void AddBackForm(Page page)
-    {
-        var formitems = page.GetFormItems();
-
-        serviceGoal = formitems[6].Value.ToString().Trim();
-        progressNotes = formitems[7].Value.ToString().Trim();
-        employerSignDate = ConvertDate(formitems[8].Value.ToString().Trim());
-        employerSignature = !string.IsNullOrEmpty(employerSignDate);
-        providerSignDate = ConvertDate(formitems[10].Value.ToString().Trim());
-        providerSignature = !string.IsNullOrEmpty(providerSignDate);
     }
 }

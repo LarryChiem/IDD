@@ -4,7 +4,7 @@
     <template v-slot:top>
       <v-toolbar flat>
         <v-toolbar-title>
-          Service Delivered On:
+          {{ $t('components_Forms_ServicesDelivered_ServicesDeliveredTable_title') }}
         </v-toolbar-title>
 
         <v-spacer></v-spacer>
@@ -12,28 +12,23 @@
         <!-- Warning dialog upon editing a parsed field -->
         <v-dialog max-width="500px" v-model="displayWarning">
           <v-card>
-            <v-card-title class="headline"
-              >Do you want to edit this field?</v-card-title
-            >
+            <v-card-title class="headline">
+              {{ $t('components_Forms_FormField_edit') }}
+            </v-card-title>
 
             <v-card-text>
-              This text was created based on the IDD timesheet that was
-              uploaded. Sometimes, the app can't quite read your handwritting
-              correctly, and you will need to edit before sumbitting. This will
-              ensure that your timesheet is not returned as incorrect. Please
-              make any corrections to match your timesheet exactly by selecting
-              "Edit Field". submission.
+              {{ $t('components_Forms_FormField_edit_desc') }}
             </v-card-text>
 
             <v-card-actions>
               <v-spacer></v-spacer>
 
               <v-btn color="red white--text" @click="closeWarning()">
-                Cancel edit
+                {{ $t('components_Forms_FormField_cancel') }}
               </v-btn>
 
               <v-btn color="green white--text" @click="warnContinue()">
-                Edit field
+                {{ $t('components_Forms_FormField_editbtn') }}
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -48,7 +43,7 @@
               <!-- Lock/unlock addding a row to the table -->
               <v-btn @click="askTableEdit($event)">
                 <v-icon color="primary" v-if="amtEdited < 1">mdi-lock</v-icon>
-                <v-icon v-else>mdi-lock-open</v-icon>
+                <v-icon v-else>refresh</v-icon>
               </v-btn>
 
               <!-- Add a row button -->
@@ -81,7 +76,7 @@
           <!-- The dialog box title -->
           <v-card>
             <v-card-title>
-              <span class="headline">{{ formTitle }}</span>
+              <span class="headline">{{ $t('components_Forms_ServicesDelivered_ServicesDeliveredTable_table_title') }}</span>
             </v-card-title>
 
             <!-- The form area -->
@@ -95,17 +90,20 @@
                   <FormField
                     v-bind="colValidation[field]"
                     v-model="editedItem[field]"
+                    :label="$t(colValidation[field].label)"
+                    :hint="$t(colValidation[field].hint)"
                   />
                 </v-row>
 
                 <v-row class="py-0 my-0">
-                  Total Hours: {{ editedItemTotalHours }}
+                  {{ $t('components_Forms_ServicesDelivered_totalhours') }}
+                  {{ editedItemTotalHours }}
                 </v-row>
 
                 <v-checkbox
-                  label="Group? (y/n)"
-                  true-value="Yes"
-                  false-value="No"
+                  :label="$t('components_Forms_ServicesDelivered_ServicesDeliveredTable_group')"
+                  true-value="1"
+                  false-value="0"
                   :input-value="editedItem.group"
                   @change="flipGroup(editedItem)"
                   @keyup.native.enter.stop="flipGroup(editedItem)"
@@ -119,10 +117,10 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="red white--text" @click="close">
-                Cancel
+                {{ $t('components_Forms_FormField_cancel') }}
               </v-btn>
               <v-btn color="green white--text" @click="save">
-                Save
+                {{ $t('components_Forms_ServicesDelivered_ServicesDeliveredTable_save') }}
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -158,6 +156,12 @@
         {{ item.totalHours }}
       </v-container>
     </template>
+    
+    <template v-slot:item.group="{ item }">
+      <v-container flat :class="getColor(item.errors, 'group')">
+        {{ item.group == "1" ? $t('yes') : $t('no') }}
+      </v-container>
+    </template>
 
     <!-- The action column of the table -->
     <template v-slot:item.actions="{ item }">
@@ -168,7 +172,7 @@
           class="ma-0 ma-0"
           color="primary"
           hide-details
-          off-icon="lock_open"
+          off-icon="refresh"
           on-icon="lock"
           tabindex="0"
           v-if="item.parsed === true"
@@ -192,15 +196,20 @@
 </template>
 
 <script>
+  import i18n from '@/plugins/i18n';
   import FormField from "@/components/Forms/FormField";
   import fieldPropsFile from "@/components/Forms/ServicesDelivered/ServicesDeliveredTableFields.json";
   import rules from "@/components/Utility/FormRules.js";
   import { TIME } from "@/components/Utility/Enums.js";
   import {
     subtractTime,
-    milliToFormat
+    milliToFormat,
+    isValid
   } from "@/components/Utility/TimeFunctions.js";
+  
   var moment = require("moment");
+  
+  import { mapFields } from "vuex-map-fields";
 
   export default {
     name: "ServicesDeliveredTable",
@@ -245,7 +254,15 @@
       willResign: {
         type: Boolean,
         default: false
-      }
+      },
+      editTable: {
+        type: Boolean,
+        default: false
+      },
+      amountEdited: {
+        type: Number,
+        default: 0 
+      },
     },
     data: function() {
       return {
@@ -254,20 +271,16 @@
           JSON.stringify(fieldPropsFile["colValidation"])
         ),
 
-        // Column headers and associated values for the table
-        headers: fieldPropsFile["headers"],
-
         // Record the amount of edited parsed fields and added rows
-        amtEdited: false,
+        amtEdited: this.amountEdited,
         allTotalHours: this.totalHours,
 
         // Hide the warning popup for unlocking a parsed row or adding a row
-        editingTable: false,
+        editingTable: this.editTable,
         displayWarning: false,
 
         // Hide the dialog popup for adding/editing a row
         displayEditDialog: false,
-        formTitle: "Add/Edit Row",
 
         // All entries of the data table
         allEntries: [],
@@ -281,7 +294,7 @@
           starttime: "",
           endtime: "",
           totalHours: "",
-          group: "No",
+          group: "0",
           disabled: false,
           parsed: false,
           errors: {}
@@ -294,7 +307,7 @@
           starttime: "",
           endtime: "",
           totalHours: "",
-          group: "No",
+          group: "0",
           disabled: false,
           parsed: false,
           errors: {}
@@ -307,6 +320,17 @@
     },
 
     computed: {
+      // Column headers and associated values for the table
+      headers: function() {
+        return [
+          { "text": i18n.t('ServicesDeliveredTable_date_label'), "align": "start", "value": "date", "sortable": false }, 
+          { "text": i18n.t('ServicesDeliveredTable_starttime_label'), "value": "starttime", "sortable": false },
+          { "text": i18n.t('ServicesDeliveredTable_endtime_label'), "value": "endtime", "sortable": false },
+          { "text": i18n.t('ServicesDelivered_totalHours_label'), "value": "totalHours", "sortable": false },
+          { "text": i18n.t('components_Forms_ServicesDelivered_ServicesDeliveredTable_group'), "value": "group", "sortable": false },
+          { "text": i18n.t('MileageTable_actions'), "value": "actions", "sortable": false }
+        ]
+      },
       editedItemTotalHours: function() {
         var start = this.editedItem["starttime"];
         var end = this.editedItem["endtime"];
@@ -314,7 +338,8 @@
         var formatTimeDiff = milliToFormat(timeDiff, TIME.TIME_24);
         this.$set(this.editedItem, "totalHours", formatTimeDiff);
         return formatTimeDiff;
-      }
+      },
+      ...mapFields(["newForm"]),
     },
 
     watch: {
@@ -346,8 +371,13 @@
           this.$set(this.colValidation[key], "rules", _transRules);
         }
       });
-      this.initialize();
-      this.validate();
+      if (this.newForm === true) {
+        this.initialize();
+        this.validate();
+      } else {
+        this.rebind();
+        this.validate();
+      }
     },
 
     methods: {
@@ -428,17 +458,17 @@
 
       // Flip the true/false value of the 'group' for a given item
       flipGroup(item) {
-        if (item.group === "Yes") {
-          item.group = "No";
+        if (item.group === "1") {
+          item.group = "0";
         } else {
-          item.group = "Yes";
+          item.group = "1";
         }
       },
 
       // Delete a single row of the table
       deleteItem(item) {
         const index = this.allEntries.indexOf(item);
-        if (confirm("Are you sure you want to delete this item?")) {
+        if (confirm(i18n.t('components_Forms_Mileage_delete'))) {
           this.allEntries.splice(index, 1);
           this.validate();
           this.$emit("input", this.allEntries);
@@ -590,7 +620,7 @@
                 }
               });
               if (wasInvalid === true) {
-                entry["errors"][col].push("Invalid input");
+                entry["errors"][col].push(i18n.t('components_Forms_ServicesDelivered_err0'));
               }
             }
           });
@@ -606,16 +636,16 @@
             var start = entry["starttime"];
             var end = entry["endtime"];
             var timeDiff = subtractTime(start, end, TIME.TIME_12);
-            if (timeDiff <= 0) {
-              entry["errors"]["starttime"].push("Invalid time interval");
-              entry["errors"]["endtime"].push("Invalid time interval");
+            if (timeDiff <= 0) { 
+              entry["errors"]["starttime"].push(i18n.t('components_Forms_ServicesDelivered_err2'));
+              entry["errors"]["endtime"].push(i18n.t('components_Forms_ServicesDelivered_err2'));
             }
 
             var formatTimeDiff = moment
               .duration({ minutes: timeDiff })
               .format(TIME.TIME_24);
             if (formatTimeDiff.localeCompare(entry["totalHours"]) === 0) {
-              entry["errors"]["totalHours"].push("Invalid calculation");
+              entry["errors"]["totalHours"].push(i18n.t('components_forms_servicesdelivered_err3'));
             }
           }
         });
@@ -661,12 +691,15 @@
           var end = entry["date"] + " " + entry["endtime"];
 
           if (index !== 0) {
-            // If the start is before the end of the prev's end, there is an overlap
-            var timeDiff = subtractTime(prev_end, start, TIME.FULL_DATE);
-            if (timeDiff <= 0) {
-              ret += 1;
-              entry["errors"]["starttime"].push("Invalid time interval");
-              entry["errors"]["endtime"].push("Invalid time interval");
+            if (isValid(prev_end, TIME.FULL_DATE) &&
+              isValid(start, TIME.FULL_DATE)) {
+              // If the start is before the end of the prev's end, there is an overlap
+              var timeDiff = subtractTime(prev_end, start, TIME.FULL_DATE);
+              if (timeDiff <= 0) {
+                ret += 1;
+                entry["errors"]["starttime"].push(i18n.t('components_Forms_ServicesDelivered_err4'));
+                entry["errors"]["endtime"].push(i18n.t('components_Forms_ServicesDelivered_err4'));
+              }
             }
           }
 
@@ -696,7 +729,7 @@
           // For each error col in an entry, check the amount of errors
           Object.entries(entry["errors"]).forEach(([col, errors]) => {
             if (errors.length > 0) {
-              console.log("Row", index, "[", col, "]: ", errors);
+              console.log(i18n.t('components_forms_servicesdelivered_row'), index, "[", col, "]: ", errors);
             }
           });
         });
@@ -711,7 +744,48 @@
           }
         }
         return ret;
-      }
-    }
+      },
+      // Re-bind data to the proper fields from parent's props
+      rebind() {
+        if (process.env.NODE_ENV === 'development' && this.amountEdited === 0) {
+          this.initialize()
+          this.validate()
+        } else {
+          // For each entry from props, create a new table row
+          if (this.value !== null) {
+            // For each timesheet table entry, create a new set 'obj'
+            this.value.forEach(row => {
+              let obj = {};
+
+              // Only add attributes that fit an existing column header
+              Object.entries(row).forEach(([key, value]) => {
+                if (key in this.colValidation) {
+                  this.$set(obj, key, value);
+                } else if (['parsed', 'disabled', 'parsedValue'].includes(key)) {
+                  this.$set(obj, key, value);
+                } else if (key !== 'errors') {
+                  console.log(
+                    "Unrecognized in form field from cache: " +
+                      `${key} - ${value}`
+                  );
+                }
+              });
+
+              // If the row was not empty, add it to the table
+              if (Object.keys(obj).length > 0) {
+                if (!('parsed' in obj)) {
+                  this.$set(obj, 'parsed', true);
+                }
+                if (!('disabled' in obj)) {
+                  this.$set(obj, 'disabled', true);
+                }
+                this.$set(obj, "errors", {});
+                this.allEntries.push(obj);
+              }
+            });
+          }
+        }
+      },
+    },
   };
 </script>

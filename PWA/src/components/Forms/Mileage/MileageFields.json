@@ -1,96 +1,101 @@
 {
   "clientName": {
     "counter": 50,
-    "hint": "Full name",
-    "label": "Customer Name",
+    "hint": "ServicesDelivered_clientName_hint",
+    "label": "ServicesDelivered_clientName_label",
     "rules": ["required", "name"]
   },
   "prime": {
     "counter": 8,
-    "hint": "Alphanumeric input",
-    "label": "Prime",
+    "hint": "ServicesDelivered_prime_hint",
+    "label": "ServicesDelivered_prime_label",
     "rules": ["required", "alphanumeric"]
   },
   "submissionDate": {
     "counter": 7,
-    "hint": "YYYY-MM",
-    "label": "Pay Period Month and Year",
+    "hint": "ServicesDelivered_submissionDate_hint",
+    "label": "ServicesDelivered_submissionDate_label",
     "rules": ["required", "monthYear"]
   },
   "providerName": {
     "counter": 50,
-    "hint": "Full name",
-    "label": "Provider Name",
+    "hint": "ServicesDelivered_providerName_hint",
+    "label": "ServicesDelivered_providerName_label",
     "rules": ["required", "name"]
   },
   "providerNum": {
     "counter": 6,
-    "hint": "Six digit number found on xyz",
-    "label": "Provider Number",
+    "hint": "ServicesDelivered_providerNum_hint",
+    "label": "ServicesDelivered_providerNum_label",
     "rules": ["required", "numeric"]
   },
   "scpaName": {
     "counter": 50,
-    "hint": "Name of the SC PA",
-    "label": "SC/PA Name",
+    "hint": "ServicesDelivered_scpaName_hint",
+    "label": "ServicesDelivered_scpaName_label",
     "rules": ["required"]
   },
   "brokerage": {
     "counter": 100,
-    "hint": "Organization name",
-    "label": "CM Organization",
+    "hint": "ServicesDelivered_brokerage_hint",
+    "label": "ServicesDelivered_brokerage_label",
     "rules": ["required"]
   },
   "serviceAuthorized": {
     "counter": 100,
-    "hint": "Service provided",
-    "label": "Service",
+    "hint": "ServicesDelivered_serviceAuthorized_hint",
+    "label": "ServicesDelivered_serviceAuthorized_label",
     "rules": ["required"]
   },
   "totalMiles": {
     "hint": "A number",
-    "label": "Total Miles",
+    "hint": "Mileage_totalMiles_hint",
     "rules": ["required", "numeric"]
   },
   "serviceGoal": {
     "auto_grow": true,
     "counter": 250,
-    "label": "Service Goal",
+    "hint": "ServicesDelivered_serviceGoal_hint",
+    "label": "ServicesDelivered_serviceGoal_label",
     "rows": 1,
     "rules": ["required"]
   },
   "progressNotes": {
     "auto_grow": true,
     "counter": 500,
-    "label": "Progress Notes",
+    "hint": "ServicesDelivered_progressNotes_hint",
+    "label": "ServicesDelivered_progressNotes_label",
     "rows": 5,
     "rules": ["required"]
   },
   "employerSignDate": {
     "hint": "YYYY-MM-DD",
-    "label": "Date",
+    "hint": "ServicesDelivered_employerSignDate_hint",
+    "label": "ServicesDelivered_employerSignDate_label",
     "rules": ["required", "date"]
   },
   "employerSignature": {
     "field_type": 1,
-    "label": "Customer Employer or Employer Rep Signature"
+    "hint": "ServicesDelivered_employerSignature_hint",
+    "label": "ServicesDelivered_employerSignature_label"
   },
   "providerSignDate": {
-    "hint": "YYYY-MM-DD",
-    "label": "Date",
+    "hint": "ServicesDelivered_providerSignDate_hint",
+    "label": "ServicesDelivered_providerSignDate_label",
     "rules": ["required", "date"]
   },
   "providerSignature": {
     "field_type": 1,
-    "label": "Provider/Employee Signature"
+    "hint": "ServicesDelivered_providerSignature_hint",
+    "label": "ServicesDelivered_providerSignature_label"
   },
   "authorization": {
     "field_type": 1,
-    "label": "I authorize the CDDP/Brokerage/CIIS staff to enter the data reported on this form into eXPRS on my behalf for claims creation and payment."
+    "label": "ServicesDelivered_authorization_label"
   },
   "approval": {
-    "counter": 3,
-    "label": "Provider Initials",
+    "counter": 10,
+    "label": "ServicesDelivered_approval_label",
     "rules": ["required", "alpha"]
   }
 }

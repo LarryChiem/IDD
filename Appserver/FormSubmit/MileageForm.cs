@@ -13,7 +13,7 @@ namespace Appserver.FormSubmit
         [JsonProperty("mileagesheet")]
         [JsonConverter(typeof(MileageRowConverter))]
         internal List<MileageRowItem> Mileage { get => miles; set => miles = value; }
-        public string totalMiles { get; set; }
+        public string totalMiles { get; set; } = "0";
         public void addMileRow(string date, string miles, string group, string purpose) =>
             this.Mileage.Add(new MileageRowItem(date, miles, group, purpose));
 
@@ -30,29 +30,21 @@ namespace Appserver.FormSubmit
 
             foreach (var row in table)
             {
-                addMileRow(
-                  ConvertDate(row[0].ToString().Trim()), // Date
-                  row[1].ToString().Trim(), // Miles
-                  ConvertInt(row[2].ToString()).ToString().Trim(), // Group
-                  row[3].ToString().Trim() // Purpose
-                );
+                if(!isEmptyMileageRow(row))
+                {
+                    addMileRow(
+                      ConvertDate(row[0].ToString().Trim()), // Date
+                      row[1].ToString().Trim(), // Miles
+                      ConvertInt(row[2].ToString()).ToString().Trim(), // Group
+                      row[3].ToString().Trim() // Purpose
+                    );
+                }
             }
 
             if (lastrow.Count > 3)
             {
                 totalMiles = lastrow[1].ToString().Trim();
             }
-        }
-        protected override void AddBackForm(TextractDocument.Page page)
-        {
-            var formitems = page.GetFormItems();
-
-            serviceGoal = formitems[7].Value.ToString().Trim();
-            progressNotes = formitems[8].Value.ToString().Trim();
-            employerSignDate = ConvertDate(formitems[9].Value.ToString().Trim());
-            employerSignature = !string.IsNullOrEmpty(employerSignDate);
-            providerSignDate = ConvertDate(formitems[11].Value.ToString().Trim());
-            providerSignature = !string.IsNullOrEmpty(providerSignDate);
         }
     }
 }

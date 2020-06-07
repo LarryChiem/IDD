@@ -1,24 +1,58 @@
 <template>
   <div class="example-drag">
     <template v-if="onlineStatus">
-      <div class="upload">
-        <ul v-if="!files.length">
-          <td colspan="7">
-            <div class="text-center p-5">
-              <h4>Drop files anywhere to upload<br />or</h4>
-              <label for="file" class="btn btn-lg btn-primary"
-                >Select Files</label
-              >
-            </div>
-          </td>
-        </ul>
-
-        <div
-          v-show="$refs.upload && $refs.upload.dropActive"
-          class="drop-active"
+      <v-snackbar
+        timeout=9000
+        v-model="snackbar"
+      >
+        <a 
+          class="white--text"
+          target="_blank" 
+          title="Link to How to Print/Download eXPRS Timesheet"
+          :href="xPRSLink" 
         >
-          <h3>Drop files to upload</h3>
-        </div>
+          {{ $t('components_Forms_FileUploader_xPRS') }}
+        </a>
+        <v-btn
+          color="red"
+          dark
+          text
+          @click="snackbar=false"
+        >
+          {{ $t('close') }}
+        </v-btn>
+      </v-snackbar>
+
+      <div class="upload">
+        <v-container v-if="!files.length" class="pa-0 mx-0" fluid>
+          <v-row class="pa-0 ma-0">
+            <v-col class="text-center pa-0 ma-0">
+              <v-alert
+                class="text-center title px-3 py-5 ma-0"
+                width=80vw
+                color="info"
+                outlined
+                dense
+                text
+              >
+                <div v-html="$t('components_Forms_FileUploader_dropfiles')"></div>
+                <label for="file" class="btn btn-primary">
+                  {{ $t('components_Forms_FileUploader_selectfiles') }}
+                </label>
+              </v-alert>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col
+              v-show="$refs.upload && $refs.upload.dropActive"
+              class="drop-active"
+            >
+              <h3>
+                {{ $t('components_Forms_FileUploader_drop') }}
+              </h3>
+            </v-col>
+          </v-row>
+        </v-container>
 
         <v-container>
           <v-row>
@@ -33,13 +67,13 @@
                     :drop-directory="true"
                     :maximum="2"
                     :size="1024 * 1024 * 10"
-                    accept="image/*, application/pdf"
+                    accept="image/*, application/pdf, image/heic"
                     @input-file="inputFile"
                     v-model="files"
                     ref="upload"
                   >
                     <i class="fa fa-plus"></i>
-                    Select files
+                    {{ $t('components_Forms_FileUploader_select') }}
                   </file-upload>
 
                   <button
@@ -49,7 +83,7 @@
                     @click.prevent="$refs.upload.active = true"
                   >
                     <i class="fa fa-arrow-up" aria-hidden="true"></i>
-                    Start Upload
+                    {{ $t('components_Forms_FileUploader_startupload') }}
                   </button>
 
                   <button
@@ -59,14 +93,15 @@
                     @click.prevent="$refs.upload.active = false"
                   >
                     <i class="fa fa-stop" aria-hidden="true"></i>
-                    Stop Upload
+                    {{ $t('components_Forms_FileUploader_stopupload') }}
                   </button>
                 </div>
               </div>
               <div v-else>
                 <div class="text-center">
-                  <v-btn color="red" ref="files" @click="reset">
-                    Reset Files
+                  <v-btn class="white--text"
+                  color="red" ref="files" @click="reset">
+                    {{ $t('components_Forms_FileUploader_resetfiles') }}
                   </v-btn>
                 </div>
               </div>
@@ -77,8 +112,29 @@
                     <span data-testid="name">{{ file.name }}</span> -
                     <!--span>{{ file.size | formatSize }}</span-->
                     <span v-if="file.error">{{ file.error }}</span>
-                    <span v-else-if="file.success">success</span>
-                    <span v-else-if="file.active">active</span>
+                    <span v-else-if="file.success">{{ $t('components_Forms_FileUploader_success') }}</span>
+                    <span v-else-if="file.active">
+                      <v-dialog
+                        value="true"
+                        hide-overlay
+                        persistent
+                        width="300"
+                      >
+                        <v-card
+                          color="primary"
+                          dark
+                        >
+                          <v-card-text>
+                            {{ $t('components_Forms_FileUploader_processing') }}
+                            <v-progress-linear
+                              indeterminate
+                              color="white"
+                              class="mb-0"
+                            ></v-progress-linear>
+                          </v-card-text>
+                        </v-card>
+                      </v-dialog>
+                    </span>
                     <span v-else></span>
                   </li>
                 </ul>
@@ -92,10 +148,10 @@
                     :loading="loading"
                     :disabled="loading"
                     color="success"
-                    class="ma-2 white-text"
-                    @click="loader = loading"
+                    class="ma-2 white--text"
+                    @click="completeForm()"
                   >
-                    Complete Form
+                    {{ $t('components_Forms_FileUploader_continue') }}
                     <v-icon right dark>mdi-cloud-upload</v-icon>
                   </v-btn>
                 </div>
@@ -106,12 +162,12 @@
       </div>
     </template>
     <template v-else>
-      OFFLINE: can't upload file unless you are online :(
+      {{ $t('components_Forms_FileUploader_offline') }}
     </template>
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss"  scoped>
   .example-drag.drop-space {
     padding-inline-start: 0;
     background: #000;
@@ -149,7 +205,7 @@
     z-index: 9999;
     opacity: 0.6;
     text-align: center;
-    background: #000;
+    color: red;
   }
   .example-drag.drop-active h3 {
     margin: -0.5em 0 0;
@@ -161,7 +217,7 @@
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);
     font-size: 40px;
-    color: #fff;
+    color: red;
     padding: 0;
   }
   .custom-loader {
@@ -223,6 +279,28 @@
       },
     },
     methods: {
+      completeForm() {
+        this.loading = true;
+        const l = this.loader;
+        this[l] = !this[l];
+        let self = this;
+        //Retrieves json response from timesheet.
+        if (!this.getUpdated) {
+          this.urlGet = this.urlGet.concat(this.formId).concat("&guid=").concat(this.guid);
+          this.getUpdated = true;
+          axios
+            .get(this.urlGet)
+            .then(function (response) {
+              self.$emit("success", response["data"]);
+            })
+            .catch(function (error) {
+              console.log(error);
+              self.$emit("error", error);
+            });
+        }
+        setTimeout(() => (this[l] = false), 30000);
+        this.loader = null;
+      },
       //Checks if all of the files are ready to be submitted.
       check() {
         if (!this.files.length) return false;
@@ -240,6 +318,9 @@
       reset() {
         this.files = [];
         this.submitted = false;
+        this.loader = null;
+        this.loading = false;
+        this.getUpdated = false;
         this.$emit("reset");
       },
       customAction() {
@@ -257,7 +338,7 @@
             },
           })
           .then(function (response) {
-            console.log(response);
+            console.log("Response from Appserver, FileUploader:293", response);
             for (let i = 0; i < self.files.length; i++) {
               self.files[i].active = false;
               self.files[i].success = true;
@@ -265,6 +346,7 @@
             self.files.active = false;
             self.files.success = true;
             self.formId = response["data"]["id"];
+            self.guid = response["data"]["guid"];
             self.submitted = true;
           })
           .catch(function (error) {
@@ -278,6 +360,7 @@
           if (!newFile.active) {
             jsonResponse = JSON.parse(newFile.xhr.response);
             this.formId = jsonResponse["id"];
+            this.guid = jsonResponse["guid"];
           }
         }
         if (newFile && oldFile && !newFile.active && oldFile.active)
@@ -285,49 +368,28 @@
             if (!newFile.active) {
               jsonResponse = JSON.parse(newFile.xhr.response);
               this.formId = jsonResponse["id"];
+              this.guid = jsonResponse["guid"];
             }
           }
       },
     },
     data() {
       return {
+        xPRSLink: 'https://apps.state.or.us/exprsDocs/HowToPrintPSWTimesheetsFromeXPRS.pdf',
+        snackbar: true,
         files: [],
         loader: null, //Calls our form retrieval and displays loading progress
         loading: false, //Is form retrieval loading
         submitted: false,
         getUpdated: false,
         urlGet: process.env.VUE_APP_SERVER_URL.concat(
-          "Timesheet/ReadyTest?id="
+          "Timesheet/Ready?id="
         ), //Retrieve timesheet
         urlPost: process.env.VUE_APP_SERVER_URL.concat("ImageUpload/DocAsForm"), //Post AppServer
       };
     },
     computed: {
-      ...mapFields(["formChoice", "formId", "onlineStatus"]),
-    },
-    //Watches for the user to press submit. BAD!
-    watch: {
-      loader() {
-        const l = this.loader;
-        this[l] = !this[l];
-        let self = this;
-        //Retrieves json response from timesheet.
-        if (!this.getUpdated) {
-          this.urlGet = this.urlGet.concat(this.formId);
-          this.getUpdated = true;
-          axios
-            .get(this.urlGet)
-            .then(function (response) {
-              self.$emit("success", response["data"]);
-            })
-            .catch(function (error) {
-              console.log(error);
-              self.$emit("error", error);
-            });
-        }
-        setTimeout(() => (this[l] = false), 30000);
-        this.loader = null;
-      },
+      ...mapFields(["formChoice", "formId", "guid", "onlineStatus"]),
     },
   };
 </script>

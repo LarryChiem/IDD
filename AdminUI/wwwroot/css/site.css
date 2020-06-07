@@ -3,8 +3,8 @@
 .leftnav {
     height: 100%; /* Full-height: remove this if you want "auto" height */
     width: 200px; /* Set the width of the sidebar */
-    position: fixed; /* Fixed Sidebar (stay in place on scroll) */
-    z-index: 1;  /*Stay on top */
+    position: absolute; /* Absolute Sidebar (The element is positioned relative to its first positioned (not static) ancestor element) */
+    z-index: 1; /*Stay on top */
     background-color: #006a4e; /* Green */
     overflow-x: hidden; /* Disable horizontal scroll */
     padding: 25px 10px;

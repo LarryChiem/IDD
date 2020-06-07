@@ -1,0 +1,397 @@
+﻿@using Common.Models
+@model HomeModel
+<table width="100%">
+<thead>
+<tr class="color-div" style="background-color: #0294B5">
+    <!--This ugly block of code can probably be fixed, but I'm not sure how tbh. Right now each 
+    HTML ActionLink sorts the data in the table and having 2 sets for each column allows the 
+    user to toggle back and forth between descending and ascending-->
+
+    <th>@Html.ActionLink("ID", "Index", new
+        {
+            sortOrder = @Model.SortOrder.Equals("id", StringComparison.CurrentCultureIgnoreCase) ? "id_desc" : "id",
+            formType = Model.FormType,
+            pname = Model.PName,
+            prime = Model.Prime,
+            cname = Model.CName,
+            datefrom = Model.DateFrom,
+            dateto = Model.DateTo,
+            status = Model.Status,
+            page = Model.Page,
+            perPage = Model.PerPage
+
+        })</th>
+
+    <th>@Html.ActionLink("Provider Name", "Index", new
+        {
+            sortOrder = @Model.SortOrder.Equals("pname", StringComparison.CurrentCultureIgnoreCase) ? "pname_desc" : "pname",
+            formType = Model.FormType,
+            pname = Model.PName,
+            prime = Model.Prime,
+            cname = Model.CName,
+            datefrom = Model.DateFrom,
+            dateto = Model.DateTo,
+            status = Model.Status,
+            page = Model.Page,
+            perPage = Model.PerPage
+
+        })</th>
+    <th>@Html.ActionLink("Provider ID", "Index", new
+        {
+            sortOrder = @Model.SortOrder.Equals("ProviderId", StringComparison.CurrentCultureIgnoreCase) ? "ProviderId_desc" : "ProviderId",
+            formType = Model.FormType,
+            pname = Model.PName,
+            prime = Model.Prime,
+            cname = Model.CName,
+            datefrom = Model.DateFrom,
+            dateto = Model.DateTo,
+            status = Model.Status,
+            page = Model.Page,
+            perPage = Model.PerPage
+        })</th>
+
+    <th>@Html.ActionLink("Client Name", "Index", new
+        {
+            sortOrder = @Model.SortOrder.Equals("cname", StringComparison.CurrentCultureIgnoreCase) ? "cname_desc" : "cname",
+            formType = Model.FormType,
+            pname = Model.PName,
+            prime = Model.Prime,
+            cname = Model.CName,
+            datefrom = Model.DateFrom,
+            dateto = Model.DateTo,
+            status = Model.Status,
+            page = Model.Page,
+            perPage = Model.PerPage
+        })</th>
+    <th>@Html.ActionLink("Client Prime", "Index", new
+        {
+            sortOrder = @Model.SortOrder.Equals("prime", StringComparison.CurrentCultureIgnoreCase) ? "prime_desc" : "prime",
+            formType = Model.FormType,
+            pname = Model.PName,
+            prime = Model.Prime,
+            cname = Model.CName,
+            datefrom = Model.DateFrom,
+            dateto = Model.DateTo,
+            status = Model.Status,
+            page = Model.Page,
+            perPage = Model.PerPage
+        })</th>
+    <th>Total Hours</th>
+    <th>@Html.ActionLink("Date Submitted", "Index", new
+        {
+            sortOrder = @Model.SortOrder.Equals("date", StringComparison.CurrentCultureIgnoreCase) ? "date_desc" : "date",
+            formType = Model.FormType,
+            pname = Model.PName,
+            prime = Model.Prime,
+            cname = Model.CName,
+            datefrom = Model.DateFrom,
+            dateto = Model.DateTo,
+            status = Model.Status,
+            page = Model.Page,
+            perPage = Model.PerPage
+        })</th>
+    <th>Lock Status</th>
+    <th>Edited (Y/N)</th>
+</tr>
+</thead>
+<tfoot>
+<tr>
+    <td colspan="7">
+        <div class="row justify-content-end">
+            <div class="col-md-auto text-right">Total entries matching query: @Model.TotalSubmissions</div>
+            <div class="col-md-auto text-right">Page @Model.Page of @Model.TotalPages</div>
+            <div class="col-md-auto">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination pagination-sm">
+                        @if (Model.Page > 1)
+                        {
+                            <li class="page-item">@Html.ActionLink("First", "Index", new
+                                                  {
+                                                      sortOrder = Model.SortOrder,
+                                                      formType = Model.FormType,
+                                                      pname = Model.PName,
+                                                      prime = Model.Prime,
+                                                      cname = Model.CName,
+                                                      datefrom = Model.DateFrom,
+                                                      dateto = Model.DateTo,
+                                                      status = Model.Status,
+                                                      page = 1,
+                                                      perPage = Model.PerPage
+                                                  }, new {@class = "page-link"})
+                            </li>
+                            <li class="page-item">@Html.ActionLink("<", "Index", new
+                                                  {
+                                                      sortOrder = Model.SortOrder,
+                                                      formType = Model.FormType,
+                                                      pname = Model.PName,
+                                                      prime = Model.Prime,
+                                                      cname = Model.CName,
+                                                      datefrom = Model.DateFrom,
+                                                      dateto = Model.DateTo,
+                                                      status = Model.Status,
+                                                      page = Model.Page - 1,
+                                                      perPage = Model.PerPage
+                                                  }, new {@class = "page-link"})
+                            </li>
+                            <li class="page-item">@Html.ActionLink((@Model.Page - 1).ToString(), "Index", new
+                                                  {
+                                                      sortOrder = Model.SortOrder,
+                                                      formType = Model.FormType,
+                                                      pname = Model.PName,
+                                                      prime = Model.Prime,
+                                                      cname = Model.CName,
+                                                      datefrom = Model.DateFrom,
+                                                      dateto = Model.DateTo,
+                                                      status = Model.Status,
+                                                      page = Model.Page - 1,
+                                                      perPage = Model.PerPage
+                                                  }, new {@class = "page-link"})
+                            </li>
+                        }
+                        <li class="page-item active">@Html.ActionLink(@Model.Page.ToString(), "Index", new
+                                                     {
+                                                         sortOrder = Model.SortOrder,
+                                                         formType = Model.FormType,
+                                                         pname = Model.PName,
+                                                         prime = Model.Prime,
+                                                         cname = Model.CName,
+                                                         datefrom = Model.DateFrom,
+                                                         dateto = Model.DateTo,
+                                                         status = Model.Status,
+                                                         page = Model.Page,
+                                                         perPage = Model.PerPage
+                                                     }, new {@class = "page-link"})
+                        </li>
+                        @if (Model.Page < Model.TotalPages)
+                        {
+                            <li class="page-item">@Html.ActionLink((@Model.Page + 1).ToString(), "Index", new
+                                                  {
+                                                      sortOrder = Model.SortOrder,
+                                                      formType = Model.FormType,
+                                                      pname = Model.PName,
+                                                      prime = Model.Prime,
+                                                      cname = Model.CName,
+                                                      datefrom = Model.DateFrom,
+                                                      dateto = Model.DateTo,
+                                                      status = Model.Status,
+                                                      page = Model.Page + 1,
+                                                      perPage = Model.PerPage
+                                                  }, new {@class = "page-link"})
+                            </li>
+                            <li class="page-item">@Html.ActionLink(">", "Index", new
+                                                  {
+                                                      sortOrder = Model.SortOrder,
+                                                      formType = Model.FormType,
+                                                      pname = Model.PName,
+                                                      prime = Model.Prime,
+                                                      cname = Model.CName,
+                                                      datefrom = Model.DateFrom,
+                                                      dateto = Model.DateTo,
+                                                      status = Model.Status,
+                                                      page = Model.Page + 1,
+                                                      perPage = Model.PerPage
+                                                  }, new {@class = "page-link"})
+                            </li>
+                            <li class="page-item">@Html.ActionLink("Last", "Index", new
+                                                  {
+                                                      sortOrder = Model.SortOrder,
+                                                      formType = Model.FormType,
+                                                      pname = Model.PName,
+                                                      prime = Model.Prime,
+                                                      cname = Model.CName,
+                                                      datefrom = Model.DateFrom,
+                                                      dateto = Model.DateTo,
+                                                      status = Model.Status,
+                                                      page = Model.TotalPages,
+                                                      perPage = Model.PerPage
+                                                  }, new {@class = "page-link"})
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </td>
+</tr>
+</tfoot>
+<tbody>
+@{
+    var color = "#8FFDDE6";
+    foreach (Timesheet t in Model.Submissions)
+    {
+        //I guess this is how you do zebra print tables in CSHTML? n-thchild CSS doesn't work in IE
+        color = color == "#8FDDE6" ? "#E6EFF3" : "#8FDDE6";
+        <tr class="color-div" style="background-color: @color">
+            <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.Id</a></td>
+            <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.ProviderName</a></td>
+            <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.ProviderId</a></td>
+            <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.ClientName</a></td>
+            <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.ClientPrime</a></td>
+            <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.TotalHours</a></td>
+            <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.Submitted</a></td>
+            @if (t.LockInfo == null)
+            {
+                <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id"> </a></td>
+            }
+            else if (t.LockInfo.User.Equals(User.Identity.Name))
+            {
+                <td class="table-success"><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.LockInfo.User</a></td>
+            }
+            else
+            {
+                <td class="table-danger"><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.LockInfo.User</a></td>
+            }
+            @if (t.Edited)
+            {
+                <td class="table-warning"><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">Y</a></td>
+            }
+            else
+            {
+                <td class="table-success"><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">N</a></td>
+            }
+        </tr>
+        <div class="modal fade" id="@("sheet" + t.Id)" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">@t.ProviderName
+                            (<span class="providerId" title="Provider Id">@t.ProviderId</span>)<button class="btn btn-default leftMargin4px" onclick="copyProviderId(this)" title="Copies the Provider's Id">Copy</button>
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="flex-container column">
+                            <div class="row">
+                                <div class="column">
+                                    <label>Status:</label> @(string.IsNullOrEmpty(t.UserActivity) ? "Pending" : t.UserActivity)
+                                </div>
+                            </div>
+                            @if (t.Status.Equals("Rejected", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                <div class="row">
+                                    <div class="column"><label>Rejection Reason:</label> @t.RejectionReason</div></div>
+                            }
+                            <div class="row">
+                                <div class="column">
+                                    <label>Client Name:</label> @t.ClientName
+                                </div>
+                                <div class="column">
+                                    <label>Submitted on:</label> @t.Submitted.ToString("MM-dd-yyyy")
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="column">
+                                    <label>Client Prime:</label> @t.ClientPrime
+                                </div>
+                                <div class="column">
+                                    <label>Total Hours:</label> @t.TotalHours
+                                </div>
+                            </div>
+                            <div class="table">
+                                <div class="row" style="background-color: #0294B5">
+                                    <div class="col"><b>Date</b></div>
+                                    <div class="col"><b>Start/Time IN</b></div>
+                                    <div class="col"><b>End/Time OUT</b></div>
+                                    <div class="col"><b>Hours</b></div>
+                                    <div class="col"><b>Group? (yes/no)</b></div>
+                                </div>
+                                @{
+                                    var modalColor = "#8FDDE6";
+                                    foreach (var e in t.TimeEntries)
+                                    {
+                                        modalColor = modalColor == "#8FDDE6" ? "#E6EFF3" : "#8FDDE6";
+                                        <div class="row" style="background-color: @modalColor">
+                                            <div class="col">@e.Date.ToString("MM-dd-yyyy")</div>
+                                            <div class="col">@e.In.ToString("h:mm tt")</div>
+                                            <div class="col">@e.Out.ToString("h:mm tt")</div>
+                                            <div class="col">@e.Hours</div>
+                                            <div class="col">@(e.Group ? "Yes" : "No")</div>
+                                        </div>
+                                    }
+                                }
+                                <div class="row table-success font-weight-bold">
+                                    <div class="col"></div>
+                                    <div class="col"></div>
+                                    <div class="col" style="text-align: right;">Total:</div>
+                                    <div class="col" style="text-align: left;">@t.TotalHours Hours</div>
+                                    <div class="col"></div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer @("modal-footer" + @t.Id)">
+                        <form asp-controller="Submission" asp-action="Process">
+                            <a class="btn btn-secondary" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id" title="Opens a full-detailed page on this submission">More Details</a>
+                            <input type="hidden" name="id" value="@t.Id"/>
+                            <input type="hidden" name="modal" value="true"/>
+                            <input class="btn btn-primary" name="Status" value="Approve" type="submit" formnovalidate>
+                            <input class="btn btn-danger" name="Status" value="Reject" type="submit">
+                            <input type="text" name="RejectionReason" placeholder="Rejection Reason" required/>
+                            @Html.HiddenFor(Model => Model.SortOrder)
+                            @Html.HiddenFor(Model => Model.DateTo)
+                            @Html.HiddenFor(Model => Model.DateFrom)
+                            @Html.HiddenFor(Model => Model.PName)
+                            @Html.HiddenFor(Model => Model.CName)
+                            @Html.HiddenFor(Model => Model.Prime)
+                            @Html.HiddenFor(Model => Model.Status)
+                            @Html.HiddenFor(Model => Model.FormType)
+                            @Html.HiddenFor(Model => Model.Page)
+                            @Html.HiddenFor(Model => Model.ProviderId)
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+</tbody>
+</table>
+<text>
+    <script src="~/lib/jquery/dist/jquery.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        function copyProviderId(element) {
+            var msg = $(element).closest("h5").find("span.providerId").text();
+            console.log($(element).closest("h5"));
+            try {
+                navigator.clipboard.writeText(msg);
+                console.log('Page URL copied to clipboard');
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+            }
+        }
+
+        var submission_Ids = [];
+        @foreach (var t in Model.Submissions)
+        {
+            @:submission_Ids.push("@t.Id");
+        }
+        var i;
+        for (i = 0; i < submission_Ids.length; i++) {
+            (function (x) {
+                $(document).ready(function () {
+                    //On open (shown.bs.modal),
+                    //if lock exists, disable processing and indicate sheet is locked
+                    //else no lock, create lock.
+                    $('#sheet' + x).on('show.bs.modal', function () {
+                        //data returns true if the current user holds the lock to the sheet
+                        //TODO: get this to return a string and display who holds the lock
+                        $.get("/Home/GetLockInfo", { id: x }, function (data) {
+                            if (!data) {
+                                $(".modal-footer" + x).html('<div class="alert alert-danger"><b>Someone is already reviewing this submission.</b></div>');
+                            }
+                        });
+                    });
+                    //On close (hide.bs.modal), if the user held the lock, then remove the lock from table.
+                    $('#sheet' + x).on('hide.bs.modal', function () {
+                        $.get("/Home/ReleaseLock", { id: x }, function () {});
+                    });
+
+                });
+            })(submission_Ids[i]);
+        }
+    </script>
+</text>
+

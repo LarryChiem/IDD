@@ -1,28 +1,23 @@
 {
-  "headers": [
-    { "text": "Date", "align": "start", "value": "date", "sortable": false },
-    { "text": "Total Miles", "value": "totalMiles", "sortable": false },
-    { "text": "Group?", "value": "group", "sortable": false },
-    { "text": "Purpose", "value": "purpose", "sortable": false },
-    { "text": "Actions", "value": "actions", "sortable": false }
-  ],
   "colValidation": {
     "date": {
       "counter": 10,
       "disabled": false,
-      "hint": "YYYY-MM-DD",
-      "label": "Date",
+      "hint": "ServicesDeliveredTable_date_hint",
+      "label": "ServicesDeliveredTable_date_label",
       "rules": ["required", "date"]
     },
     "totalMiles": {
       "disabled": false,
-      "label": "Total Miles",
+      "hint": "Mileage_totalMiles_hint",
+      "label": "Mileage_totalMiles_label",
       "rules": ["required", "numeric"]
     },
     "purpose": {
       "counter": 100,
       "disabled": false,
-      "label": "Purpose",
+      "hint": "MileageTable_purpose_hint",
+      "label": "MileageTable_purpose_label",
       "rules": ["required"]
     },
     "group": {

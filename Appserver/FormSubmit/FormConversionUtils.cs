@@ -107,9 +107,6 @@ namespace IDD
                     l[i] = xd.ToString("MM");
                     s = String.Join("-", l);
 
-                    //System.Console.WriteLine("PARSED MONTH " + x);
-                    //System.Console.WriteLine("TO: " + xd.ToString("MM"));
-                    //System.Console.WriteLine("RETURNING: " + s);
                     return s;
 
                 }
@@ -157,8 +154,6 @@ namespace IDD
                 // the second millenia?
                 if (dt.Year.ToString().Contains("20"))
                 {
-                    //System.Console.WriteLine("\nOUT: " + dt.ToString());
-                    //System.Console.WriteLine("FROM: " + s);
                     return dt;
                 }
                 else
@@ -173,8 +168,6 @@ namespace IDD
             {
                 if (dt.Year.ToString().Contains("20"))
                 {
-                    //System.Console.WriteLine("\nOut Clean: " + dt.ToString());
-                    //System.Console.WriteLine("FROM : " + s);
                     return dt;
                 }
                 else
@@ -188,8 +181,6 @@ namespace IDD
             {
                 if (dt.Year.ToString().Contains("20"))
                 {
-                    //System.Console.WriteLine("\nOUT Custom: " + dt.ToString());
-                    //System.Console.WriteLine("FROM: " + s);
                     return dt;
                 }
                 else

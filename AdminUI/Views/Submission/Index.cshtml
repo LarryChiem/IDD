@@ -1,0 +1,114 @@
+﻿@model Common.Models.Submission
+@{
+    ViewData["Title"] = "Submission";
+    Layout = "_LayoutContainer";
+}
+
+
+@if (!Model.LockInfo.User.Equals(User.Identity.Name, StringComparison.CurrentCultureIgnoreCase))
+{
+    <div class="alert alert-danger"><h1>Sheet is being reviewed by @Model.LockInfo.User</h1></div>
+}
+
+<h1>eXPRS Plan of Care - Services Delivered Report Form @(Model.Edited ? "(Edited)" : "")</h1>
+
+<div class="row">
+    <div class="column">
+        <label>Submission Status:</label> @(string.IsNullOrEmpty(Model.UserActivity) ? "Pending" : Model.UserActivity)
+    </div>
+    <div class="column">
+        <label>Submission ID:</label> @Model.Id
+    </div>
+</div>
+
+@if (Model.Status.Equals("Rejected", StringComparison.CurrentCultureIgnoreCase))
+{
+    <div class="row"><div class="column"><label>Rejection Reason:</label> @Model.RejectionReason</div></div>
+}
+
+<div class="row">
+    <div class="column">
+        <label>Provider Name:</label> @Model.ProviderName
+    </div>
+    <div class="column">
+        <label>Client Name:</label> @Model.ClientName
+    </div>
+</div>
+<div class="row">
+    <div class="column">
+        <label>Provider ID:</label> <span class="providerId" title="Provider Id">@Model.ProviderId</span><button class="btn btn-default leftMargin4px" onclick="copyProviderId(this)" title="Copies the Provider's Id">Copy</button>
+    </div>
+    <div class="column">
+        <label>Client Prime:</label> @Model.ClientPrime
+    </div>
+</div>
+<div class="row">
+    <div class="column">
+        <label>Service Authorized:</label>  @Model.FormType
+    </div>
+    <div class="column">
+        <label>Submitted on:</label> @Model.Submitted.ToString("MM-dd-yyyy")
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    function copyProviderId(element) {
+        var msg = $(element).closest(".column").find("span.providerId").text();
+        try {
+            navigator.clipboard.writeText(msg);
+            console.log('Page URL copied to clipboard');
+        } catch (err) {
+            console.error('Failed to copy: ', err);
+        }
+    }
+</script>
+
+<partial name="@("_" + Model.GetType().Name + "Table")"/>
+
+<div class="row m-1 border">
+    <div class="column">
+        <label>Service Goal:</label>  @Model.ServiceGoal
+    </div>
+</div>
+<div class="row m-1 border">
+    <div class="column">
+        <label>Progress Notes:</label>  @Model.ProgressNotes
+    </div>
+</div>
+<div class="row">
+    @foreach (var uri in Model.UriList)
+    {
+        <div class="column">
+            <div class="container">
+                @if (uri.EndsWith("pdf"))
+                {
+                    <div class="alert alert-primary"><h6>Provider uploaded image(s) as PDF. Click <a href="@uri">here</a> to download raw image(s)</h6></div>
+                }
+                else
+                {
+                    <a target="_blank" href=@uri>
+                        <img src=@uri alt="Image Thumbnail" class="img-thumbnail image"/>
+                        <div class="overlay">
+                            <div class="textoverlay">Click to view full size</div>
+                        </div>
+                    </a>
+                }
+            </div>
+        </div>
+    }
+</div> <!--End of div.row-->
+@if (Model.LockInfo.User.Equals(User.Identity.Name,StringComparison.CurrentCultureIgnoreCase))
+{
+    <div class="fixed-bottom row d-flex justify-content-center" id="bottom-sticky">
+        <form asp-controller="Submission" asp-action="Process">
+            <div class="row">
+                @Html.ActionLink("Download PDF", "GenPDF", "Submission", new { id = Model.Id }, new { @class = "btn btn-info aToInput" })
+                <input type="hidden" name="id" value="@Model.Id" />
+                <input class="btn btn-primary" name="status" value="Approve" type="submit" formnovalidate>
+                <input class="btn btn-danger" name="status" value="Reject" type="submit">
+                <input type="text" name="rejectionReason" placeholder="Rejection reason..." required/>
+            </div>
+        </form>
+    </div>
+}

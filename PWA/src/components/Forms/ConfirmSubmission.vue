@@ -1,27 +1,24 @@
 <template>
   <v-container class="text-center">
     <v-btn color="success" dark @click.stop="signalParentValidate">
-      Submit
+      {{ $t('components_Forms_ConfirmSubmission_submit') }}
     </v-btn>
 
-    <v-dialog v-model="displaySubmit">
-      <div v-if="isValid">
+    <v-dialog v-model="displaySubmit" max-width="75%">
+      <template v-if="isValid">
         <v-card>
           <div v-if="!loading">
-            <v-card-title class="headline" id="confirm">
-              Are you sure want to submit the form?
+            <v-card-title class="headline" id="confirm" >
+              {{ $t('components_Forms_ConfirmSubmission_confirm') }}
             </v-card-title>
 
             <v-card-text>
-              Please ensure your timesheet is correct and mathces your time in
-              eXPRS. If it does not, it will be returned to you and may not be
-              processed in this pay period.
+              {{ $t('components_Forms_ConfirmSubmission_confirm_desc') }}
             </v-card-text>
 
             <v-card-text v-if="this.totalEdited > 0">
               <em>
-                There were {{ totalEdited }} edited fields. Please confirm these
-                edit(s).
+                {{ $t('components_Forms_ConfirmSubmission_edited') }}
               </em>
 
               <!-- 
@@ -32,13 +29,13 @@
                 <v-checkbox
                   color="success"
                   v-model="reSigned"
-                  label="Employer accepts all changes to the IDD form."
+                  :label="$t('components_Forms_ConfirmSubmission_employer')"
                   value="Employer"
                 ></v-checkbox>
                 <v-checkbox
                   color="success"
                   v-model="reSigned"
-                  label="Provider accepts all changes to the IDD form."
+                  :label="$t('components_Forms_ConfirmSubmission_provider')"
                   value="Provider"
                 ></v-checkbox>
               </v-container>
@@ -47,13 +44,13 @@
                 color="red lighten-2"
                 v-if="!reSigned.includes('Employer')"
               >
-                Employer should confirm these edit(s).
+                {{ $t('components_Forms_ConfirmSubmission_employer_desc') }}
               </v-card>
               <v-card
                 color="red lighten-2"
                 v-if="!reSigned.includes('Provider')"
               >
-                Provider should confirm these edit(s).
+                {{ $t('components_Forms_ConfirmSubmission_provider_desc') }}
               </v-card>
             </v-card-text>
 
@@ -61,22 +58,25 @@
               <v-spacer></v-spacer>
 
               <!-- Confirm if user is ready to submit -->
-              <v-btn color="red" text @click="displaySubmit = false">
-                Cancel
+              <v-btn 
+                class="white--text"
+                color="red" 
+                @click="displaySubmit = false">
+                {{ $t('components_Forms_ConfirmSubmission_cancel') }}
               </v-btn>
 
               <template v-if="onlineStatus">
                 <v-btn
-                  text
+                  class="white--text"
                   color="green darken-1"
                   :disabled="canSubmit"
                   @click="submit"
                 >
-                  Submit
+                  {{ $t('components_Forms_ConfirmSubmission_submit') }}
                 </v-btn>
               </template>
               <template v-else>
-                Offline! Please connect to the internet to submit.
+                {{ $t('components_Forms_ConfirmSubmission_offline') }}
               </template>
             </v-card-actions>
           </div>
@@ -84,69 +84,98 @@
           <div v-else>
             <div v-if="!returnHome">
               <!-- Submitting the form -->
-              <div class="text-center">
-                <v-progress-circular
-                  indeterminate
+              <v-dialog
+                value="true"
+                hide-overlay
+                persistent
+                width="300"
+              >
+                <v-card
                   color="primary"
-                  id="progress"
-                  :size="50"
-                ></v-progress-circular>
-                <p class="text--disabled">Submitting form</p>
-              </div>
+                  dark
+                >
+                  <v-card-text class="text-center">
+                    <v-progress-circular
+                      indeterminate
+                      color="white"
+                      id="progress"
+                      class="mb-0"
+                      :size="50"
+                    ></v-progress-circular>
+                  </v-card-text>
+                  <v-card-text class="text-center">
+                    {{ $t('components_Forms_ConfirmSubmission_submitting') }}
+                  </v-card-text>
+                </v-card>
+              </v-dialog>
             </div>
 
             <div v-else>
               <!-- Display submission status -->
               <div v-if="submissionStatus">
-                <v-dialog value="true" hide-overlay persistent width="300">
-                  <v-card color="primary" dark>
-                    <v-card-title class="headline text-center" id="submited">
-                      Your form has been submitted!
+                <v-dialog 
+                  value="true" 
+                  hide-overlay 
+                  persistent 
+                  width="300"
+                >
+                  <v-card>
+                    <v-card-title 
+                      class="headline text-center success white--text" 
+                      id="submited"
+                    >
+                      {{ $t('components_Forms_ConfirmSubmission_submitted') }}
                     </v-card-title>
-                    <v-card-text class="text-center" id="submission-complete">
-                      Thank you for submitting your timesheet. Please keep your
-                      copy for your records. If there are any issues, IDD staff
-                      will contact you via email.
-                      <v-btn color="success" outlined to="/">
-                        Return home
-                      </v-btn>
+                    <v-card-text>
+                      <v-card-text 
+                        class="text-center" 
+                        id="submission-complete"
+                      >
+                        {{ $t('components_Forms_ConfirmSubmission_submitted_desc') }}
+                      </v-card-text>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn 
+                          class="mt-3 center"
+                          color="indigo" 
+                          @click="resetForm()" 
+                          dark
+                        >
+                          {{ $t('components_Forms_ConfirmSubmission_home') }}
+                        </v-btn>
+                      </v-card-actions>
                     </v-card-text>
                   </v-card>
                 </v-dialog>
-                <!--v-card-title class="headline text-center" id="submited">
-                  Your form has been submitted!
-                </v-card-title-->
-
-                <v-card-text class="text-center" id="submissionError">
-                  Some text on what will come next for the employee.
-                </v-card-text>
               </div>
               <div v-else>
-                <v-card-title class="headline" id="failure">
-                  Something has gone wrong
-                </v-card-title>
+                <v-alert 
+                  class="headline" 
+                  id="failure"
+                  type="error"
+                >
+                  {{ $t('components_Forms_ConfirmSubmission_error') }}
+                </v-alert>
 
                 <v-card-text>
-                  Please try again.
+                  {{ $t('components_Forms_ConfirmSubmission_error_desc') }}
                 </v-card-text>
               </div>
             </div>
           </div>
         </v-card>
-      </div>
+      </template>
 
       <!-- The form is not valid -->
-      <div v-else>
+      <template v-else>
         <v-card>
           <v-card-title class="headline text-danger" id="invalid">
-            Your form is not valid.
+            {{ $t('components_Forms_ConfirmSubmission_invalid') }}
           </v-card-title>
 
           <v-card-text>
-            Please fix the invalid parts of the form and then retry submitting
-            your form.
-            <hr />
-            Errors:
+            <div v-html="$t('components_Forms_ConfirmSubmission_invalid_desc')">
+            </div>
             <v-card
               color="red lighten-2"
               v-for="(error, index) in errors"
@@ -156,7 +185,7 @@
             </v-card>
           </v-card-text>
         </v-card>
-      </div>
+      </template>
     </v-dialog>
   </v-container>
 </template>
@@ -181,6 +210,7 @@
   import axios from "axios";
   import store from "@/store/index.js";
   import { mapFields } from "vuex-map-fields";
+  import { mapMutations } from "vuex";
   import { FORM, FORM_TYPE } from "@/components/Utility/Enums.js";
 
   export default {
@@ -257,7 +287,7 @@
           this.totalEdited > 0 && !(this.reSigned.length === 2) && this.isValid
         );
       },
-      ...mapFields(["formChoice", "formId", "onlineStatus"]),
+      ...mapFields(["formChoice", "formId", "guid", "onlineStatus"]),
       formType: function() {
         return FORM_TYPE[this.formChoice];
       },
@@ -292,6 +322,11 @@
     },
 
     methods: {
+      ...mapMutations({
+        resetState: "resetState",
+        resetServiceDelivered: "ServiceDelivered/resetState",
+        resetMileage: "Mileage/resetState",
+      }),
       // Reset all submission values
       resetValid() {
         this.reSigned = [];
@@ -363,7 +398,9 @@
         this.submitData = this.formatData();
         if (this.errors.length === 0) {
           this.submitData["id"] = this.formId;
+          this.submitData["guid"] = this.guid;
           this.submitData["formChoice"] = FORM[this.formChoice];
+          console.log("submitData form ConfirmSubmission:410", this.submitData);
           axios
             .post(this.url, this.submitData, {
               headers: {
@@ -383,7 +420,14 @@
               console.log(error);
             });
         }
-      }
+      },
+      resetForm() {
+        // Reset the vuex store
+        this.resetState();
+        this.resetServiceDelivered();
+        this.resetMileage();
+        window.location.href = '/';
+      },
     }
   };
 </script>

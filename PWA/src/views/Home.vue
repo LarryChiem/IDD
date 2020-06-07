@@ -42,7 +42,7 @@
                 <v-img :src="card.src" height="200px"> </v-img>
                 <v-card-text>
                   <h4>
-                    {{ card.title }}
+                    {{ text_title(card.title) }}
                   </h4>
                   <v-icon x-large :color="card.iconColor">{{
                     card.icon
@@ -53,6 +53,43 @@
           </v-col>
         </v-row>
       </v-container>
+    <div class="text-center">
+      <v-bottom-sheet 
+        hide-overlay
+        :value="modalOpen" 
+      >
+        <v-alert
+          color="light-green darken-3"
+          class="py-3 my-0 pr-6" 
+          border="top"
+          tile
+          dismissible
+          v-model="modalOpen"
+        >
+          <template v-slot:prepend>
+            <div
+              class="pa-1 mr-6"
+              style="border-radius:4px; background-color: rgba(255,255,255,.7);"
+            >
+            <v-img 
+              max-width="5vw"
+              max-height="5vw"
+              :src="pic_logo" 
+              contain
+            />
+            </div>
+          </template>
+          <v-row>
+            <v-col justify="center" class="py-0 my-0 white--text" >
+                This website looks better if you save it onto your device 
+                <v-btn @click.stop="promptInstall" class="grey darken-3 ml-5" small dark depressed rounded>
+                  Save
+                </v-btn>
+            </v-col>
+          </v-row>
+        </v-alert>
+      </v-bottom-sheet>
+    </div>
     </v-container>
   </v-img>
 </template>
@@ -75,31 +112,72 @@
 </style>
 
 <script>
+  import { VuePwaInstallMixin } from "vue-pwa-install";
+  import i18n from '@/plugins/i18n';
+
   const pic_timesheet = require("@/assets/card_timesheet.jpg");
   const pic_burnside = require("@/assets/card_burnside.jpg");
+  const pic_logo = require('@/assets/icons/logo_short.svg');
 
   export default {
     name: "Home",
+    mixins: [VuePwaInstallMixin],
     props: {
       source: String,
     },
     data: () => ({
       cards: [
         {
-          title: "Upload Timesheet",
+          title: 0,
           src: pic_timesheet,
           link: "/timesheet",
           icon: "add_circle",
           iconColor: "success",
         },
         {
-          title: "About",
+          title: 1,
           src: pic_burnside,
           link: "/about",
           icon: "info",
           iconColor: "warning",
         },
       ],
+      deferredPrompt: false,
+      modalOpen: false,
+      pic_logo: pic_logo,
     }),
+    created() {
+      this.$on("canInstall", (event) => {
+        // Prevent Chrome 67 and earlier from automatically showing the prompt:
+        event.preventDefault();
+
+        // Stash the event so it can be triggered later:
+        this.deferredPrompt = event;
+        this.modalOpen = true;
+      });
+    },
+    methods: {
+      text_title(id) {
+        if (id === 0) return i18n.t('views_Home_upload');
+        else if (id === 1) return i18n.t('views_Home_about');
+        return i18n.t('translate_error');
+      },
+      promptInstall() {
+        // Show the prompt:
+        this.deferredPrompt.prompt();
+   
+        // Wait for the user to respond to the prompt:
+        this.deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === "accepted") {
+            console.log("User accepted the install prompt");
+          } else {
+            console.log("User dismissed the install prompt");
+          }
+   
+          this.deferredPrompt = null;
+          this.modalOpen = false;
+        });
+      },
+    },
   };
 </script>

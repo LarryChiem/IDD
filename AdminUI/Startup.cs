@@ -1,19 +1,13 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using AdminUI.Areas.Identity.Data;
 using AdminUI.Data;
 using AdminUI.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Common.Data;
 using Common.MigrationUtilities;
 
@@ -55,6 +49,7 @@ namespace AdminUI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, RoleManager<IdentityRole> roleManager, PayPeriodContext ppcontext, SubmissionContext scontext)
         {
+            UpdateDatabase(app);
             GlobalVariables.CurrentPayPeriod = ppcontext.PayPeriods.FirstOrDefault(p => p.Current);
             SeedRoles(roleManager);
 
@@ -98,6 +93,24 @@ namespace AdminUI
             result = await roleManager.RoleExistsAsync("Administrator");
             if (!result)
                 await roleManager.CreateAsync(new IdentityRole{ Name = "Administrator"});
+        }
+        private static void UpdateDatabase(IApplicationBuilder app)
+        {
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<SubmissionContext>())
+                {
+                    context.Database.Migrate();
+                }
+                using (var context = serviceScope.ServiceProvider.GetService<PayPeriodContext>())
+                {
+                    context.Database.Migrate();
+                }
+                using (var context = serviceScope.ServiceProvider.GetService<AdminUIUserContext>())
+                {
+                    context.Database.Migrate();
+                }
+            }
         }
     }
 }

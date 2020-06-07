@@ -1,0 +1,155 @@
+﻿@model HomeModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+<link rel="manifest" href="~/manifest.json">
+<!-- Note: Avoid using inline styles as much as possible. Instead, use classes or ids & .css files -->
+
+@if (Model.Warning)
+{
+    <div class="alert alert-danger" style="text-align:center"><h1>Fewer than 3 Pay Periods remaining in database! Ask an Administrator to add more.</h1></div>
+}
+<div class ="text-center">
+    <div class="leftnav">
+        <p>Saved filters</p>
+            @foreach (var filter in Model.Filters)
+            {
+                @Html.ActionLink(filter.FilterName, "Index", new
+                {
+                    formType = filter.FormType,
+                    pname = filter.ProviderName,
+                    providerId = filter.ProviderId,
+                    prime = filter.ClientPrime,
+                    cname = filter.ClientName,
+                    datefrom = filter.DateFrom.ToString("yyyy-MM-dd"),
+                    dateto = filter.DateTo.ToString("yyyy-MM-dd"),
+                    status = filter.Status
+                })
+                @Html.ActionLink("(delete)", "DeleteFilter", new
+                {
+                    id = filter.Id
+                })
+            }
+    </div>
+</div>
+<div class="main">
+    <div class="text-center" 
+         style="background-color: var(--light-grey); width: 100%; margin-top: 0; padding-top: 25px; padding-bottom: 25px;
+                                                                                                                    left: 0; border-radius: 10px;">
+        <div class="container-fluid">
+            <form>
+                <div class="row text-right">
+                    <div class="col-md-3">
+                        <label for="pName">Provider Name:</label>
+                        <input type="text" name="pName" id="pName" value="@Model.PName">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="cName">Client Name:</label>
+                        <input type="text" name="cName" id="cName" value="@Model.CName">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="dateFrom">From:</label>
+                        <input type="date" name="dateFrom" id="dateFrom" value="@Model.DateFrom" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="status">Status:</label>
+                        <select name="status" id="status">
+                            <option value="all" selected=@(Model.Status.Equals("all", StringComparison.CurrentCultureIgnoreCase))>All</option>
+                            <option value="pending" selected=@(Model.Status.Equals("pending", StringComparison.CurrentCultureIgnoreCase))>Pending</option>
+                            <option value="approved" selected=@(Model.Status.Equals("approved", StringComparison.CurrentCultureIgnoreCase))>Approved</option>
+                            <option value="rejected" selected=@(Model.Status.Equals("rejected", StringComparison.CurrentCultureIgnoreCase))>Rejected</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row text-right">
+                    <div class="col-md-3">
+                        <label for="pName">Provider ID:</label>
+                        <input type="text" name="ProviderId" id="ProviderId" value="@Model.ProviderId">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="prime">Client Prime:</label>
+                        <input type="text" name="prime" id="prime" value="@Model.Prime">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="dateTo">To:</label>
+                        <input type="date" name="dateTo" id="dateTo" value="@Model.DateTo" required><br/>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="formType">Form Type:</label>
+                        <select name="formType" id="formType">
+                            <option value="timesheet" selected="@(Model.FormType.Equals("Timesheet",StringComparison.CurrentCultureIgnoreCase))">Timesheet</option>
+                            <option value="mileageForm"  selected="@(Model.FormType.Equals("MileageForm",StringComparison.CurrentCultureIgnoreCase))">Mileage</option>
+                        </select>
+                    </div>
+                </div>
+                <br/>
+                <input type="hidden" name="perPage" value =@Model.PerPage>
+                <input type="hidden" name="sortOrder" value =@Model.SortOrder>
+                <input role="button" class="btn btn-info" type="submit" value="Apply Filters"/>
+                <a data-toggle="modal" data-target="#Filter" class="btn btn-secondary" style="color:white">Save Filter</a>
+                <div class="modal fade" id="Filter" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Save Filter</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Enter name for filter: </p>
+                                <input type="text" name="filterName" id="filterName" placeholder="Name">
+                            </div>
+                            <div class="modal-footer">
+                                <input role="button" class="btn" type="submit" value="Save Filter" asp-action="SaveFilter"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--comment@Html.ActionLink("Download CSV", "DownloadCSV", new
+                {
+                formType = Model.FormType,
+                pname = Model.PName,
+                providerId = Model.ProviderId,
+                prime = Model.Prime,
+                cname = Model.CName,
+                datefrom = Model.DateFrom,
+                dateto = Model.DateTo,
+                status = Model.Status
+                }, new
+                {
+                <!--comment@class = "btn btn-secondary "-->
+                <!--}) -->
+                @Html.ActionLink("Download PDFs", "DownloadPDFs", new
+                {
+                    formType = Model.FormType,
+                    pname = Model.PName,
+                    providerId = Model.ProviderId,
+                    prime = Model.Prime,
+                    cname = Model.CName,
+                    datefrom = Model.DateFrom,
+                    dateto = Model.DateTo,
+                    status = Model.Status
+                }, new
+                {
+                    @class = "btn btn-dark"
+                })
+                <br/><br/>
+            </form>
+        </div>
+
+
+        <dir id="check-the-css-file">
+            @if (Model.Submissions.Count == 0)
+            {
+                <br/>
+                <p>No Submissions found matching parameters</p>
+            }
+            else
+            {
+                <partial name="@("_" + Model.FormType + "Table")"/>
+            }
+        </dir>
+    </div>
+</div>

@@ -1,30 +1,43 @@
 <template>
-  <v-container :fill-height="askContinue" fluid>
+  <v-container 
+    :fill-height="askContinue" 
+    :class="continueColor"
+    fluid 
+  >
     <!-- If there is already parsed form data, ask if the user wants to continue -->
-    <template v-if="askContinue">
+    <template v-if="askContinue" >
       <v-row align="center" justify="center">
-        <v-col cols="12" md="4" sm="8">
-          <v-card>
-            <v-card-title>
-              Continue existing form?
-            </v-card-title>
-            <v-card-text>
-              Form already exists! You are working on form id#{{ formId }}<br />
-              Do you want to continue or start new? <br />
-            </v-card-text>
-            <v-card-actions>
-              <v-btn class="white--text" color="red" @click="resetForm()">
-                reset
-              </v-btn>
-              <v-btn
-                class="white--text"
-                color="green"
-                @click="willContinue = true"
-              >
-                continue
-              </v-btn>
-            </v-card-actions>
-          </v-card>
+        <v-col cols="12" md="6" sm="8">
+          <v-dialog
+            value="true"
+            hide-overlay
+            persistent
+          >
+            <v-card>
+              <v-card-title class="indigo white--text">
+                {{ $t('views_Timesheet_continue') }}
+              </v-card-title>
+              <v-card-text class="text-center subtitle-1 mt-3">
+                {{ $t('views_Timesheet_continue_desc0') }}
+                <strong> #{{ formId }}</strong><br />
+                {{ $t('views_Timesheet_continue_desc1') }}
+              </v-card-text>
+              <v-divider></v-divider>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn class="white--text" color="red" @click="resetForm()">
+                  {{ $t('views_Timesheet_continue_btn0') }}
+                </v-btn>
+                <v-btn
+                  class="white--text"
+                  color="green"
+                  @click="setWillContinue()"
+                >
+                  {{ $t('views_Timesheet_continue_btn1') }}
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-col>
       </v-row>
     </template>
@@ -33,36 +46,76 @@
       <v-row class="mt-9 mx-9">
         <v-col align="center">
           <p class="title">
-            Select the type of form that you would like to submit:
+            {{ $t('views_Timesheet_select') }}
           </p>
+        </v-col>
+      </v-row>
+      <v-row class="mt-9 mx-9">
+        <v-col 
+          cols="1" 
+          v-if="newForm === false"
+        >
+          <v-btn
+            icon
+            color="red"
+            class="white--text"
+            slot="prepend"
+            @click="resetForm()"
+          >
+            <v-icon>mdi-delete</v-icon>
+          </v-btn>
+        </v-col>
+        <v-col>
           <v-select
             :items="Object.keys(FORM)"
-            label="Timesheet"
+            :disabled="!newForm"
+            :label="$t('views_Timesheet_timesheet')"
             v-model="formChoice"
             outlined
           >
-            <v-btn
-              icon
-              color="red"
-              class="white--text"
-              v-if="newForm === false"
-              slot="prepend"
-              @click="resetForm()"
-            >
-              <v-icon>mdi-delete</v-icon>
-            </v-btn>
           </v-select>
         </v-col>
       </v-row>
-
-      <!-- Page Title -->
-      <v-row class="mt-9">
+      
+      <!-- Display warning at top if textract can't parse the uploaded imae -->
+      <v-row v-if="invalidForm === true" align="center">
         <v-col align="center">
-          <p class="headline">
-            {{ formChoice ? formChoice : "Please select a form type!" }} <br />
-          </p>
+          <v-alert 
+            border="left"
+            type="warning" 
+            text 
+            outlined
+          >
+            {{ $t('views_Timesheet_invalid') }}
+          </v-alert>
         </v-col>
       </v-row>
+      
+
+      <!-- Page Title -->
+      <v-divider />
+      <v-row class="mt-9">
+        <v-col align="center">
+          <v-alert 
+            class="headline pa-5" 
+            color="light-blue"
+            text 
+            outlined
+            v-if="formChoice"
+          >
+            {{ formChoice }} 
+          </v-alert>
+          <v-alert 
+            class="headline pa-5 mx-9" 
+            color="warning"
+            text 
+            outlined
+            v-else
+          >
+            {{ $t('views_Timesheet_select_form') }}
+          </v-alert>
+        </v-col>
+      </v-row> 
 
       <!-- Render either file upload or form -->
       <v-row v-if="formChoice !== null">
@@ -74,9 +127,9 @@
           />
 
           <v-card v-if="fileStatus === FILE.FAILURE" class="ma-5">
-            <v-card-title class="error white--text"
-              >FILE UPLOAD ERROR!</v-card-title
-            >
+            <v-card-title class="error white--text">
+              {{ $t('views_Timesheet_upload_error') }}
+            </v-card-title>
             <v-card-text>
               {{ errors }}
             </v-card-text>
@@ -120,6 +173,7 @@
   import ServicesDelivered from "@/components/Forms/ServicesDelivered/ServicesDelivered";
   import Mileage from "@/components/Forms/Mileage/Mileage";
   import { FORM, FILE } from "@/components/Utility/Enums.js";
+  import mockServiceDelivered from "@/components/Utility/happy_path_mileage.json";
   
   export default {
     name: "Timesheet",
@@ -135,10 +189,14 @@
         FORM: FORM,
 
         // The uploaded timesheet, as a .json of parsed values from the backend
-        parsedFileData: null,
+        parsedFileData: process.env.NODE_ENV === 'development'
+                        ? mockServiceDelivered
+                        : null,
 
         // Possible statuses of the uploading the form
-        fileStatus: FILE.INIT,
+        fileStatus: process.env.NODE_ENV === 'development'
+                    ? FILE.SUCCESS 
+                    : FILE.INIT,
 
         // Upload errors
         errors: [],
@@ -148,22 +206,33 @@
       };
     },
     computed: {
-      ...mapFields(["formId", "formChoice", "newForm"]),
+      ...mapFields(["formId", "formChoice", "newForm", "invalidForm"]),
       askContinue() {
         return this.newForm === false && this.willContinue === false;
       },
+      continueColor() {
+        return this.askContinue ? "grey darken-1" : "";
+      }
     },
     methods: {
-      ...mapMutations(["resetState"]),
+      ...mapMutations({
+        resetState: "resetState",
+        resetServiceDelivered: "ServiceDelivered/resetState",
+        resetMileage: "Mileage/resetState",
+      }),
 
       // Successfully received parsed .json from the backend
       fillForm(response) {
         // Save the parsed .json
         this.parsedFileData = response;
+        
+        // Check if textract had trouble parsing the form
+        if (response.response === "invalid") {
+          this.invalidForm = true;
+        }
 
         // Hide the image upload and display the pre-populated IDD form
-        this.fileStatus = FILE.SUCCESS;
-        this.willContinue = true;
+        this.setWillContinue();
       },
       handleError(error) {
         this.errors = error;
@@ -172,10 +241,18 @@
       resetForm() {
         // Reset the vuex store
         this.resetState();
+        this.resetServiceDelivered();
+        this.resetMileage();
         this.parsedFileData = null;
         this.fileStatus = FILE.INIT;
         this.array = [];
         this.willContinue = false;
+        this.invalidForm = false;
+      },
+      setWillContinue() {
+        this.willContinue = true;
+        this.fileStatus = FILE.SUCCESS;
+        console.log("parsedFileData from Timesheet:236", this.parsedFileData);
       },
     },
   };

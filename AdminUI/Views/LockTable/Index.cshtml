@@ -157,7 +157,11 @@
         <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index"  asp-route-id="@t.Id">@t.Submitted</a></td>
         <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index"  asp-route-id="@t.Id">@t.LockInfo.User</a></td>
         <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index"  asp-route-id="@t.Id">@t.LockInfo.LastActivity</a></td>
-        <td><form asp-action="ReleaseLock"><input type="hidden" name="id" value="@t.Id"/><input class="btn-warning" value ="Release" type="submit"></form></td>
+        <td><form asp-action="ReleaseLock">
+            <input type="hidden" name="id" value="@t.Id"/>
+            <input type="hidden" name="sortOrder" value="@Model.SortOrder"/>
+            <input class="btn-warning" value="Release" type="submit">
+        </form></td>
     </tr>
     <div class="modal fade" id="@("sheet" + t.Id)" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -199,6 +203,7 @@
                 <div class="modal-footer">
                     <form asp-action="ReleaseLock">
                         <a class="btn btn-secondary" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">More Details</a>
+                        <input type="hidden" name="sortOrder" value="@Model.SortOrder"/>
                         <input type="hidden" name="id" value="@t.Id"/>
                         <input class="btn btn-warning" value="Release Lock" type="submit">
                     </form>

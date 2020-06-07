@@ -25,16 +25,18 @@ namespace Appserver.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Guid")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ParsedTextractJSON")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UriString")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<AbstractFormObject.FormType>("formType")
+                    b.Property<string>("formType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)")
-                        .HasConversion(new EnumToStringConverter<AbstractFormObject.FormType>());
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 

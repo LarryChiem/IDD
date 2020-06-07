@@ -75,7 +75,8 @@
     }
   ],
   "totalHours": "10",
-  "id": 0,
+  "id": 1,
+  "guid": "",
   "clientName": "Donald Duck",
   "prime": "123456",
   "providerName": "Daughy Duck",
@@ -90,6 +91,6 @@
   "providerSignature": true,
   "providerSignDate": "2020-04-01",
   "authorization": true,
-  "approval": true,
+  "approval": "",
   "review_status": "Pending"
 }

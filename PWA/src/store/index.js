@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import { getField, updateField } from "vuex-map-fields";
+import VuexPersistence from 'vuex-persist'
 
 import Mileage from "@/store/modules/Forms/Mileage";
 import ServiceDelivered from "@/store/modules/Forms/ServiceDelivered";
@@ -13,7 +14,12 @@ const initialState = () => ({
   formId: 0,
   onlineStatus: true,
   newForm: true,
+  invalidForm: false,
 });
+
+const vuexLocal = new VuexPersistence({
+  storage: window.localStorage
+})
 
 export default new Vuex.Store({
   modules: {
@@ -37,4 +43,5 @@ export default new Vuex.Store({
     },
   },
   strict: debug,
+  plugins: [vuexLocal.plugin]
 });

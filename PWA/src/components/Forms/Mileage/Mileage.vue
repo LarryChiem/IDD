@@ -1,7 +1,7 @@
 <template>
   <v-form class="mx-2" lazy-validation ref="form" v-model="valid">
     <p class="title">
-      Front side of the form
+      {{ $t('components_Forms_ServicesDelivered_front') }}
     </p>
 
     <v-layout wrap>
@@ -17,6 +17,8 @@
           'serviceAuthorized',
         ]"
         v-bind="combineProps([fieldProps[field], formFields[field]])"
+        :label="$t(fieldProps[field].label)"
+        :hint="$t(fieldProps[field].hint)"
         :willResign="willResign"
         :key="field"
         :reset="resetChild"
@@ -29,9 +31,12 @@
     <v-card-text>
       <MileageTable
         v-bind="formFields.mileagesheet"
+        :label="$t(fieldProps['totalMiles'].label)"
         :cols="valCols"
         :value="formFields.mileagesheet.value"
         :reset="resetChild"
+        :editTable="willResign"
+        :amountEdited="totalEdited"
         :totalMiles="formFields['totalMiles']['value']"
         :willResign="willResign"
         @update-totalMiles="
@@ -50,17 +55,19 @@
     </v-card-text>
 
     <!-- totalMiles -->
-    Total Miles:
+    {{ $t('components_Forms_Mileage_totalmiles') }}
     {{ this.formFields["totalMiles"]["value"] }}
     <hr />
 
     <p class="title">
-      Back side of the form
+      {{ $t('components_Forms_ServicesDelivered_back') }}
     </p>
 
     <FormField
       v-for="field in ['serviceGoal', 'progressNotes']"
       v-bind="combineProps([fieldProps[field], formFields[field]])"
+      :label="$t(fieldProps[field].label)"
+      :hint="$t(fieldProps[field].hint)"
       :value="formFields[field].value"
       :willResign="willResign"
       :key="field"
@@ -72,21 +79,16 @@
     <hr />
 
     <!-- Employer Verification Section -->
-    <p class="subtitle-1">
-      <strong>RECIPIENT/EMPLOYER VERIFICATION:</strong><br />
-      <em>
-        I affirm that the data reported on this form is for actual dates/time
-        worked by the provider delivering the service/supports listed to the
-        recipient, that it does not exceed the total amount of service
-        authorized and was delivered according to the recipient's service plan
-        and provider/recipient service agreement.
-      </em>
-    </p>
+    <p class="subtitle-1"
+      v-html="$t('components_Forms_ServicesDelivered_employer_verification')"
+    ></p>
 
     <v-layout wrap>
       <FormField
         v-for="field in ['employerSignature', 'employerSignDate']"
         v-bind="combineProps([fieldProps[field], formFields[field]])"
+        :label="$t(fieldProps[field].label)"
+        :hint="$t(fieldProps[field].hint)"
         :value="formFields[field].value"
         :willResign="willResign"
         :key="field"
@@ -100,23 +102,16 @@
     <hr />
 
     <!-- Provider Verification Section -->
-    <p class="subtitle-1">
-      <strong>PROVIDER/EMPLOYEE VERIFICATION:</strong><br />
-      <em>
-        I affirm that the data reported on this form is for actual dates/time I
-        worked delivering the service/supports listed to the recipient, that it
-        does not exceed the total amount of service authorized and was delivered
-        according to the recipient's service plan and provider/recipient service
-        agreement. I further acknowledge that reporting dates/tim worked in
-        excess of the amount of service authorized or not consistent with the
-        recipient's service plan may be considered Medicaid Fraud.
-      </em>
-    </p>
+    <p class="subtitle-1"
+      v-html="$t('components_Forms_ServicesDelivered_provider_verification')"
+    ></p>
 
     <v-layout wrap>
       <FormField
         v-for="field in ['providerSignature', 'providerSignDate']"
         v-bind="combineProps([fieldProps[field], formFields[field]])"
+        :label="$t(fieldProps[field].label)"
+        :hint="$t(fieldProps[field].hint)"
         :value="formFields[field].value"
         :willResign="willResign"
         :key="field"
@@ -132,6 +127,7 @@
       <FormField
         v-for="field in ['authorization', 'approval']"
         v-bind="combineProps([fieldProps[field], formFields[field]])"
+        :label="$t(fieldProps[field].label)"
         :value="formFields[field].value"
         :willResign="willResign"
         :key="field"
@@ -142,8 +138,7 @@
     </v-layout>
 
     <strong class="subtitle-1">
-      Providers submit this completed/signed form to the CDDP, Brokerage or CIIS
-      Program that authorized the service delivered.
+      {{ $t('components_Forms_ServicesDelivered_authorize') }}
     </strong>
 
     <v-container>
@@ -151,7 +146,7 @@
         <v-col cols="6">
           <v-container class="text-center">
             <v-btn color="error" class="mr-4" @click="reset">
-              Reset Form
+              {{ $t('components_Forms_ServicesDelivered_reset') }}
             </v-btn>
           </v-container>
         </v-col>
@@ -170,6 +165,7 @@
 </template>
 
 <script>
+  import i18n from '@/plugins/i18n';
   import MileageTable from "@/components/Forms/Mileage/MileageTable";
   import FormField from "@/components/Forms/FormField";
   import ConfirmSubmission from "@/components/Forms/ConfirmSubmission";
@@ -347,9 +343,11 @@
               var colErrors = errors.length;
               if (colErrors > 0) {
                 this.errors.push([
-                  `ERROR: in row ${
-                    index + 1
-                  } of the mileagesheet table, '${col}' has the following errors:`,
+                  i18n.t('components_Forms_ServicesDelivered_err5_0') +
+                  `${index + 1}` + 
+                  i18n.t('components_Forms_ServicesDelivered_err5_1') +
+                  `${col}` +
+                  i18n.t('components_Forms_ServicesDelivered_err5_2') +
                   errors,
                 ]);
               }
@@ -365,7 +363,7 @@
 
         // Check parent's response on validity of input fields
         if (!this.$refs.form.validate()) {
-          this.errors.push("ERROR: Invalid input in some form fields!");
+          this.errors.push(i18n.t('components_Forms_ServicesDelivered_err1'));
         }
 
         // Check the validity of the mileagesheet table
@@ -404,9 +402,7 @@
               TIME.YEAR_MONTH
             );
             if (submissionDiff < 0) {
-              this.errors.push(
-                `ERROR: the employer or provider sign date is before the pay period.`
-              );
+              this.errors.push(i18n.t('components_Forms_ServicesDelivered_err6'));
             }
 
             // Get the last date from the mileagesheet table
@@ -419,9 +415,7 @@
                 subtractTime(latestDate, comparisonDate, TIME.YEAR_MONTH_DAY) <
                 0
               ) {
-                this.errors.push(
-                  `ERROR: the employer or provider sign date is before the latest service delivery date.`
-                );
+                this.errors.push(i18n.t('components_Forms_ServicesDelivered_err7'));
               }
             }
           }

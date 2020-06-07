@@ -13,11 +13,11 @@
     <v-content>
       <!-- Update whether or not the client has Internet access -->
       <v-offline @detected-condition="handleConnectivityChange"></v-offline>
-      <template v-if="onlineStatus === false">
+      <v-container v-if="onlineStatus === false" fluid>
         <v-alert type="error" class="my-0">
-          No Internet connection! Some features may be unavailable at this time.
+          {{ $t('App_nointernet') }}
         </v-alert>
-      </template>
+      </v-container>
 
       <!-- Fade-in/Fade-out for smooth navigation transitions -->
       <transition mode="out-in" name="fade">

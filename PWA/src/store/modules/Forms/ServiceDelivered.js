@@ -15,13 +15,26 @@ const mutations = {
       JSON.parse(JSON.stringify(value))
     );
   },
+  resetState(state) {
+    // acquire initial state
+    const s = initialState();
+    state['totalEdited'] = s['totalEdited'];
+    state['willResign'] = s['willResign'];
+    Object.keys(s['formFields']).forEach((key) => {
+      Vue.set(
+        state['formFields'],
+        key,
+        JSON.parse(JSON.stringify(s['formFields'][key]))
+      );
+    });
+  },
 };
 
 const getters = {
   getField,
 };
 
-const state = () => ({
+const initialState = () => ({
   formFields: {
     clientName: { value: null, parsed_value: null, disabled: false },
     prime: { value: null, parsed_value: null, disabled: false },
@@ -53,5 +66,5 @@ export default {
   namespaced: true,
   mutations,
   getters,
-  state,
+  state: initialState(),
 };

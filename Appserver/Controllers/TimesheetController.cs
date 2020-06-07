@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using Common.Models;
 using IDD;
 using Common.Data;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Appserver.Controllers
 {
@@ -45,13 +46,18 @@ namespace Appserver.Controllers
         [HttpGet]
         public IActionResult ReadyTest(int id)
         {
-            return Ready(id);
+            var result = _context.Stagings.FirstOrDefault(m=> m.Id == id );
+            if( result == null)
+            {
+                return Json(new JsonResponse("not ready"));
+            }
+            return Ready(id, result.Guid);
         }
         [Produces("application/json")]
         [HttpGet]
-        public IActionResult Ready(int id)
+        public IActionResult Ready(int id, string guid)
         {
-            var stage = _context.Stagings.FirstOrDefault(m => m.Id == id);
+            var stage = _context.Stagings.FirstOrDefault(m => m.Id == id && m.Guid == guid);
 
             if (stage == null)
             {
@@ -79,6 +85,7 @@ namespace Appserver.Controllers
             }
 
             ts.id = id;
+            ts.guid = guid;
 
             return Json(ts);
         }
@@ -88,12 +95,23 @@ namespace Appserver.Controllers
         [Produces("application/json")]
         public IActionResult Submit(int id)
         {
-            var stage = _context.Stagings.FirstOrDefault(m => m.Id == id);
+            var oldstage = _context.Stagings.FirstOrDefault(m => m.Id == id);
 
-            if (stage == null)
+            if (oldstage == null)
             {
                 return Json(new JsonResponse("not ready"));
             }
+
+            // Copy staging
+            var stage = new SubmissionStaging {
+                Guid = Guid.NewGuid().ToString(),
+                UriString = oldstage.UriString,
+                ParsedTextractJSON = oldstage.ParsedTextractJSON,
+                formType = oldstage.formType
+                };
+            _context.Add(stage);
+            _context.SaveChanges();
+
             var textractform = new TextractDocument.TextractDocument();
 
             foreach (var a in JArray.Parse(stage.ParsedTextractJSON))
@@ -102,12 +120,22 @@ namespace Appserver.Controllers
                 childform.FromJson(a);
                 textractform.AddPages(childform);
             }
-            var ts = AbstractFormObject.FromTextract(textractform, stage.formType);
+            AbstractFormObject ts;
+            try
+            {
+                ts = AbstractFormObject.FromTextract(textractform, stage.formType);
+            }
+            catch (Exception)
+            {
+                return Json(new JsonResponse("invalid form"));
+            }
 
-            ts.id = id;
+            ts.id = stage.Id;
+            ts.guid = stage.Guid;
 
             var PWAForm = PWAsubmission.FromForm(ts, stage.formType);
             switch (stage.formType) {
+                case AbstractFormObject.FormType.OR526_ATTENDANT:
                 case AbstractFormObject.FormType.OR507_RELIEF:
                     return SubmitTimesheet((PWATimesheet)PWAForm);
                 case AbstractFormObject.FormType.OR004_MILEAGE:
@@ -126,12 +154,26 @@ namespace Appserver.Controllers
         [Produces("application/json")]
         public IActionResult SubmitTimesheet([FromBody] PWATimesheet submittedform)
         {
+            // Check correct authorization
+            var result = _context.Stagings.FirstOrDefault(m => m.Id == submittedform.id && m.Guid == submittedform.guid);
+            if( result == null)
+            {
+                return Json(new
+                {
+                    response = "invalid"
+                });
+            }
             var dbutil = new FormToDbUtil(_subcontext, _context);
             Timesheet ts = dbutil.PopulateTimesheet(submittedform);
 
             var submission = _subcontext;
-            submission.Add(ts);
-            submission.SaveChanges();
+            using (var transaction = submission.Database.BeginTransaction())
+            {
+                submission.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Submissions ON");
+                submission.Add(ts);
+                submission.SaveChanges();
+                transaction.Commit();
+            }
 
             // Do something with form
             Response.Headers.Add("Access-Control-Allow-Origin", "*");
@@ -146,14 +188,19 @@ namespace Appserver.Controllers
         public IActionResult SubmitMileage([FromBody] PWAMileage submittedform)
         {
             var dbutil = new FormToDbUtil(_subcontext, _context);
-            MileageForm mf = dbutil.PopulateMileage(submittedform);
-
+            MileageForm mf = dbutil.PopulateMileage(submittedform); 
+            
             var submission = _subcontext;
-            submission.Add(mf);
-            submission.SaveChanges();
+            using (var transaction = submission.Database.BeginTransaction())
+            {
+                submission.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Submissions ON");
+                submission.Add(mf);
+                submission.SaveChanges();
+                transaction.Commit();
+            }
 
-            // Do something with form
-            Response.Headers.Add("Access-Control-Allow-Origin", "*");
+        // Do something with form
+        Response.Headers.Add("Access-Control-Allow-Origin", "*");
             Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             return Json(new { response = "ok" });
         }

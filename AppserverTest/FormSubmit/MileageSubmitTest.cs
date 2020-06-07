@@ -46,6 +46,7 @@ namespace AppserverTest.FormSubmit
             string k = File.ReadAllText(path).Replace("\r", "");
             MileageForm obj = new MileageForm();
 
+            obj.id = 1;
             obj.clientName = "Donald Duck";
             obj.prime = "123456";
             obj.providerName = "Daughy Duck";
@@ -71,7 +72,7 @@ namespace AppserverTest.FormSubmit
             obj.employerSignature = true;
             obj.employerSignDate = "2020-04-01";
             obj.authorization = true;
-            obj.approval = true;
+            obj.approval = "";
             obj.providerSignature = true;
             obj.providerSignDate = "2020-04-01";
 

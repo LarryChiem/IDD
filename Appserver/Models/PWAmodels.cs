@@ -6,6 +6,7 @@ namespace Common.Models
     public abstract class PWAsubmission
     {
         public int id { get; set; }
+        public string guid { get; set; }
         public int formChoice { get; set; }
         public PWAsubmissionVals clientName { get; set; }
         public PWAsubmissionVals prime { get; set; }
@@ -47,6 +48,7 @@ namespace Common.Models
             submission.employerSignature = new PWAsubmissionVals(form.employerSignature.ToString());
             submission.employerSignDate = new PWAsubmissionVals(form.employerSignDate);
             submission.id = form.id;
+            submission.guid = form.guid;
             submission.prime = new PWAsubmissionVals(form.prime);
             submission.progressNotes = new PWAsubmissionVals(form.progressNotes);
             submission.providerName = new PWAsubmissionVals(form.providerName);

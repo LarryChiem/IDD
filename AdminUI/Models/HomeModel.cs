@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using AdminUI.Areas.Identity.Data;
 using Common.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace AdminUI.Models
 {

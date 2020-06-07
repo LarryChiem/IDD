@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using AdminUI.Models;
 using Common.Data;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +17,11 @@ namespace AdminUI.Controllers
         {
             _context = context;
         }
-        // GET
+        /*
+         * Index is the main LockTable view
+         * Parameters: The SortOrder and the page/perPage for pagination
+         * Returns the LockTable Index View 
+         */
         public IActionResult Index(string sortOrder="id", int page = 1, int perPage = 20)
         {
             var model = new LockTableModel();
@@ -58,6 +61,11 @@ namespace AdminUI.Controllers
 
             return View(model);
         }
+        /*
+         * Releases a lock
+         * Parameters: The ID of the submission
+         * Returns the LockTable Index
+         */
         [HttpPost]
         public async Task<IActionResult> ReleaseLock(int id, string sortOrder)
         {
@@ -71,6 +79,11 @@ namespace AdminUI.Controllers
             return RedirectToAction("Index", "LockTable", new {sortOrder});
         }
 
+        /*
+         * Releases every lock in the database
+         * Parameters: None
+         * Returns the LockTable Index
+         */
         public async Task<IActionResult> ReleaseAllLocks()
         {
 

@@ -9,7 +9,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Common.Data;
-using Common.MigrationUtilities;
 
 namespace AdminUI
 {
@@ -36,12 +35,6 @@ namespace AdminUI
             services.AddDbContext<PayPeriodContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("AzureDB"), 
                     b => b.MigrationsAssembly("AdminUI")));
-
-
-            DbContextOptions<SubmissionContext> options = new DbContextOptions<SubmissionContext>();
-            options.UseSqlServer(Configuration.GetConnectionString("AzureDB"));
-            SubmissionContext subcontext = new SubmissionContext(options);
-            UriMigrationHelper.UpgradeCommaFixSubmissions(subcontext);
             
             services.AddRazorPages();
         }

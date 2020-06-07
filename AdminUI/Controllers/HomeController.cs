@@ -13,11 +13,8 @@ using AdminUI.Models;
 using Common.Models;
 using Microsoft.EntityFrameworkCore;
 using Common.Data;
-using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using PdfSharp.Pdf;
-using SQLitePCL;
 using Lock = Common.Models.Lock;
 
 namespace AdminUI.Controllers
@@ -38,6 +35,11 @@ namespace AdminUI.Controllers
             _userManager = userManager;
         }
 
+        /*
+         * Index is the main home page of the AdminUI
+         * Parameters: A sortOrder for the table, filters for the table, and page number and perPage counts for pagination
+         * Returns the Home Index
+         */
         public IActionResult Index(string sortOrder = "id", string pName="", string cName="", string dateFrom="", string dateTo="", string prime="", string providerId="", 
             string status="pending", int page = 1, int perPage = 20, string formType="timesheet")
         {
@@ -106,7 +108,7 @@ namespace AdminUI.Controllers
         }
 
         /*
-         * This function queries the submission database with the provided filters. Only the Form Type is required
+         * GetSubmissions queries the submission database with the provided filters. Only the Form Type is required
          * Parameters: The 8 different filters
          * Returns: The list of submissions matching the query
          */
@@ -148,6 +150,11 @@ namespace AdminUI.Controllers
             return submissions.ToList();
         }
 
+        /*
+         * GetLockInfo() retrieves the LockInfo of a submission from the database. If none exists, it creates on and assigns it to the current user
+         * Parameters: ID of the submission
+         * Returns true if the current user holds the lock
+         */
         public bool GetLockInfo(int id)
         {
             var submission = _context.Submissions.Find(id);
@@ -171,7 +178,11 @@ namespace AdminUI.Controllers
             return submission.LockInfo.User.Equals(User.Identity.Name);
         }
 
-        //Releases the Lock if the current User is holding the lock
+        /*
+         * Releases the Lock if the current User is holding the lock
+         * Parameters: The ID of the submission
+         * Returns nothing
+         */
         public void ReleaseLock(int id)
         {
             var submission = _context.Submissions.Find(id);
@@ -185,6 +196,12 @@ namespace AdminUI.Controllers
             }
         }
 
+        //TODO: Work with Gloria to figure out exactly what the CSV should look like, then fix this and re-enable button
+        /*
+         * DownloadCSV() should build a CSV summary of all sheets matching the filters
+         * Parameters: Submission filters
+         * Returns a CSV file
+         */
         public FileContentResult DownloadCSV(string pName, string cName, string dateFrom, string dateTo, string prime, string status, string formType, string providerId)
         {
             var submissions = GetSubmissions(formType, pName, providerId, cName, prime, dateFrom, dateTo, status);
@@ -212,6 +229,11 @@ namespace AdminUI.Controllers
             return File(new System.Text.UTF8Encoding().GetBytes(csv), "text/csv", name);
         }
 
+        /*
+         * DownloadPDFs creates a zip file of every PDF matching the filters
+         * Parameters: Submission filters
+         * Returns a Zip file containing PDFs
+         */
         public FileContentResult DownloadPDFs(string pName, string cName, string dateFrom, string dateTo, string prime, string status, string formType, string providerId)
         {
             var submissions = GetSubmissions(formType, pName, providerId, cName, prime, dateFrom, dateTo, status);
@@ -237,6 +259,11 @@ namespace AdminUI.Controllers
             return File(ms.ToArray(), "application/zip", DateTime.Now.ToString("yyyy-M-dd") + "_" + formType + "_pdfs" + ".zip");
         }
 
+        /*
+         * SaveFilter saves a filter and assigns it to a user
+         * Parameters: The name of the filters and the 8 fields that make a filter
+         * Returns the Home Index with the filter applied
+         */
         public async Task<IActionResult> SaveFilter(string pName, string cName, string dateFrom, string dateTo, string prime,
             string status, string formType, string providerId, string filterName)
         {
@@ -270,6 +297,11 @@ namespace AdminUI.Controllers
                 FormType = formType
             });
         }
+        /*
+         * DeleteFilter removes a filter from the list of User Filters
+         * Parameters: The ID of the filter
+         * Returns the default Home Index
+         */
         public async Task<IActionResult> DeleteFilter(int id)
         {
             var user = _userManager.Users.Include(u => u.Filters).Single(u => u.UserName == User.Identity.Name);

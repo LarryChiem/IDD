@@ -191,6 +191,7 @@
   import rules from "@/components/Utility/FormRules.js";
   import { TIME } from "@/components/Utility/Enums.js";
   import { subtractTime } from "@/components/Utility/TimeFunctions.js";
+  import { mapFields } from "vuex-map-fields";
 
   export default {
     name: "MileageTable",
@@ -235,7 +236,15 @@
       willResign: {
         type: Boolean,
         default: false
-      }
+      },
+      editTable: {
+        type: Boolean,
+        default: false
+      },
+      amountEdited: {
+        type: Number,
+        default: 0 
+      },
     },
     data: function() {
       return {
@@ -245,11 +254,11 @@
         ),
 
         // Record the amount of edited parsed fields and added rows
-        amtEdited: false,
+        amtEdited: this.amountEdited,
         allTotalMiles: this.totalMiles,
 
         // Hide the warning popup for unlocking a parsed row or adding a row
-        editingTable: false,
+        editingTable: this.editTable,
         displayWarning: false,
 
         // Hide the dialog popup for adding/editing a row
@@ -319,8 +328,13 @@
           this.$set(this.colValidation[key], "rules", _transRules);
         }
       });
-      this.initialize();
-      this.validate();
+      if (this.newForm === true) {
+        this.initialize();
+        this.validate();
+      } else {
+        this.rebind();
+        this.validate();
+      }
     },
 
     computed: {
@@ -334,6 +348,7 @@
           { "text": i18n.t('MileageTable_actions'), "value": "actions", "sortable": false }
         ];
       },
+      ...mapFields(["newForm"]),
     },
 
     methods: {
@@ -631,7 +646,48 @@
           }
         }
         return ret;
-      }
-    }
+      },
+      // Re-bind data to the proper fields from parent's props
+      rebind() {
+        if (process.env.NODE_ENV === 'development' && this.amountEdited === 0) {
+          this.initialize()
+          this.validate()
+        } else {
+          // For each entry from props, create a new table row
+          if (this.value !== null) {
+            // For each timesheet table entry, create a new set 'obj'
+            this.value.forEach(row => {
+              let obj = {};
+
+              // Only add attributes that fit an existing column header
+              Object.entries(row).forEach(([key, value]) => {
+                if (key in this.colValidation) {
+                  this.$set(obj, key, value);
+                } else if (['parsed', 'disabled', 'parsedValue'].includes(key)) {
+                  this.$set(obj, key, value);
+                } else if (key !== 'errors') {
+                  console.log(
+                    "Unrecognized in form field from cache: " +
+                      `${key} - ${value}`
+                  );
+                }
+              });
+
+              // If the row was not empty, add it to the table
+              if (Object.keys(obj).length > 0) {
+                if (!('parsed' in obj)) {
+                  this.$set(obj, 'parsed', true);
+                }
+                if (!('disabled' in obj)) {
+                  this.$set(obj, 'disabled', true);
+                }
+                this.$set(obj, "errors", {});
+                this.allEntries.push(obj);
+              }
+            });
+          }
+        }
+      },
+    },
   };
 </script>

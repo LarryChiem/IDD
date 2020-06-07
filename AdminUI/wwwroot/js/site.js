@@ -61,7 +61,7 @@ if (currentPath !== '/identity/account/login' && currentPath !== '/identity/acco
         }
 
         // Validate length
-        if (passwordInput.value.length >= 8) {
+        if (passwordInput.value.length >= 6) {
             length.classList.remove('invalid');
             length.classList.add('valid');
         } else {

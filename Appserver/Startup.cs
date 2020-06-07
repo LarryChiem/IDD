@@ -41,10 +41,6 @@ namespace Appserver
             services.AddDbContext<SubmissionContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("AzureDB"),
                     b => b.MigrationsAssembly("AdminUI")));
-
-            DbContextOptions<SubmissionStagingContext> options = new DbContextOptions<SubmissionStagingContext>();
-            SubmissionStagingContext context = new SubmissionStagingContext(options);
-            ModelUtils.UpgradeCommaFixStaging(context);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -125,6 +121,12 @@ namespace Appserver
                 using (var context = serviceScope.ServiceProvider.GetService<SubmissionStagingContext>())
                 {
                     context.Database.Migrate();
+                    ModelUtils.UpgradeCommaFixStaging(context);
+                }
+
+                using (var context = serviceScope.ServiceProvider.GetService<SubmissionContext>())
+                {
+                    UriMigrationHelper.UpgradeCommaFixSubmissions(context);
                 }
             }
         }

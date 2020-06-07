@@ -1,7 +1,6 @@
 ﻿using Common.Data;
 using System.Linq;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
 
 namespace Common.MigrationUtilities
 {
@@ -16,11 +15,11 @@ namespace Common.MigrationUtilities
                 // Failure indicates old formatting. If the first result can deserialize
                 // successfully, then the follow entries will have been formatted correctly.
                 // Thus, the break.
+                var g = entry.UriList;
                 var currentString = entry.UriString;
                 try
                 {
                     var undone = System.Text.Json.JsonSerializer.Deserialize<List<string>>(currentString);
-                    break;
                 }
                 catch (System.Exception ex)
                 {
@@ -28,6 +27,8 @@ namespace Common.MigrationUtilities
                     entry.UriString = System.Text.Json.JsonSerializer.Serialize(uList);
                 }
             }
+
+            subcontext.SaveChanges();
         }
 
 

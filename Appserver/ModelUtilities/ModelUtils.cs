@@ -25,6 +25,8 @@ namespace Common.MigrationUtilities
                 }
             }
 
+            subcontext.SaveChanges();
+
         }
 
 
@@ -45,6 +47,8 @@ namespace Common.MigrationUtilities
                     continue;
                 }
             }
+
+            subcontext.SaveChanges();
         }
     }
 }

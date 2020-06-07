@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
 using PdfSharp.Pdf.IO;
+using Newtonsoft.Json;
 
 namespace Common.Models
 {
@@ -32,13 +33,32 @@ namespace Common.Models
         public IList<string> UriList { get; set; }
         public string UriString
         {
+            get => UriString = NormalizeUriListGetter(UriList);
+            set => UriList = NormalizeUriStringSetter(value);
+
             //get => string.Join(",", UriList);
             //set => UriList = value.Split(',').ToList();
-            get => System.Text.Json.JsonSerializer.Serialize(UriList);
-            set => UriList = System.Text.Json.JsonSerializer.Deserialize<List<string>>(value);
         }
 
 
+        public string NormalizeUriListGetter(IList<string> urilist)
+        {
+            List<string> jsonlist = new List<string>();
+
+            foreach (var entry in urilist)
+            {
+                jsonlist.Add(entry);
+            }
+
+            return System.Text.Json.JsonSerializer.Serialize(jsonlist);
+        }
+
+        public List<string> NormalizeUriStringSetter(string uristring)
+        {
+            var cleaned = uristring.Replace("\"", "").TrimStart('[').TrimEnd(']');
+            var retlist = cleaned.Split(',').ToList<string>();
+            return retlist;
+        }
 
         /*
          *  Creates a PDF representation of the Timesheet

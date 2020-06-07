@@ -48,6 +48,7 @@ namespace AdminUI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, RoleManager<IdentityRole> roleManager, PayPeriodContext ppcontext, SubmissionContext scontext)
         {
+            UpdateDatabase(app);
             GlobalVariables.CurrentPayPeriod = ppcontext.PayPeriods.FirstOrDefault(p => p.Current);
             SeedRoles(roleManager);
 
@@ -91,6 +92,24 @@ namespace AdminUI
             result = await roleManager.RoleExistsAsync("Administrator");
             if (!result)
                 await roleManager.CreateAsync(new IdentityRole{ Name = "Administrator"});
+        }
+        private static void UpdateDatabase(IApplicationBuilder app)
+        {
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<SubmissionContext>())
+                {
+                    context.Database.Migrate();
+                }
+                using (var context = serviceScope.ServiceProvider.GetService<PayPeriodContext>())
+                {
+                    context.Database.Migrate();
+                }
+                using (var context = serviceScope.ServiceProvider.GetService<AdminUIUserContext>())
+                {
+                    context.Database.Migrate();
+                }
+            }
         }
     }
 }

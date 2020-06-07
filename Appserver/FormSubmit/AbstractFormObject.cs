@@ -1,12 +1,11 @@
 using Appserver.FormSubmit;
 using Appserver.TextractDocument;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
-public abstract class AbstractFormObject {
+public abstract class AbstractFormObject{
 
     /*******************************************************************************
     /// Enums
@@ -364,6 +363,7 @@ public abstract class AbstractFormObject {
         }
         return matches;
     }
+
 
     protected abstract void AddTables(List<Table> tables);
     protected void AddBackForm(Page page)

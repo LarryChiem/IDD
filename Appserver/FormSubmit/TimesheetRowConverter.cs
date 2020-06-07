@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 public class TimesheetRowConverter: JsonConverter
 {
-    public override bool CanConvert(System.Type objectType){ return false;}
+    public override bool CanConvert(Type objectType){ return false;}
     public override bool CanWrite{ get {return false;}}
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer){
         throw new NotImplementedException();

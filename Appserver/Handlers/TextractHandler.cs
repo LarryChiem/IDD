@@ -1,28 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
-using Amazon;
 using Amazon.S3;
-using Amazon.Runtime;
-using Amazon.Runtime.CredentialManagement;
-using Amazon.Runtime.Internal;
 using Amazon.Textract;
 using Amazon.Textract.Model;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Amazon.S3.Transfer;
 using Amazon.S3.Model;
-using System.Diagnostics;
 
 namespace Appserver.Controllers
 {
     public class TextractHandler
     {
+
+		/*******************************************************************************
+        /// Fields
+        *******************************************************************************/
 		private AmazonTextractClient textractClient;
 		private AmazonS3Client s3Client;
 
+
+		/*******************************************************************************
+        /// Constructor
+        *******************************************************************************/
 		public TextractHandler()
 		{
 			this.textractClient = new AmazonTextractClient();
@@ -30,7 +31,12 @@ namespace Appserver.Controllers
 		}
 
 
-        // Handler for image files
+		/*******************************************************************************
+        /// Methods
+        *******************************************************************************/
+
+
+		// Handler for image files
 		public AnalyzeDocumentResponse HandleAsyncJob(Stream file)
 		{
 			var job = StartDocumentAnalysis(file, new List<string> { "TABLES", "FORMS" });
@@ -38,7 +44,7 @@ namespace Appserver.Controllers
 			{
 				job.Wait();
 			}
-			catch (System.AggregateException e)
+			catch (AggregateException e)
 			{
 				Console.WriteLine(e.Message);
 				throw;
@@ -57,7 +63,7 @@ namespace Appserver.Controllers
 			{
 				job.Wait();
 			}
-			catch (System.AggregateException e)
+			catch (AggregateException e)
 			{
 				Console.WriteLine(e.Message);
 				throw;
@@ -68,6 +74,7 @@ namespace Appserver.Controllers
 		}
 
 
+		// Handler for image formatted documents
 		private async Task<AnalyzeDocumentResponse> StartDocumentAnalysis(Stream file, List<string> featureTypes)
 		{
 			var request = new AnalyzeDocumentRequest();
@@ -91,33 +98,33 @@ namespace Appserver.Controllers
 		private async Task<GetDocumentAnalysisResponse> StartPDFAnalysis(IFormFile file, List<string> featureTypes)
         {
 			// Upload PDF to S3, with guid as file key
-			var k = Guid.NewGuid();
-			PDFtoS3Bucket(file, k.ToString()).Wait();
+			var guid = Guid.NewGuid();
+			PDFtoS3Bucket(file, guid.ToString()).Wait();
 
 			// Create S3 obj to hand to Textract
 			var s3 = new Amazon.Textract.Model.S3Object();
 			s3.Bucket = Environment.GetEnvironmentVariable("BUCKET_NAME");
-			s3.Name = k.ToString();
-			var r = new StartDocumentAnalysisRequest();
+			s3.Name = guid.ToString();
+			var startrequest = new StartDocumentAnalysisRequest();
 
 			// Set document for request to S3 obj
-			r.DocumentLocation = new DocumentLocation
+			startrequest.DocumentLocation = new DocumentLocation
 			{
 				S3Object = s3
 			};
-			r.FeatureTypes = featureTypes;
+			startrequest.FeatureTypes = featureTypes;
 
             // Start analysis
-			var response = await this.textractClient.StartDocumentAnalysisAsync(r);
+			var response = await this.textractClient.StartDocumentAnalysisAsync(startrequest);
 
             // Wait for analysis to finish
-			var x = new GetDocumentAnalysisRequest();
-			x.JobId = response.JobId;
+			var getrequest = new GetDocumentAnalysisRequest();
+			getrequest.JobId = response.JobId;
 
 			var results = await GetDocAnalysisResponse(response);
 
 			// Remove PDF from S3
-			RemoveFromS3Bucket(k.ToString()).Wait();
+			RemoveFromS3Bucket(guid.ToString()).Wait();
 			return results;
 		}
 
@@ -126,17 +133,17 @@ namespace Appserver.Controllers
         private async Task<GetDocumentAnalysisResponse> GetDocAnalysisResponse(StartDocumentAnalysisResponse response)
         {
 			// Get jobID from start analysis response
-			var x = new GetDocumentAnalysisRequest();
-			x.JobId = response.JobId;
+			var getrequest = new GetDocumentAnalysisRequest();
+			getrequest.JobId = response.JobId;
 
 			// Poll for analysis to finish. Can take over 15sec. to
             // get results, thus the somewhat long delay.
-			GetDocumentAnalysisResponse res = await this.textractClient.GetDocumentAnalysisAsync(x);
+			GetDocumentAnalysisResponse res = await this.textractClient.GetDocumentAnalysisAsync(getrequest);
 			int c = 0;
             while(res.JobStatus != "SUCCEEDED")
             {
 				await Task.Delay(200);
-				res = await this.textractClient.GetDocumentAnalysisAsync(x);
+				res = await this.textractClient.GetDocumentAnalysisAsync(getrequest);
 				c++;
 				System.Diagnostics.Debug.WriteLine("Trying again.... " + res.JobStatus + " Attempt " + c);
             }

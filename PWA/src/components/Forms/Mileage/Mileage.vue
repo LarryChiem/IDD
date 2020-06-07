@@ -35,6 +35,8 @@
         :cols="valCols"
         :value="formFields.mileagesheet.value"
         :reset="resetChild"
+        :editTable="willResign"
+        :amountEdited="totalEdited"
         :totalMiles="formFields['totalMiles']['value']"
         :willResign="willResign"
         @update-totalMiles="

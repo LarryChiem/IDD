@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Common.Models;
 using Common.Data;
 
-//TODO: Delete this file when releasing
-namespace AdminUI.Models
+namespace AdminUI.Data
 {
     public static class MockData
     {
+        /*
+         * InitializeSubmissionDB() initializes a mock data base for local development and testing
+         * Parameters: The context to initialize
+         * Returns nothing
+         */
         public static void InitializeSubmissionDb(SubmissionContext context)
         {
             if (context.Submissions.Any())

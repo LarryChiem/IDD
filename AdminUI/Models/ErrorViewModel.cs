@@ -1,5 +1,3 @@
-using System;
-
 namespace AdminUI.Models
 {
     public class ErrorViewModel

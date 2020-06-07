@@ -1,24 +1,13 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Common.Data;
-using PdfSharp.Pdf;
-using PdfSharp.Drawing;
-using PdfSharp.Drawing.Layout;
 using System.IO;
 using Common.Models;
-using DocumentFormat.OpenXml.Drawing;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using MigraDoc.DocumentObjectModel;
-using MigraDoc.DocumentObjectModel.Tables;
-using SQLitePCL;
-using System.Text.RegularExpressions;
 
 namespace AdminUI.Controllers
 {
@@ -35,7 +24,11 @@ namespace AdminUI.Controllers
             _context = context;
         }
 
-        //should return a timesheet View
+        /*
+         * Index returns a detailed Submission View
+         * Parameters: the ID of the Submission
+         * Returns: Index.cshtml view
+         */
         public IActionResult Index(int id)
         {
             var submission =  _context.Submissions.Find(id);
@@ -56,6 +49,11 @@ namespace AdminUI.Controllers
             return View(submission);
         }
 
+        /*
+         * GenPDF() creates a PDF of a submission and sends it to the web client for download
+         * Parameters: the ID of the submission
+         * Returns the PDF summary of the submission
+         */
         public async Task<IActionResult> GenPDF(int id)
         {
             //find the timesheet code
@@ -82,6 +80,11 @@ namespace AdminUI.Controllers
             return File(stream.ToArray(), System.Net.Mime.MediaTypeNames.Application.Pdf, fileDownloadName);
         }
 
+        /*
+         * Process() sets the status of the submission to either approved or rejected
+         * Parameters: The ID of the submission, the status, the rejection reason, the sort order of the able, the filters, and a string indicating whether or not this was process by the modal
+         * Returns either the next available submission or the Home Index, depending on the value of 'modal'
+         */
         [HttpPost]
         public async Task<IActionResult> Process(int id, string status, string rejectionReason, string sortOrder="", string dateFrom="", string dateTo="", string pName="", string cName="", 
             string prime="", string formType="", int page=0, string providerId="", string modal="false")
@@ -133,6 +136,11 @@ namespace AdminUI.Controllers
             return next != null ? RedirectToAction("Index", new {Id = next.Id}) : RedirectToAction("Index", "Home");
         }
 
+        /*
+         * ProcessLine() processes individual rows on the submissions
+         * Parameters: The submission ID, the entry ID, and the status to be set
+         * Returns the Index of the submission ID
+         */
         [HttpPost]
         public IActionResult ProcessLine(int submissionId, int entryId, string status)
         {

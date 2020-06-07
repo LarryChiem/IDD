@@ -24,7 +24,6 @@ namespace AdminUI.Controllers
             var model = new LockTableModel();
             var submissions = _context.Submissions.Include(s=>s.LockInfo).Where(s => s.LockInfo != null);
 
-
             //big ol' switch statement determines how to sort the data in the table
             submissions = sortOrder switch
             {

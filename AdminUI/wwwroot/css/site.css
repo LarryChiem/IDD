@@ -270,3 +270,11 @@ label {
 .leftMargin4px {
     margin-left: 4px;
 }
+
+.invalid.password_requirement {
+    color: orange;
+}
+
+.valid.password_requirement {
+    color: green;
+}

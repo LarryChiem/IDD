@@ -29,7 +29,6 @@ namespace AdminUI.Controllers
         private readonly ILogger<SubmissionController> _logger;
         private readonly SubmissionContext _context;
 
-
         public SubmissionController(ILogger<SubmissionController> logger, SubmissionContext context)
         {
             _logger = logger;
@@ -52,7 +51,6 @@ namespace AdminUI.Controllers
                 _context.Update(submission);
                 _context.SaveChanges();
             }
-
             submission.LoadEntries(_context);
 
             return View(submission);
@@ -117,7 +115,6 @@ namespace AdminUI.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-
                     if (!_context.Submissions.Any(e => e.Id == id))
                     {
                         return NotFound();

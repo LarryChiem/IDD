@@ -5,7 +5,6 @@ namespace AdminUI.Models
 {
     public class LockTableModel
     {
-        
         public IList<Submission> Submissions;
         public int TotalPages;
         public int TotalSubmissions;

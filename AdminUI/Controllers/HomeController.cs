@@ -185,7 +185,6 @@ namespace AdminUI.Controllers
             }
         }
 
-        //TODO: Work with Gloria to figure out exactly what the CSV should look like, then fix this and re-enable button
         public FileContentResult DownloadCSV(string pName, string cName, string dateFrom, string dateTo, string prime, string status, string formType, string providerId)
         {
             var submissions = GetSubmissions(formType, pName, providerId, cName, prime, dateFrom, dateTo, status);
@@ -197,8 +196,6 @@ namespace AdminUI.Controllers
             //the following loops through every property in a submission, first saving the names of the properties to 
             //act as a header. Then, it loops through every submission, adding every individual property of the submission
             //to the csv, then returning it for download.
-            
-            //var properties = typeof(Timesheet).GetProperties();
             var properties = submissions.GetType().GetGenericArguments()[0].GetProperties();
             var csv = properties.Aggregate("", (current, f) => current + (f.Name + ','));
             foreach (var s in submissions)
@@ -206,7 +203,6 @@ namespace AdminUI.Controllers
                 csv += '\n';
                 foreach (var p in properties)
                 {
-                    
                     if (p.GetValue(s) != null)
                         csv += "\"" + p.GetValue(s).ToString().Replace("\"","\"\"") + "\"";
                     csv += ',';
@@ -223,7 +219,6 @@ namespace AdminUI.Controllers
             var ms = new MemoryStream();
             using (var archive = new ZipArchive(ms, ZipArchiveMode.Create, true))
             {
-
                 foreach (var submission in submissions)
                 {
                     //ClientName_Prime_ProviderID_ProviderName_yyyyMMdd_FormNumber
@@ -239,15 +234,12 @@ namespace AdminUI.Controllers
                     zipStream.Close();
                 }
             }
-
             return File(ms.ToArray(), "application/zip", DateTime.Now.ToString("yyyy-M-dd") + "_" + formType + "_pdfs" + ".zip");
-
         }
 
         public async Task<IActionResult> SaveFilter(string pName, string cName, string dateFrom, string dateTo, string prime,
             string status, string formType, string providerId, string filterName)
         {
-
             var user = await _userManager.GetUserAsync(User);
             if (user.Filters == null)
                 user.Filters = new List<Filter>();
@@ -286,6 +278,5 @@ namespace AdminUI.Controllers
             await _userManager.UpdateAsync(user);
             return RedirectToAction("Index");
         }
-
     }
 }

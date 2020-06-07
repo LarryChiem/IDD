@@ -1,28 +1,31 @@
 ﻿@using Common.Models
 @model HomeModel
 <table width="100%">
-<thead>
-<tr class="color-div" style="background-color: #0294B5">
-    <!--This ugly block of code can probably be fixed, but I'm not sure how tbh. Right now each 
-    HTML ActionLink sorts the data in the table and having 2 sets for each column allows the 
-    user to toggle back and forth between descending and ascending-->
+    <thead>
+        <tr class="color-div" style="background-color: #0294B5">
+            <!--This ugly block of code can probably be fixed, but I'm not sure how tbh. Right now each
+            HTML ActionLink sorts the data in the table and having 2 sets for each column allows the
+            user to toggle back and forth between descending and ascending-->
 
-    <th>@Html.ActionLink("ID", "Index", new
-        {
-            sortOrder = @Model.SortOrder.Equals("id", StringComparison.CurrentCultureIgnoreCase) ? "id_desc" : "id",
-            formType = Model.FormType,
-            pname = Model.PName,
-            prime = Model.Prime,
-            cname = Model.CName,
-            datefrom = Model.DateFrom,
-            dateto = Model.DateTo,
-            status = Model.Status,
-            page = Model.Page,
-            perPage = Model.PerPage
+            <th>
+                @Html.ActionLink("ID", "Index", new
+            {
+                sortOrder = @Model.SortOrder.Equals("id", StringComparison.CurrentCultureIgnoreCase) ? "id_desc" : "id",
+                formType = Model.FormType,
+                pname = Model.PName,
+                prime = Model.Prime,
+                cname = Model.CName,
+                datefrom = Model.DateFrom,
+                dateto = Model.DateTo,
+                status = Model.Status,
+                page = Model.Page,
+                perPage = Model.PerPage
 
-        })</th>
+            })
+        </th>
 
-    <th>@Html.ActionLink("Provider Name", "Index", new
+        <th>
+            @Html.ActionLink("Provider Name", "Index", new
         {
             sortOrder = @Model.SortOrder.Equals("pname", StringComparison.CurrentCultureIgnoreCase) ? "pname_desc" : "pname",
             formType = Model.FormType,
@@ -35,178 +38,194 @@
             page = Model.Page,
             perPage = Model.PerPage
 
-        })</th>
-    <th>@Html.ActionLink("Provider ID", "Index", new
-        {
-            sortOrder = @Model.SortOrder.Equals("ProviderId", StringComparison.CurrentCultureIgnoreCase) ? "ProviderId_desc" : "ProviderId",
-            formType = Model.FormType,
-            pname = Model.PName,
-            prime = Model.Prime,
-            cname = Model.CName,
-            datefrom = Model.DateFrom,
-            dateto = Model.DateTo,
-            status = Model.Status,
-            page = Model.Page,
-            perPage = Model.PerPage
-        })</th>
+        })
+    </th>
+    <th>
+        @Html.ActionLink("Provider ID", "Index", new
+    {
+        sortOrder = @Model.SortOrder.Equals("ProviderId", StringComparison.CurrentCultureIgnoreCase) ? "ProviderId_desc" : "ProviderId",
+        formType = Model.FormType,
+        pname = Model.PName,
+        prime = Model.Prime,
+        cname = Model.CName,
+        datefrom = Model.DateFrom,
+        dateto = Model.DateTo,
+        status = Model.Status,
+        page = Model.Page,
+        perPage = Model.PerPage
+    })
+</th>
 
-    <th>@Html.ActionLink("Client Name", "Index", new
-        {
-            sortOrder = @Model.SortOrder.Equals("cname", StringComparison.CurrentCultureIgnoreCase) ? "cname_desc" : "cname",
-            formType = Model.FormType,
-            pname = Model.PName,
-            prime = Model.Prime,
-            cname = Model.CName,
-            datefrom = Model.DateFrom,
-            dateto = Model.DateTo,
-            status = Model.Status,
-            page = Model.Page,
-            perPage = Model.PerPage
-        })</th>
-    <th>@Html.ActionLink("Client Prime", "Index", new
-        {
-            sortOrder = @Model.SortOrder.Equals("prime", StringComparison.CurrentCultureIgnoreCase) ? "prime_desc" : "prime",
-            formType = Model.FormType,
-            pname = Model.PName,
-            prime = Model.Prime,
-            cname = Model.CName,
-            datefrom = Model.DateFrom,
-            dateto = Model.DateTo,
-            status = Model.Status,
-            page = Model.Page,
-            perPage = Model.PerPage
-        })</th>
-    <th>Total Hours</th>
-    <th>@Html.ActionLink("Date Submitted", "Index", new
-        {
-            sortOrder = @Model.SortOrder.Equals("date", StringComparison.CurrentCultureIgnoreCase) ? "date_desc" : "date",
-            formType = Model.FormType,
-            pname = Model.PName,
-            prime = Model.Prime,
-            cname = Model.CName,
-            datefrom = Model.DateFrom,
-            dateto = Model.DateTo,
-            status = Model.Status,
-            page = Model.Page,
-            perPage = Model.PerPage
-        })</th>
-    <th>Lock Status</th>
-    <th>Edited (Y/N)</th>
+<th>
+    @Html.ActionLink("Client Name", "Index", new
+{
+    sortOrder = @Model.SortOrder.Equals("cname", StringComparison.CurrentCultureIgnoreCase) ? "cname_desc" : "cname",
+    formType = Model.FormType,
+    pname = Model.PName,
+    prime = Model.Prime,
+    cname = Model.CName,
+    datefrom = Model.DateFrom,
+    dateto = Model.DateTo,
+    status = Model.Status,
+    page = Model.Page,
+    perPage = Model.PerPage
+})
+</th>
+<th>
+    @Html.ActionLink("Client Prime", "Index", new
+{
+    sortOrder = @Model.SortOrder.Equals("prime", StringComparison.CurrentCultureIgnoreCase) ? "prime_desc" : "prime",
+    formType = Model.FormType,
+    pname = Model.PName,
+    prime = Model.Prime,
+    cname = Model.CName,
+    datefrom = Model.DateFrom,
+    dateto = Model.DateTo,
+    status = Model.Status,
+    page = Model.Page,
+    perPage = Model.PerPage
+})
+</th>
+<th>Total Hours</th>
+<th>
+    @Html.ActionLink("Date Submitted", "Index", new
+{
+    sortOrder = @Model.SortOrder.Equals("date", StringComparison.CurrentCultureIgnoreCase) ? "date_desc" : "date",
+    formType = Model.FormType,
+    pname = Model.PName,
+    prime = Model.Prime,
+    cname = Model.CName,
+    datefrom = Model.DateFrom,
+    dateto = Model.DateTo,
+    status = Model.Status,
+    page = Model.Page,
+    perPage = Model.PerPage
+})
+</th>
+<th>Lock Status</th>
+<th>Edited (Y/N)</th>
 </tr>
 </thead>
 <tfoot>
-<tr>
-    <td colspan="7">
-        <div class="row justify-content-end">
-            <div class="col-md-auto text-right">Total entries matching query: @Model.TotalSubmissions</div>
-            <div class="col-md-auto text-right">Page @Model.Page of @Model.TotalPages</div>
-            <div class="col-md-auto">
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination pagination-sm">
-                        @if (Model.Page > 1)
+    <tr>
+        <td colspan="7">
+            <div class="row justify-content-end">
+                <div class="col-md-auto text-right">Total entries matching query: @Model.TotalSubmissions</div>
+                <div class="col-md-auto text-right">Page @Model.Page of @Model.TotalPages</div>
+                <div class="col-md-auto">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination pagination-sm">
+                            @if (Model.Page > 1)
+                            {
+                                <li class="page-item">
+                                    @Html.ActionLink("First", "Index", new
+                                {
+                                    sortOrder = Model.SortOrder,
+                                    formType = Model.FormType,
+                                    pname = Model.PName,
+                                    prime = Model.Prime,
+                                    cname = Model.CName,
+                                    datefrom = Model.DateFrom,
+                                    dateto = Model.DateTo,
+                                    status = Model.Status,
+                                    page = 1,
+                                    perPage = Model.PerPage
+                                }, new { @class = "page-link" })
+                            </li>
+                            <li class="page-item">
+                                @Html.ActionLink("<", "Index", new
+                            {
+                                sortOrder = Model.SortOrder,
+                                formType = Model.FormType,
+                                pname = Model.PName,
+                                prime = Model.Prime,
+                                cname = Model.CName,
+                                datefrom = Model.DateFrom,
+                                dateto = Model.DateTo,
+                                status = Model.Status,
+                                page = Model.Page - 1,
+                                perPage = Model.PerPage
+                            }, new { @class = "page-link" })
+                        </li>
+                        <li class="page-item">
+                            @Html.ActionLink((@Model.Page - 1).ToString(), "Index", new
                         {
-                            <li class="page-item">@Html.ActionLink("First", "Index", new
-                                                  {
-                                                      sortOrder = Model.SortOrder,
-                                                      formType = Model.FormType,
-                                                      pname = Model.PName,
-                                                      prime = Model.Prime,
-                                                      cname = Model.CName,
-                                                      datefrom = Model.DateFrom,
-                                                      dateto = Model.DateTo,
-                                                      status = Model.Status,
-                                                      page = 1,
-                                                      perPage = Model.PerPage
-                                                  }, new {@class = "page-link"})
-                            </li>
-                            <li class="page-item">@Html.ActionLink("<", "Index", new
-                                                  {
-                                                      sortOrder = Model.SortOrder,
-                                                      formType = Model.FormType,
-                                                      pname = Model.PName,
-                                                      prime = Model.Prime,
-                                                      cname = Model.CName,
-                                                      datefrom = Model.DateFrom,
-                                                      dateto = Model.DateTo,
-                                                      status = Model.Status,
-                                                      page = Model.Page - 1,
-                                                      perPage = Model.PerPage
-                                                  }, new {@class = "page-link"})
-                            </li>
-                            <li class="page-item">@Html.ActionLink((@Model.Page - 1).ToString(), "Index", new
-                                                  {
-                                                      sortOrder = Model.SortOrder,
-                                                      formType = Model.FormType,
-                                                      pname = Model.PName,
-                                                      prime = Model.Prime,
-                                                      cname = Model.CName,
-                                                      datefrom = Model.DateFrom,
-                                                      dateto = Model.DateTo,
-                                                      status = Model.Status,
-                                                      page = Model.Page - 1,
-                                                      perPage = Model.PerPage
-                                                  }, new {@class = "page-link"})
-                            </li>
-                        }
-                        <li class="page-item active">@Html.ActionLink(@Model.Page.ToString(), "Index", new
-                                                     {
-                                                         sortOrder = Model.SortOrder,
-                                                         formType = Model.FormType,
-                                                         pname = Model.PName,
-                                                         prime = Model.Prime,
-                                                         cname = Model.CName,
-                                                         datefrom = Model.DateFrom,
-                                                         dateto = Model.DateTo,
-                                                         status = Model.Status,
-                                                         page = Model.Page,
-                                                         perPage = Model.PerPage
-                                                     }, new {@class = "page-link"})
+                            sortOrder = Model.SortOrder,
+                            formType = Model.FormType,
+                            pname = Model.PName,
+                            prime = Model.Prime,
+                            cname = Model.CName,
+                            datefrom = Model.DateFrom,
+                            dateto = Model.DateTo,
+                            status = Model.Status,
+                            page = Model.Page - 1,
+                            perPage = Model.PerPage
+                        }, new { @class = "page-link" })
+                    </li>
+                }
+                            <li class="page-item active">
+                                @Html.ActionLink(@Model.Page.ToString(), "Index", new
+                            {
+                                sortOrder = Model.SortOrder,
+                                formType = Model.FormType,
+                                pname = Model.PName,
+                                prime = Model.Prime,
+                                cname = Model.CName,
+                                datefrom = Model.DateFrom,
+                                dateto = Model.DateTo,
+                                status = Model.Status,
+                                page = Model.Page,
+                                perPage = Model.PerPage
+                            }, new { @class = "page-link" })
                         </li>
                         @if (Model.Page < Model.TotalPages)
                         {
-                            <li class="page-item">@Html.ActionLink((@Model.Page + 1).ToString(), "Index", new
-                                                  {
-                                                      sortOrder = Model.SortOrder,
-                                                      formType = Model.FormType,
-                                                      pname = Model.PName,
-                                                      prime = Model.Prime,
-                                                      cname = Model.CName,
-                                                      datefrom = Model.DateFrom,
-                                                      dateto = Model.DateTo,
-                                                      status = Model.Status,
-                                                      page = Model.Page + 1,
-                                                      perPage = Model.PerPage
-                                                  }, new {@class = "page-link"})
-                            </li>
-                            <li class="page-item">@Html.ActionLink(">", "Index", new
-                                                  {
-                                                      sortOrder = Model.SortOrder,
-                                                      formType = Model.FormType,
-                                                      pname = Model.PName,
-                                                      prime = Model.Prime,
-                                                      cname = Model.CName,
-                                                      datefrom = Model.DateFrom,
-                                                      dateto = Model.DateTo,
-                                                      status = Model.Status,
-                                                      page = Model.Page + 1,
-                                                      perPage = Model.PerPage
-                                                  }, new {@class = "page-link"})
-                            </li>
-                            <li class="page-item">@Html.ActionLink("Last", "Index", new
-                                                  {
-                                                      sortOrder = Model.SortOrder,
-                                                      formType = Model.FormType,
-                                                      pname = Model.PName,
-                                                      prime = Model.Prime,
-                                                      cname = Model.CName,
-                                                      datefrom = Model.DateFrom,
-                                                      dateto = Model.DateTo,
-                                                      status = Model.Status,
-                                                      page = Model.TotalPages,
-                                                      perPage = Model.PerPage
-                                                  }, new {@class = "page-link"})
-                            </li>
-                        }
+                            <li class="page-item">
+                                @Html.ActionLink((@Model.Page + 1).ToString(), "Index", new
+                            {
+                                sortOrder = Model.SortOrder,
+                                formType = Model.FormType,
+                                pname = Model.PName,
+                                prime = Model.Prime,
+                                cname = Model.CName,
+                                datefrom = Model.DateFrom,
+                                dateto = Model.DateTo,
+                                status = Model.Status,
+                                page = Model.Page + 1,
+                                perPage = Model.PerPage
+                            }, new { @class = "page-link" })
+                        </li>
+                        <li class="page-item">
+                            @Html.ActionLink(">", "Index", new
+                        {
+                            sortOrder = Model.SortOrder,
+                            formType = Model.FormType,
+                            pname = Model.PName,
+                            prime = Model.Prime,
+                            cname = Model.CName,
+                            datefrom = Model.DateFrom,
+                            dateto = Model.DateTo,
+                            status = Model.Status,
+                            page = Model.Page + 1,
+                            perPage = Model.PerPage
+                        }, new { @class = "page-link" })
+                    </li>
+                    <li class="page-item">
+                        @Html.ActionLink("Last", "Index", new
+                    {
+                        sortOrder = Model.SortOrder,
+                        formType = Model.FormType,
+                        pname = Model.PName,
+                        prime = Model.Prime,
+                        cname = Model.CName,
+                        datefrom = Model.DateFrom,
+                        dateto = Model.DateTo,
+                        status = Model.Status,
+                        page = Model.TotalPages,
+                        perPage = Model.PerPage
+                    }, new { @class = "page-link" })
+                </li>
+            }
                     </ul>
                 </nav>
             </div>
@@ -215,46 +234,47 @@
 </tr>
 </tfoot>
 <tbody>
-@{
-    var color = "#8FFDDE6";
-    foreach (Timesheet t in Model.Submissions)
-    {
-        //I guess this is how you do zebra print tables in CSHTML? n-thchild CSS doesn't work in IE
-        color = color == "#8FDDE6" ? "#E6EFF3" : "#8FDDE6";
-        <tr class="color-div" style="background-color: @color">
-            <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.Id</a></td>
-            <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.ProviderName</a></td>
-            <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.ProviderId</a></td>
-            <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.ClientName</a></td>
-            <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.ClientPrime</a></td>
-            <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.TotalHours</a></td>
-            <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.Submitted</a></td>
-            @if (t.LockInfo == null)
-            {
-                <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id"> </a></td>
-            }
-            else if (t.LockInfo.User.Equals(User.Identity.Name))
-            {
-                <td class="table-success"><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.LockInfo.User</a></td>
-            }
-            else
-            {
-                <td class="table-danger"><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.LockInfo.User</a></td>
-            }
-            @if (t.Edited)
-            {
-                <td class="table-warning"><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">Y</a></td>
-            }
-            else
-            {
-                <td class="table-success"><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">N</a></td>
-            }
-        </tr>
-        <div class="modal fade" id="@("sheet" + t.Id)" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">@t.ProviderName
+    @{
+        var color = "#8FFDDE6";
+        foreach (Timesheet t in Model.Submissions)
+        {
+            //I guess this is how you do zebra print tables in CSHTML? n-thchild CSS doesn't work in IE
+            color = color == "#8FDDE6" ? "#E6EFF3" : "#8FDDE6";
+            <tr class="color-div" style="background-color: @color">
+                <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.Id</a></td>
+                <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.ProviderName</a></td>
+                <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.ProviderId</a></td>
+                <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.ClientName</a></td>
+                <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.ClientPrime</a></td>
+                <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.TotalHours</a></td>
+                <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.Submitted</a></td>
+                @if (t.LockInfo == null)
+                {
+                    <td><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id"> </a></td>
+                }
+                else if (t.LockInfo.User.Equals(User.Identity.Name))
+                {
+                    <td class="table-success"><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.LockInfo.User</a></td>
+                }
+                else
+                {
+                    <td class="table-danger"><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">@t.LockInfo.User</a></td>
+                }
+                @if (t.Edited)
+                {
+                    <td class="table-warning"><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">Y</a></td>
+                }
+                else
+                {
+                    <td class="table-success"><a data-toggle="modal" data-target="#@("sheet" + t.Id)" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id">N</a></td>
+                }
+            </tr>
+            <div class="modal fade" id="@("sheet" + t.Id)" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">
+                                @t.ProviderName
                             (<span class="providerId" title="Provider Id">@t.ProviderId</span>)<button class="btn btn-default leftMargin4px" onclick="copyProviderId(this)" title="Copies the Provider's Id">Copy</button>
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -271,7 +291,8 @@
                             @if (t.Status.Equals("Rejected", StringComparison.CurrentCultureIgnoreCase))
                             {
                                 <div class="row">
-                                    <div class="column"><label>Rejection Reason:</label> @t.RejectionReason</div></div>
+                                    <div class="column"><label>Rejection Reason:</label> @t.RejectionReason</div>
+                                </div>
                             }
                             <div class="row">
                                 <div class="column">
@@ -325,11 +346,11 @@
                     <div class="modal-footer @("modal-footer" + @t.Id)">
                         <form asp-controller="Submission" asp-action="Process">
                             <a class="btn btn-secondary" asp-controller="Submission" asp-action="Index" asp-route-id="@t.Id" title="Opens a full-detailed page on this submission">More Details</a>
-                            <input type="hidden" name="id" value="@t.Id"/>
-                            <input type="hidden" name="modal" value="true"/>
+                            <input type="hidden" name="id" value="@t.Id" />
+                            <input type="hidden" name="modal" value="true" />
                             <input class="btn btn-primary" name="Status" value="Approve" type="submit" formnovalidate>
                             <input class="btn btn-danger" name="Status" value="Reject" type="submit">
-                            <input type="text" name="RejectionReason" placeholder="Rejection Reason" required/>
+                            <input type="text" name="RejectionReason" placeholder="Rejection Reason" required />
                             @Html.HiddenFor(Model => Model.SortOrder)
                             @Html.HiddenFor(Model => Model.DateTo)
                             @Html.HiddenFor(Model => Model.DateFrom)
@@ -346,7 +367,7 @@
             </div>
         </div>
     }
-}
+    }
 </tbody>
 </table>
 <text>
@@ -388,7 +409,6 @@
                     $('#sheet' + x).on('hide.bs.modal', function () {
                         $.get("/Home/ReleaseLock", { id: x }, function () {});
                     });
-
                 });
             })(submission_Ids[i]);
         }

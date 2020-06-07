@@ -27,8 +27,6 @@
     <PackageReference Include="AWSSDK.S3" Version="3.3.110.70" />
   </ItemGroup>
 
-
-
   <ItemGroup>
     <Content Remove="Views\Index.cshtml" />
     <Content Remove="AppserverTest\obj\AppserverTest.csproj.nuget.dgspec.json" />

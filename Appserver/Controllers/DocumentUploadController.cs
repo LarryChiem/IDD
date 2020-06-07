@@ -9,12 +9,11 @@ using Appserver.Data;
 using Appserver.Models;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
-using Common.Data;
 using Microsoft.Extensions.Primitives;
 
 namespace Appserver.Controllers
 {
-    public class ImageUploadController : Controller
+    public class DocumentUploadController : Controller
     {
 
         /*******************************************************************************
@@ -25,7 +24,7 @@ namespace Appserver.Controllers
         /*******************************************************************************
         /// Constructor
         *******************************************************************************/
-        public ImageUploadController(SubmissionStagingContext context)
+        public DocumentUploadController(SubmissionStagingContext context)
         {
             _context = context;
         }
@@ -40,7 +39,7 @@ namespace Appserver.Controllers
         // formats are jpg/png/pdf. Valid documents are sent to AWS Textract for processing
         // with the results being stored in a staging table. The documents themselves are
         // stored in Azure Blob upon being uploaded. 
-        [HttpPost("ImageUpload")]
+        [NonAction]
         public async Task<IActionResult> PostImage(List<IFormFile> files, AbstractFormObject.FormType formType)
         {
             var c = files.Count;

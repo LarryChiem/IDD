@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#if DEBUG
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Appserver.Models;
@@ -35,3 +32,4 @@ namespace Appserver.Controllers
         }
     }
 }
+#endif

@@ -33,11 +33,11 @@ namespace Common.Models
         public IList<string> UriList { get; set; }
         public string UriString
         {
-            get => UriString = NormalizeUriListGetter(UriList);
-            set => UriList = NormalizeUriStringSetter(value);
+            //get => UriString = NormalizeUriListGetter(UriList);
+            //set => UriList = NormalizeUriStringSetter(value);
 
-            //get => string.Join(",", UriList);
-            //set => UriList = value.Split(',').ToList();
+            get => string.Join(",", UriList);
+            set => UriList = value.Split(',').ToList();
         }
 
 

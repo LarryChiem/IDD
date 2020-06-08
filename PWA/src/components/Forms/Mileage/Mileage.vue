@@ -167,24 +167,23 @@
 </template>
 
 <script>
-  import i18n from "@/plugins/i18n";
-  import MileageTable from "@/components/Forms/Mileage/MileageTable";
-  import FormField from "@/components/Forms/FormField";
   import ConfirmSubmission from "@/components/Forms/ConfirmSubmission";
+  import FormField from "@/components/Forms/FormField";
   import fieldPropsFile from "@/components/Forms/Mileage/MileageFields.json";
+  import i18n from '@/plugins/i18n';
+  import MileageTable from "@/components/Forms/Mileage/MileageTable";
   import rules from "@/components/Utility/FormRules.js";
-  import { TIME } from "@/components/Utility/Enums.js";
-  import { subtractTime, isValid } from "@/components/Utility/TimeFunctions.js";
-
   import { mapFields } from "vuex-map-fields";
   import { mapMutations } from "vuex";
+  import { subtractTime, isValid } from "@/components/Utility/TimeFunctions.js";
+  import { TIME } from "@/components/Utility/Enums.js";
 
   export default {
     name: "Mileage",
     components: {
-      MileageTable,
-      FormField,
       ConfirmSubmission,
+      FormField,
+      MileageTable,
     },
 
     props: {
@@ -254,6 +253,7 @@
       ...mapFields(["formId", "newForm"]),
       ...mapFields("Mileage", ["willResign", "formFields", "totalEdited"]),
     },
+
     methods: {
       // Expose and rename the mutations for changing vuex state
       ...mapMutations({
@@ -262,6 +262,7 @@
         setMileagesheet: "Mileage/updateMileageSheet",
         set: "updateField",
       }),
+      
       bindData() {
         // Bind data from a .json IDD mileagesheet to forFields in the vuex store
         if (this.parsedFileData !== null) {
@@ -284,9 +285,11 @@
           });
         }
       },
+      
       combineProps(props) {
         return Object.assign(...props);
       },
+
       initialize() {
         // Initialize some fields
         this.set(this.wrapSet("willResign", false));
@@ -476,6 +479,8 @@
         this.incrementEdited(amtEdited);
       },
 
+      // Aux. function for updating vuex variables without breaking reactivity
+      // Wraps the variable path & update value to a vuex format
       wrapSet(path, value) {
         return { path: path, value: value };
       },

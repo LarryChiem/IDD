@@ -119,8 +119,8 @@
 </style>
 
 <script>
+  import i18n from '@/plugins/i18n';
   import { VuePwaInstallMixin } from "vue-pwa-install";
-  import i18n from "@/plugins/i18n";
 
   const pic_timesheet = require("@/assets/card_timesheet.jpg");
   const pic_burnside = require("@/assets/card_burnside.jpg");
@@ -154,11 +154,13 @@
       pic_logo: pic_logo,
     }),
     created() {
+      // If the client's browser attempts to prompt the client to download the PWA (aka. chrome),
+      // block this attempt and show our custom prompt instead.
       this.$on("canInstall", (event) => {
         // Prevent Chrome 67 and earlier from automatically showing the prompt:
         event.preventDefault();
 
-        // Stash the event so it can be triggered later:
+        // Stash the download event so it can be triggered later:
         this.deferredPrompt = event;
         this.modalOpen = true;
       });
@@ -169,6 +171,8 @@
         else if (id === 1) return i18n.t("views_Home_about");
         return i18n.t("translate_error");
       },
+      
+      // If the client accepts to install the PWA via our custom prompt, show the browser's install prompt
       promptInstall() {
         // Show the prompt:
         this.deferredPrompt.prompt();

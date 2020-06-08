@@ -7,8 +7,10 @@ const mutations = {
     state.totalEdited += count;
   },
   updateTimesheet(state, value) {
-    // Create a deep copy of timesheet for any change
-    // Inefficient, but works
+    // Create a deep copy of 'timesheet' if there was any change
+    // This avoids having to create _another_ vuex file for the
+    // timesheet table fields.
+    // Inefficient, but it works
     Vue.set(
       state.formFields.timesheet,
       "value",
@@ -16,7 +18,6 @@ const mutations = {
     );
   },
   resetState(state) {
-    // acquire initial state
     const s = initialState();
     state["totalEdited"] = s["totalEdited"];
     state["willResign"] = s["willResign"];

@@ -148,6 +148,7 @@
         type: [String, Boolean, Number],
         Default: null,
       },
+      // can we skip the 'edit field warning' prompt
       willResign: {
         type: Boolean,
         Default: false,
@@ -168,6 +169,8 @@
     },
 
     watch: {
+      // If the parent component was reset, reset this field to either the
+      // parsed value, or clear it out
       reset() {
         if (this.parsed_value !== null) {
           this.isDisabled = true;

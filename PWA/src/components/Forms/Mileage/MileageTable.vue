@@ -201,12 +201,12 @@
 </template>
 
 <script>
-  import i18n from "@/plugins/i18n";
   import FormField from "@/components/Forms/FormField";
   import fieldPropsFile from "@/components/Forms/Mileage/MileageTableFields.json";
+  import i18n from '@/plugins/i18n';
   import rules from "@/components/Utility/FormRules.js";
-  import { TIME } from "@/components/Utility/Enums.js";
   import { subtractTime } from "@/components/Utility/TimeFunctions.js";
+  import { TIME } from "@/components/Utility/Enums.js";
   import { mapFields } from "vuex-map-fields";
 
   export default {
@@ -220,22 +220,27 @@
         type: Array,
         default: null,
       },
+      // The columns of this table
       cols: {
         type: Array,
         default: null,
       },
+      // Is adding a row enabled?
       disabled: {
         type: Boolean,
         default: false,
       },
+      // Was this table edited anywhere?
       modified: {
         type: Boolean,
         default: true,
       },
+      // Does this table have parsed values?
       parsed: {
         type: Boolean,
         default: false,
       },
+      // The parsed values for this table (used for resetting)
       parsed_value: {
         type: Array,
         default: null,
@@ -245,24 +250,29 @@
         type: Boolean,
         default: false,
       },
+      // Sum of all the totalHours for each row
       totalMiles: {
         type: Number,
         default: 0,
       },
+      // Do we have to display the 'edit warning' prompt?
       willResign: {
         type: Boolean,
         default: false
       },
+      // Display or hide the 'edit warning' prompt
       editTable: {
         type: Boolean,
         default: false
       },
+      // How many fields were edited/added/deleted
       amountEdited: {
         type: Number,
         default: 0 
       },
     },
-    data: function () {
+    
+    data: function() {
       return {
         // Specify rules and hints for adding a new row to the table
         colValidation: JSON.parse(

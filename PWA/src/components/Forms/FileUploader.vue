@@ -1,8 +1,12 @@
 <template>
   <div class="example-drag">
     <template v-if="onlineStatus">
-      <v-snackbar v-model="snackbar" :timeout="9000">
-        <a
+      <!-- Pop-up at the bottom of the page -->
+      <v-snackbar
+        v-model="snackbar"
+        :timeout=9000
+      >
+        <a 
           class="white--text"
           target="_blank"
           title="Link to How to Print/Download eXPRS Timesheet"
@@ -14,9 +18,12 @@
           {{ $t("close") }}
         </v-btn>
       </v-snackbar>
+      <!-- END Pop-up at the bottom of the page -->
 
+      <!-- Uploader Section -->
       <div class="upload">
-        <v-container v-if="!files.length" class="pa-0 mx-0" fluid>
+        <!-- File Drop Area -->
+        <v-container v-if="files.length < 2" class="pa-0 mx-0" fluid>
           <v-row class="pa-0 ma-0">
             <v-col class="text-center pa-0 ma-0">
               <v-alert
@@ -47,15 +54,17 @@
             </v-col>
           </v-row>
         </v-container>
-
+        <!-- END File Drop Area -->
+        
         <v-container>
           <v-row>
             <v-col>
               <div v-if="!submitted">
+                <!-- File Upload Buttons -->
                 <div class="example-btn">
                   <file-upload
                     class="btn btn-primary"
-                    :custom-action="customAction"
+                    :custom-action="uploadToServer"
                     :multiple="true"
                     :drop="true"
                     :drop-directory="true"
@@ -90,6 +99,8 @@
                     {{ $t("components_Forms_FileUploader_stopupload") }}
                   </button>
                 </div>
+                <!-- END File Upload Buttons -->
+              
               </div>
               <div v-else>
                 <div class="text-center">
@@ -103,7 +114,8 @@
                   </v-btn>
                 </div>
               </div>
-
+              
+              <!-- List of Files and their details -->
               <div v-if="files.length">
                 <ul class="file-list">
                   <li v-for="file in files" :key="file.id">
@@ -114,6 +126,8 @@
                       $t("components_Forms_FileUploader_success")
                     }}</span>
                     <span v-else-if="file.active">
+
+                      <!-- Files Processing Dialog Box -->
                       <v-dialog
                         value="true"
                         hide-overlay
@@ -131,32 +145,38 @@
                           </v-card-text>
                         </v-card>
                       </v-dialog>
+                      <!-- END Files Processing Dialog Box -->
+                    
                     </span>
-                    <span v-else></span>
                   </li>
                 </ul>
               </div>
+            <!-- END List of Files and their details -->
             </v-col>
-
-            <div class="continue" v-if="check()">
-              <v-col>
-                <div class="text-right">
+          </v-row>
+            
+          <!-- Files successfully uploaded, but not yet parsed -->
+          <!-- This button kicks off parsing the uploaded files -->
+          <div class="continue" v-if="check()">
+            <v-row>
+              <v-col class="text-center">
                   <v-btn
                     :loading="loading"
                     :disabled="loading"
                     color="success"
-                    class="ma-2 white--text"
+                    class="ma-0 white--text"
                     @click="completeForm()"
                   >
                     {{ $t("components_Forms_FileUploader_continue") }}
                     <v-icon right dark>mdi-cloud-upload</v-icon>
                   </v-btn>
-                </div>
               </v-col>
-            </div>
-          </v-row>
+            </v-row>
+          </div>
         </v-container>
       </div>
+      <!-- END Uploader Section -->
+
     </template>
     <template v-else>
       {{ $t("components_Forms_FileUploader_offline") }}
@@ -256,11 +276,11 @@
 </style>
 
 <script>
-  import { mapFields } from "vuex-map-fields";
-  import FileUpload from "vue-upload-component";
   import axios from "axios";
+  import FileUpload from "vue-upload-component";
   import { FORM } from "@/components/Utility/Enums.js";
-
+  import { mapFields } from "vuex-map-fields";
+  
   export default {
     name: "file_uploader",
     components: {
@@ -275,55 +295,36 @@
           value.every((file) => file.id && file.name && file.type),
       },
     },
+    data() {
+      return {
+        // More info about printing the IDD timesheet
+        xPRSLink: 'https://apps.state.or.us/exprsDocs/HowToPrintPSWTimesheetsFromeXPRS.pdf',
+        // Controls whether the 'more info' box is displayed or hidden
+        snackbar: true,
+        // User uploaded files 
+        files: [],
+        // Have the files been uploaded yet?
+        submitted: false,
+        // Did the user already hit the upload files button?
+        getUpdated: false,
+        //Calls our form retrieval and displays loading progress
+        loader: null, 
+        // Are the uploaded files being parsed right now?
+        loading: false,
+        // URL, where files are uploaded to the Appserver
+        urlPost: process.env.VUE_APP_SERVER_URL.concat("ImageUpload/DocAsForm"),
+        // URL, where uploaded files are parsed and a .json is returned
+        urlGet: process.env.VUE_APP_SERVER_URL.concat(
+          "Timesheet/Ready?id="
+        ),
+      };
+    },
+    computed: {
+      ...mapFields(["formChoice", "formId", "guid", "onlineStatus"]),
+    },
     methods: {
-      completeForm() {
-        this.loading = true;
-        const l = this.loader;
-        this[l] = !this[l];
-        let self = this;
-        //Retrieves json response from timesheet.
-        if (!this.getUpdated) {
-          this.urlGet = this.urlGet
-            .concat(this.formId)
-            .concat("&guid=")
-            .concat(this.guid);
-          this.getUpdated = true;
-          axios
-            .get(this.urlGet)
-            .then(function (response) {
-              self.$emit("success", response["data"]);
-            })
-            .catch(function (error) {
-              console.log(error);
-              self.$emit("error", error);
-            });
-        }
-        setTimeout(() => (this[l] = false), 30000);
-        this.loader = null;
-      },
-      //Checks if all of the files are ready to be submitted.
-      check() {
-        if (!this.files.length) return false;
-        let count = 0;
-        let x;
-        for (x in this.files) {
-          if (this.files[x].success == true) count += 1;
-        }
-        if (count == this.files.length) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-      reset() {
-        this.files = [];
-        this.submitted = false;
-        this.loader = null;
-        this.loading = false;
-        this.getUpdated = false;
-        this.$emit("reset");
-      },
-      customAction() {
+      // Upload the files to the server (no parsing yet!) 
+      uploadToServer() {
         let formData = new FormData();
         for (let i = 0; i < this.files.length; i++) {
           let file = this.files[i].file;
@@ -354,6 +355,59 @@
           });
         return;
       },
+
+      // Parse the uploaded files and get the response as .json
+      completeForm() {
+        this.loading = true;
+        const l = this.loader;
+        this[l] = !this[l];
+        let self = this;
+
+        // Retrieves a .json response from timesheet
+        if (!this.getUpdated) {
+          this.urlGet = this.urlGet
+            .concat(this.formId)
+            .concat("&guid=")
+            .concat(this.guid);
+          this.getUpdated = true;
+          axios
+            .get(this.urlGet)
+            .then(function (response) {
+              self.$emit("success", response["data"]);
+            })
+            .catch(function (error) {
+              console.log(error);
+              self.$emit("error", error);
+            });
+        }
+        setTimeout(() => (this[l] = false), 30000);
+        this.loader = null;
+      },
+      
+      //Checks if all of the files are ready to be submitted.
+      check() {
+        if (!this.files.length) return false;
+        let count = 0;
+        let x;
+        for (x in this.files) {
+          if (this.files[x].success == true) count += 1;
+        }
+        if (count == this.files.length) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+
+      reset() {
+        this.files = [];
+        this.submitted = false;
+        this.loader = null;
+        this.loading = false;
+        this.getUpdated = false;
+        this.$emit("reset");
+      },
+
       inputFile: function (newFile, oldFile) {
         let jsonResponse;
         if (newFile.xhr) {
@@ -363,7 +417,7 @@
             this.guid = jsonResponse["guid"];
           }
         }
-        if (newFile && oldFile && !newFile.active && oldFile.active)
+        if (newFile && oldFile && !newFile.active && oldFile.active) {
           if (newFile.xhr) {
             if (!newFile.active) {
               jsonResponse = JSON.parse(newFile.xhr.response);
@@ -371,24 +425,8 @@
               this.guid = jsonResponse["guid"];
             }
           }
+        }
       },
-    },
-    data() {
-      return {
-        xPRSLink:
-          "https://apps.state.or.us/exprsDocs/HowToPrintPSWTimesheetsFromeXPRS.pdf",
-        snackbar: true,
-        files: [],
-        loader: null, //Calls our form retrieval and displays loading progress
-        loading: false, //Is form retrieval loading
-        submitted: false,
-        getUpdated: false,
-        urlGet: process.env.VUE_APP_SERVER_URL.concat("Timesheet/Ready?id="), //Retrieve timesheet
-        urlPost: process.env.VUE_APP_SERVER_URL.concat("ImageUpload/DocAsForm"), //Post AppServer
-      };
-    },
-    computed: {
-      ...mapFields(["formChoice", "formId", "guid", "onlineStatus"]),
     },
   };
 </script>

@@ -1,12 +1,13 @@
-import Vue from "vue";
 import App from "./App.vue";
+import FlagIcon from 'vue-flag-icon';
+import i18n from '@/plugins/i18n';
 import router from "./router";
-import "./registerServiceWorker";
+import Vue from "vue";
 import vuetify from "@/plugins/vuetify";
-import i18n from "@/plugins/i18n";
-import FlagIcon from "vue-flag-icon";
 import store from "./store";
+import "./registerServiceWorker";
 
+// Load flag icons to indicate the selected display language
 Vue.use(FlagIcon);
 
 Vue.config.productionTip = false;
@@ -24,10 +25,11 @@ Vue.filter("formatSize", function (size) {
   return size.toString() + " B";
 });
 
+// Mount a new Vue instance onto the page
 new Vue({
+  i18n,
   router,
   store,
   vuetify,
-  i18n,
   render: (h) => h(App),
 }).$mount("#app");

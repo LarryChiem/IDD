@@ -34,8 +34,8 @@
   import AppBar from "@/components/AppShell/AppBar";
   import AppFooter from "@/components/AppShell/AppFooter";
   import NavigationDrawer from "@/components/AppShell/NavigationDrawer";
-  import { mapFields } from "vuex-map-fields";
   import VOffline from "v-offline";
+  import { mapFields } from "vuex-map-fields";
 
   export default {
     name: "App",

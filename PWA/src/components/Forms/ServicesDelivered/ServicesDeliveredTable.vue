@@ -212,9 +212,9 @@
 </template>
 
 <script>
-  import i18n from "@/plugins/i18n";
   import FormField from "@/components/Forms/FormField";
   import fieldPropsFile from "@/components/Forms/ServicesDelivered/ServicesDeliveredTableFields.json";
+  import i18n from '@/plugins/i18n';
   import rules from "@/components/Utility/FormRules.js";
   import { TIME } from "@/components/Utility/Enums.js";
   import {
@@ -238,49 +238,59 @@
         type: Array,
         default: null,
       },
+      // The columns of this table
       cols: {
         type: Array,
         default: null,
       },
+      // Is adding a row enabled?
       disabled: {
         type: Boolean,
         default: false,
       },
+      // Was this table edited anywhere?
       modified: {
         type: Boolean,
         default: true,
       },
+      // Does this table have parsed values?
       parsed: {
         type: Boolean,
         default: false,
       },
+      // The parsed values for this table (used for resetting)
       parsed_value: {
         type: Array,
         default: null,
       },
-      // Reset to default props or no
+      // Reset to default props or no?
       reset: {
         type: Boolean,
         default: false,
       },
+      // Sum of all the totalHours for each row
       totalHours: {
         type: String,
         default: "00:00",
       },
+      // Do we have to display the 'edit warning' prompt?
       willResign: {
         type: Boolean,
         default: false
       },
+      // Display or hide the 'edit warning' prompt
       editTable: {
         type: Boolean,
         default: false
       },
+      // How many fields were edited/added/deleted
       amountEdited: {
         type: Number,
         default: 0 
       },
     },
-    data: function () {
+
+    data: function() {
       return {
         // Specify rules and hints for adding a new row to the table
         colValidation: JSON.parse(

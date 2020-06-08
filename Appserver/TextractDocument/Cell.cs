@@ -70,6 +70,10 @@ namespace Appserver.TextractDocument
         public int GetRow() => RowIndex;
         public int GetCol() => ColumnIndex;
 
+        /// <summary>
+        /// This creates the tree structure by linking a cell to its parent.
+        /// </summary>
+        /// <param name="page">The Cells parent block</param>
         public override void SetPage(Page page)
         {
             _parent = page;

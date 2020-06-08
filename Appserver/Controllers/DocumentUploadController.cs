@@ -29,12 +29,32 @@ namespace Appserver.Controllers
             _context = context;
         }
 
+        /*******************************************************************************
+        /// Actions
+        *******************************************************************************/
+
+        // Document upload controller that is compatible with the format
+        // being sent from the PWA.
+        [Route("ImageUpload/DocAsForm")]
+        [HttpPost("ImageList")]
+        public async Task<IActionResult> ImageList(IFormCollection file_collection)
+        {
+            if (file_collection["formChoice"].Equals(StringValues.Empty))
+            {
+                return Json(new
+                {
+                    response = "invalid form type"
+                });
+            }
+            AbstractFormObject.FormType formType = (AbstractFormObject.FormType)Enum.Parse(typeof(AbstractFormObject.FormType),file_collection["formChoice"].ToString());
+
+            return await PostImage(file_collection.Files.ToList(), formType);
+        }
 
         /*******************************************************************************
         /// Methods
         *******************************************************************************/
 
-        // POST: /home/timesheet/
         // Handle the initial processing of document uploads. Currently, the only accepted
         // formats are jpg/png/pdf. Valid documents are sent to AWS Textract for processing
         // with the results being stored in a staging table. The documents themselves are
@@ -59,7 +79,7 @@ namespace Appserver.Controllers
             foreach (var file in files)
             {
                 // Nothing to work with, next!
-                if(file.Length == 0)
+                if (file.Length == 0)
                 {
                     skipped_files.Add("File name " + file.Name + " is empty");
                     continue;
@@ -68,7 +88,7 @@ namespace Appserver.Controllers
                 if (accepted_types.Contains(file.ContentType))
                 {
                     // Process PDF
-                    if(file.ContentType == "application/pdf")
+                    if (file.ContentType == "application/pdf")
                     {
                         pdf_responses.Add(process_pdf(file));
                     }
@@ -106,27 +126,9 @@ namespace Appserver.Controllers
                 id = stageId,
                 guid = stageGuid
             }
-            ) ;
+            );
         }
 
-
-        // Document upload controller that is compatible with the format
-        // being sent from the PWA.
-        [Route("ImageUpload/DocAsForm")]
-        [HttpPost("ImageList")]
-        public async Task<IActionResult> ImageList(IFormCollection file_collection)
-        {
-            if (file_collection["formChoice"].Equals(StringValues.Empty))
-            {
-                return Json(new
-                {
-                    response = "invalid form type"
-                });
-            }
-            AbstractFormObject.FormType formType = (AbstractFormObject.FormType)Enum.Parse(typeof(AbstractFormObject.FormType),file_collection["formChoice"].ToString());
-
-            return await PostImage(file_collection.Files.ToList(), formType);
-        }
 
         // Store user submissions in Azure and get back the file's bucket handle.
         private async Task<string> UploadToBlob(List<IFormFile> files)

@@ -69,6 +69,11 @@ namespace Appserver.TextractDocument
                 p.CreateStructure();
             }
         }
+        /// <summary>
+        /// This takes in a TextractResponse in Json form and creates the Textract Document in two phases.
+        /// The first phase creates the blocks, the second phase creates the structure.
+        /// </summary>
+        /// <param name="token">A Textract Response</param>
         public void ParseJson(JToken token) 
         { 
             // Start reading
@@ -154,11 +159,20 @@ namespace Appserver.TextractDocument
             }
         }
 
-        public void FromTextractResponse( Amazon.Textract.Model.AnalyzeDocumentResponse response)
+        /// <summary>
+        /// This takes a Textract Document Response and constructs a structured document.
+        /// </summary>
+        /// <param name="response"></param>
+        public void FromTextractResponse(AnalyzeDocumentResponse response)
         {
             ParseJson(JObject.Parse( JsonConvert.SerializeObject(response)));
         }
-
+        /// <summary>
+        /// Adds another TextractDocument to this one. If this document does not have anything yet it
+        /// will copy over the metadata information. If it is adding additional pages it makes sure that the pages
+        /// are renumbered.
+        /// </summary>
+        /// <param name="doc"></param>
         public void AddPages(TextractDocument doc)
         {
             if( Pages.Count == 0)
@@ -176,6 +190,9 @@ namespace Appserver.TextractDocument
             }
         }
 
+        /// <summary>
+        /// Gives a quick summary of items.
+        /// </summary>
         public void printSummary()
         {
             foreach( var p in Pages)
@@ -184,6 +201,10 @@ namespace Appserver.TextractDocument
             }
         }
 
+        /// <summary>
+        /// Provides a way to stringify the TextractDocument
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             string response = String.Format("Page Count: {0}\n",Pages.Count);

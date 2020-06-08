@@ -30,7 +30,10 @@ namespace Appserver.Controllers
             _subcontext = subcontext;
         }
 
-        // Takes the staging id from a previous upload operation. 
+        /*******************************************************************************
+        /// Actions
+        *******************************************************************************/
+        // Takes the staging id from a previous upload operation, does not require the guid. 
         [Produces("application/json")]
         [Route("Test/ReadyTest")]
         [HttpGet]
@@ -56,6 +59,9 @@ namespace Appserver.Controllers
         }
 
         // Used primarily for testing and validation
+        // Takes the id of a staged upload, copies it to a new stage, then submits it.
+        // This method causes an exception to be thrown and caught due to the lack of edit
+        // data.
         [Produces("application/json")]
         [Route("Test/SubmitTest")]
         [HttpGet]

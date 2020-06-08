@@ -27,9 +27,21 @@ namespace Appserver.FormSubmit
         /*******************************************************************************
         /// Methods
         *******************************************************************************/
+        /// <summary>
+        /// Adds a row to the mileage sheet.
+        /// </summary>
+        /// <param name="date">The date the worked was performed on.</param>
+        /// <param name="miles">The number of miles driven.</param>
+        /// <param name="group">Whether this was a group or not.</param>
+        /// <param name="purpose">The purpose of the trip.</param>
         public void addMileRow(string date, string miles, string group, string purpose) =>
             this.Mileage.Add(new MileageRowItem(date, miles, group, purpose));
 
+        /// <summary>
+        /// This takes a Table from a textract document and adds the information to the mileage
+        /// form.
+        /// </summary>
+        /// <param name="tables"></param>
         protected override void AddTables(List<Table> tables)
         {
             var table = tables[0].GetTable();
@@ -58,7 +70,7 @@ namespace Appserver.FormSubmit
                     addMileRow(
                       ConvertDate(row[0].ToString().Trim()), // Date
                       row[1].ToString().Trim(), // Miles
-                      ConvertInt(row[2].ToString()).ToString().Trim(), // Group
+                      IsGroup(row[2].ToString()).ToString().Trim(), // Group
                       row[3].ToString().Trim() // Purpose
                     );
                 }
@@ -74,8 +86,12 @@ namespace Appserver.FormSubmit
             }
         }
 
-
-        public static bool isTotalMilesRow(List<Cell> lastrow)
+        /// <summary>
+        /// Checks if the row is the total row or a normal row of the mileage sheet.
+        /// </summary>
+        /// <param name="lastrow">Takes a candidiate for the last row</param>
+        /// <returns>True if this is the total row.</returns>
+        private bool isTotalMilesRow(List<Cell> lastrow)
         {
             Regex rxNumberGroup = new Regex(@"([0-9])+");
             int confidence = 0;

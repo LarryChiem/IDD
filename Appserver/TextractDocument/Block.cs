@@ -14,6 +14,9 @@ namespace Appserver.TextractDocument
         public abstract List<Block> GetRelationships();
         public abstract int GetPage();
         public abstract void SetPage(Page page);
+        /// <summary>
+        /// Used in creation to create the structure of the document.
+        /// </summary>
         public abstract void CreateStructure();
         public abstract void PrintSummary();
         public abstract float GetConfidence();

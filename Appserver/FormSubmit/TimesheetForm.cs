@@ -31,10 +31,23 @@ public class TimesheetForm: AbstractFormObject
     /*******************************************************************************
     /// Methods
     *******************************************************************************/
-
+    /// <summary>
+    /// Adds a row to the timesheet.
+    /// </summary>
+    /// <param name="date">The date the worked was performed on.</param>
+    /// <param name="start">The time the work started.</param>
+    /// <param name="end">The time the work ended.</param>
+    /// <param name="end">The time the work ended.</param>
+    /// <param name="group">Whether this was a group or not.</param>
+    /// <param name="total">The total hours worked.</param>
     public void addTimeRow(string date, string start, string end, string total, string group) => 
         this.Times.Add(new TimesheetRowItem(date, start, end, total, group));
 
+    /// <summary>
+    /// This takes a Table from a textract document and adds the information to the timesheet
+    /// form.
+    /// </summary>
+    /// <param name="tables"></param>
     protected override void AddTables(List<Table> tables)
     {
         var table = tables[0].GetTable();
@@ -66,7 +79,7 @@ public class TimesheetForm: AbstractFormObject
                   FixHours(row[1].ToString()).ToString().Trim(),
                   FixHours(row[2].ToString()).ToString().Trim(),
                   FixHours(row[3].ToString()).ToString().Trim(),
-                  ConvertInt(row[4].ToString()).ToString().Trim());
+                  IsGroup(row[4].ToString()).ToString().Trim());
             }
         }
 
@@ -83,9 +96,12 @@ public class TimesheetForm: AbstractFormObject
         }
     }
 
-    // If one of the rows in the cell matches the regex
-    // and there is also a row that can be parsed into hours,
-    // then we probably have a total hours cell. 
+
+    /// <summary>
+    /// Checks if the row is the total row or a normal row of the timesheet.
+    /// </summary>
+    /// <param name="lastrow">Takes a candidiate for the last row</param>
+    /// <returns>True if this is the total row.</returns>
     public static bool isTotalTimeRow(List<Cell> lastrow)
     {
         // The letters of "total/unit/hours" without

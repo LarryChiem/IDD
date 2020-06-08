@@ -31,9 +31,8 @@ namespace Appserver.Controllers
 
 
         /*******************************************************************************
-        /// Methods
+        /// Actions
         *******************************************************************************/
-
 
         // A previous upload is considered ready when the response from textract has
         // been received. When ready, a json repersentation of the appropriate form is returned.
@@ -112,8 +111,6 @@ namespace Appserver.Controllers
                 transaction.Commit();
             }
 
-            Response.Headers.Add("Access-Control-Allow-Origin", "*");
-            Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             return Json(new {response="ok"});
         }
 
@@ -138,8 +135,6 @@ namespace Appserver.Controllers
                 transaction.Commit();
             }
 
-            Response.Headers.Add("Access-Control-Allow-Origin", "*");
-            Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             return Json(new { response = "ok" });
         }
 

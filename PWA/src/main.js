@@ -3,8 +3,8 @@ import App from "./App.vue";
 import router from "./router";
 import "./registerServiceWorker";
 import vuetify from "@/plugins/vuetify";
-import i18n from '@/plugins/i18n';
-import FlagIcon from 'vue-flag-icon';
+import i18n from "@/plugins/i18n";
+import FlagIcon from "vue-flag-icon";
 import store from "./store";
 
 Vue.use(FlagIcon);

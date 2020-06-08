@@ -1,7 +1,7 @@
 <template>
   <v-form class="mx-2" lazy-validation ref="form" v-model="valid">
     <p class="title">
-      {{ $t('components_Forms_ServicesDelivered_front') }}
+      {{ $t("components_Forms_ServicesDelivered_front") }}
     </p>
 
     <v-layout wrap>
@@ -55,12 +55,12 @@
     </v-card-text>
 
     <!-- totalHours -->
-    {{ $t('components_Forms_ServicesDelivered_totalhours') }}
+    {{ $t("components_Forms_ServicesDelivered_totalhours") }}
     {{ this.formFields["totalHours"]["value"] }}
     <hr />
 
     <p class="title">
-      {{ $t('components_Forms_ServicesDelivered_back') }}
+      {{ $t("components_Forms_ServicesDelivered_back") }}
     </p>
 
     <FormField
@@ -79,7 +79,8 @@
     <hr />
 
     <!-- Employer Verification Section -->
-    <p class="subtitle-1"
+    <p
+      class="subtitle-1"
       v-html="$t('components_Forms_ServicesDelivered_employer_verification')"
     ></p>
 
@@ -102,7 +103,8 @@
     <hr />
 
     <!-- Provider Verification Section -->
-    <p class="subtitle-1"
+    <p
+      class="subtitle-1"
       v-html="$t('components_Forms_ServicesDelivered_provider_verification')"
     ></p>
 
@@ -138,7 +140,7 @@
     </v-layout>
 
     <strong class="subtitle-1">
-      {{ $t('components_Forms_ServicesDelivered_authorize') }}
+      {{ $t("components_Forms_ServicesDelivered_authorize") }}
     </strong>
 
     <v-container>
@@ -146,7 +148,7 @@
         <v-col cols="6">
           <v-container class="text-center">
             <v-btn color="error" class="mr-4" @click="reset">
-              {{ $t('components_Forms_ServicesDelivered_reset') }}
+              {{ $t("components_Forms_ServicesDelivered_reset") }}
             </v-btn>
           </v-container>
         </v-col>
@@ -165,7 +167,7 @@
 </template>
 
 <script>
-  import i18n from '@/plugins/i18n';
+  import i18n from "@/plugins/i18n";
   import ServicesDeliveredTable from "@/components/Forms/ServicesDelivered/ServicesDeliveredTable";
   import FormField from "@/components/Forms/FormField";
   import ConfirmSubmission from "@/components/Forms/ConfirmSubmission";
@@ -347,12 +349,12 @@
               var colErrors = errors.length;
               if (colErrors > 0) {
                 this.errors.push([
-                  i18n.t('components_Forms_ServicesDelivered_err5_0') +
-                  `${index + 1}` + 
-                  i18n.t('components_Forms_ServicesDelivered_err5_1') +
-                  `${col}` +
-                  i18n.t('components_Forms_ServicesDelivered_err5_2') +
-                  errors,
+                  i18n.t("components_Forms_ServicesDelivered_err5_0") +
+                    `${index + 1}` +
+                    i18n.t("components_Forms_ServicesDelivered_err5_1") +
+                    `${col}` +
+                    i18n.t("components_Forms_ServicesDelivered_err5_2") +
+                    errors,
                 ]);
               }
             });
@@ -367,7 +369,7 @@
 
         // Check parent's response on validity of input fields
         if (!this.$refs.form.validate()) {
-          this.errors.push(i18n.t('components_Forms_ServicesDelivered_err1'));
+          this.errors.push(i18n.t("components_Forms_ServicesDelivered_err1"));
         }
 
         // Check the validity of the timesheet table
@@ -406,7 +408,9 @@
               TIME.YEAR_MONTH
             );
             if (submissionDiff < 0) {
-              this.errors.push(i18n.t('components_Forms_ServicesDelivered_err6'));
+              this.errors.push(
+                i18n.t("components_Forms_ServicesDelivered_err6")
+              );
             }
 
             // Get the last date from the timesheet table
@@ -419,7 +423,9 @@
                 subtractTime(latestDate, comparisonDate, TIME.YEAR_MONTH_DAY) <
                 0
               ) {
-                this.errors.push(i18n.t('components_Forms_ServicesDelivered_err7'));
+                this.errors.push(
+                  i18n.t("components_Forms_ServicesDelivered_err7")
+                );
               }
             }
           }

@@ -15,7 +15,7 @@
       <v-offline @detected-condition="handleConnectivityChange"></v-offline>
       <v-container v-if="onlineStatus === false" fluid>
         <v-alert type="error" class="my-0">
-          {{ $t('App_nointernet') }}
+          {{ $t("App_nointernet") }}
         </v-alert>
       </v-container>
 

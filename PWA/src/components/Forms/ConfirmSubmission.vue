@@ -1,24 +1,24 @@
 <template>
   <v-container class="text-center">
     <v-btn color="success" dark @click.stop="signalParentValidate">
-      {{ $t('components_Forms_ConfirmSubmission_submit') }}
+      {{ $t("components_Forms_ConfirmSubmission_submit") }}
     </v-btn>
 
-    <v-dialog v-model="displaySubmit" max-width="75%">
+    <v-dialog v-model="displaySubmit" max-width="50%">
       <template v-if="isValid">
         <v-card>
           <div v-if="!loading">
-            <v-card-title class="headline" id="confirm" >
-              {{ $t('components_Forms_ConfirmSubmission_confirm') }}
+            <v-card-title class="headline" id="confirm">
+              {{ $t("components_Forms_ConfirmSubmission_confirm") }}
             </v-card-title>
 
             <v-card-text>
-              {{ $t('components_Forms_ConfirmSubmission_confirm_desc') }}
+              {{ $t("components_Forms_ConfirmSubmission_confirm_desc") }}
             </v-card-text>
 
             <v-card-text v-if="this.totalEdited > 0">
               <em>
-                {{ $t('components_Forms_ConfirmSubmission_edited') }}
+                {{ $t("components_Forms_ConfirmSubmission_edited") }}
               </em>
 
               <!-- 
@@ -44,13 +44,13 @@
                 color="red lighten-2"
                 v-if="!reSigned.includes('Employer')"
               >
-                {{ $t('components_Forms_ConfirmSubmission_employer_desc') }}
+                {{ $t("components_Forms_ConfirmSubmission_employer_desc") }}
               </v-card>
               <v-card
                 color="red lighten-2"
                 v-if="!reSigned.includes('Provider')"
               >
-                {{ $t('components_Forms_ConfirmSubmission_provider_desc') }}
+                {{ $t("components_Forms_ConfirmSubmission_provider_desc") }}
               </v-card>
             </v-card-text>
 
@@ -58,11 +58,12 @@
               <v-spacer></v-spacer>
 
               <!-- Confirm if user is ready to submit -->
-              <v-btn 
+              <v-btn
                 class="white--text"
-                color="red" 
-                @click="displaySubmit = false">
-                {{ $t('components_Forms_ConfirmSubmission_cancel') }}
+                color="red"
+                @click="displaySubmit = false"
+              >
+                {{ $t("components_Forms_ConfirmSubmission_cancel") }}
               </v-btn>
 
               <template v-if="onlineStatus">
@@ -72,11 +73,11 @@
                   :disabled="canSubmit"
                   @click="submit"
                 >
-                  {{ $t('components_Forms_ConfirmSubmission_submit') }}
+                  {{ $t("components_Forms_ConfirmSubmission_submit") }}
                 </v-btn>
               </template>
               <template v-else>
-                {{ $t('components_Forms_ConfirmSubmission_offline') }}
+                {{ $t("components_Forms_ConfirmSubmission_offline") }}
               </template>
             </v-card-actions>
           </div>
@@ -84,16 +85,8 @@
           <div v-else>
             <div v-if="!returnHome">
               <!-- Submitting the form -->
-              <v-dialog
-                value="true"
-                hide-overlay
-                persistent
-                width="300"
-              >
-                <v-card
-                  color="primary"
-                  dark
-                >
+              <v-dialog value="true" hide-overlay persistent width="300">
+                <v-card color="primary" dark>
                   <v-card-text class="text-center">
                     <v-progress-circular
                       indeterminate
@@ -104,7 +97,7 @@
                     ></v-progress-circular>
                   </v-card-text>
                   <v-card-text class="text-center">
-                    {{ $t('components_Forms_ConfirmSubmission_submitting') }}
+                    {{ $t("components_Forms_ConfirmSubmission_submitting") }}
                   </v-card-text>
                 </v-card>
               </v-dialog>
@@ -113,52 +106,43 @@
             <div v-else>
               <!-- Display submission status -->
               <div v-if="submissionStatus">
-                <v-dialog 
-                  value="true" 
-                  hide-overlay 
-                  persistent 
-                  width="300"
-                >
+                <v-dialog value="true" hide-overlay persistent width="300">
                   <v-card>
-                    <v-card-title 
-                      class="headline text-center success white--text" 
+                    <v-card-title
+                      class="headline text-center success white--text"
                       id="submited"
                     >
-                      {{ $t('components_Forms_ConfirmSubmission_submitted') }}
+                      {{ $t("components_Forms_ConfirmSubmission_submitted") }}
                     </v-card-title>
                     <v-card-text>
-                      <v-card-text 
-                        class="text-center" 
-                        id="submission-complete"
-                      >
-                        {{ $t('components_Forms_ConfirmSubmission_submitted_desc') }}
+                      <v-card-text class="text-center" id="submission-complete">
+                        {{
+                          $t(
+                            "components_Forms_ConfirmSubmission_submitted_desc"
+                          )
+                        }}
                       </v-card-text>
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn 
+                      <v-card-text class="text-center">
+                        <v-btn
                           class="mt-3 center"
-                          color="indigo" 
-                          @click="resetForm()" 
+                          color="indigo"
+                          @click="resetForm()"
                           dark
                         >
-                          {{ $t('components_Forms_ConfirmSubmission_home') }}
+                          {{ $t("components_Forms_ConfirmSubmission_home") }}
                         </v-btn>
-                      </v-card-actions>
+                      </v-card-text>
                     </v-card-text>
                   </v-card>
                 </v-dialog>
               </div>
               <div v-else>
-                <v-alert 
-                  class="headline" 
-                  id="failure"
-                  type="error"
-                >
-                  {{ $t('components_Forms_ConfirmSubmission_error') }}
+                <v-alert class="headline" id="failure" type="error">
+                  {{ $t("components_Forms_ConfirmSubmission_error") }}
                 </v-alert>
 
                 <v-card-text>
-                  {{ $t('components_Forms_ConfirmSubmission_error_desc') }}
+                  {{ $t("components_Forms_ConfirmSubmission_error_desc") }}
                 </v-card-text>
               </div>
             </div>
@@ -170,12 +154,13 @@
       <template v-else>
         <v-card>
           <v-card-title class="headline text-danger" id="invalid">
-            {{ $t('components_Forms_ConfirmSubmission_invalid') }}
+            {{ $t("components_Forms_ConfirmSubmission_invalid") }}
           </v-card-title>
 
           <v-card-text>
-            <div v-html="$t('components_Forms_ConfirmSubmission_invalid_desc')">
-            </div>
+            <div
+              v-html="$t('components_Forms_ConfirmSubmission_invalid_desc')"
+            ></div>
             <v-card
               color="red lighten-2"
               v-for="(error, index) in errors"
@@ -191,9 +176,12 @@
 </template>
 
 <style>
-  .v-card__text,
+  .v-card__text {
+    word-break: normal; /* maybe !important  */
+  }
   .v-card__title {
     word-break: normal; /* maybe !important  */
+    justify-content: center;
   }
   .v-progress-circular {
     margin: 1rem;
@@ -219,32 +207,32 @@
       // The cols in the datatable
       cols: {
         type: Array,
-        default: null
+        default: null,
       },
 
       //If the information is valid.
       valid: {
         type: Boolean,
-        default: false
+        default: false,
       },
 
       // Signal that parent form has completed validation
       validationSignal: {
         type: Boolean,
-        default: false
+        default: false,
       },
 
       // The list of errors from the parent's validation function
       errors: {
         type: Array,
-        default: null
+        default: null,
       },
 
       // The amount of errors from the parent's validation function
       numErrors: {
         type: Number,
-        default: 0
-      }
+        default: 0,
+      },
     },
 
     data() {
@@ -269,12 +257,12 @@
         waitingOnParent: false,
 
         // Provider and employer re-signed the form
-        reSigned: []
+        reSigned: [],
       };
     },
 
     computed: {
-      url: function() {
+      url: function () {
         //URL for the AppServer
         if (FORM[this.formChoice] === FORM.OR004_MILEAGE)
           return process.env.VUE_APP_SERVER_URL.concat(
@@ -282,25 +270,25 @@
           );
         else return process.env.VUE_APP_SERVER_URL.concat("Timesheet/Submit");
       },
-      canSubmit: function() {
+      canSubmit: function () {
         return (
           this.totalEdited > 0 && !(this.reSigned.length === 2) && this.isValid
         );
       },
       ...mapFields(["formChoice", "formId", "guid", "onlineStatus"]),
-      formType: function() {
+      formType: function () {
         return FORM_TYPE[this.formChoice];
       },
-      totalEdited: function() {
+      totalEdited: function () {
         if (this.formType !== undefined && store.getters !== undefined)
           return store.getters[this.formType + "/getField"]("totalEdited");
         else return 0;
       },
-      formFields: function() {
+      formFields: function () {
         if (this.formType !== undefined && store.getters !== undefined)
           return store.getters[this.formType + "/getField"]("formFields");
         else return null;
-      }
+      },
     },
 
     watch: {
@@ -318,7 +306,7 @@
           this.waitingOnParent = false;
           this.displaySubmit = true;
         }
-      }
+      },
     },
 
     methods: {
@@ -356,7 +344,7 @@
               key;
               var row = {};
 
-              this.cols.forEach(col => {
+              this.cols.forEach((col) => {
                 row[col] = value[col];
               });
               row["wasEdited"] = !value["disabled"];
@@ -404,10 +392,10 @@
           axios
             .post(this.url, this.submitData, {
               headers: {
-                "content-type": "application/json"
-              }
+                "content-type": "application/json",
+              },
             })
-            .then(function(response) {
+            .then(function (response) {
               if (response["data"]["response"] == "ok") {
                 console.log("Finished posting!");
                 self.submissionStatus = true;
@@ -416,7 +404,7 @@
                 self.returnHome = true;
               }
             })
-            .catch(function(error) {
+            .catch(function (error) {
               console.log(error);
             });
         }
@@ -426,8 +414,8 @@
         this.resetState();
         this.resetServiceDelivered();
         this.resetMileage();
-        window.location.href = '/';
+        window.location.href = "/";
       },
-    }
+    },
   };
 </script>

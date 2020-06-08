@@ -4,7 +4,11 @@
     <template v-slot:top>
       <v-toolbar flat>
         <v-toolbar-title>
-          {{ $t('components_Forms_ServicesDelivered_ServicesDeliveredTable_title') }}
+          {{
+            $t(
+              "components_Forms_ServicesDelivered_ServicesDeliveredTable_title"
+            )
+          }}
         </v-toolbar-title>
 
         <v-spacer></v-spacer>
@@ -13,22 +17,22 @@
         <v-dialog max-width="500px" v-model="displayWarning">
           <v-card>
             <v-card-title class="headline">
-              {{ $t('components_Forms_FormField_edit') }}
+              {{ $t("components_Forms_FormField_edit") }}
             </v-card-title>
 
             <v-card-text>
-              {{ $t('components_Forms_FormField_edit_desc') }}
+              {{ $t("components_Forms_FormField_edit_desc") }}
             </v-card-text>
 
             <v-card-actions>
               <v-spacer></v-spacer>
 
               <v-btn color="red white--text" @click="closeWarning()">
-                {{ $t('components_Forms_FormField_cancel') }}
+                {{ $t("components_Forms_FormField_cancel") }}
               </v-btn>
 
               <v-btn color="green white--text" @click="warnContinue()">
-                {{ $t('components_Forms_FormField_editbtn') }}
+                {{ $t("components_Forms_FormField_editbtn") }}
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -76,7 +80,11 @@
           <!-- The dialog box title -->
           <v-card>
             <v-card-title>
-              <span class="headline">{{ $t('components_Forms_ServicesDelivered_ServicesDeliveredTable_table_title') }}</span>
+              <span class="headline">{{
+                $t(
+                  "components_Forms_ServicesDelivered_ServicesDeliveredTable_table_title"
+                )
+              }}</span>
             </v-card-title>
 
             <!-- The form area -->
@@ -96,12 +104,16 @@
                 </v-row>
 
                 <v-row class="py-0 my-0">
-                  {{ $t('components_Forms_ServicesDelivered_totalhours') }}
+                  {{ $t("components_Forms_ServicesDelivered_totalhours") }}
                   {{ editedItemTotalHours }}
                 </v-row>
 
                 <v-checkbox
-                  :label="$t('components_Forms_ServicesDelivered_ServicesDeliveredTable_group')"
+                  :label="
+                    $t(
+                      'components_Forms_ServicesDelivered_ServicesDeliveredTable_group'
+                    )
+                  "
                   true-value="1"
                   false-value="0"
                   :input-value="editedItem.group"
@@ -117,10 +129,14 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="red white--text" @click="close">
-                {{ $t('components_Forms_FormField_cancel') }}
+                {{ $t("components_Forms_FormField_cancel") }}
               </v-btn>
               <v-btn color="green white--text" @click="save">
-                {{ $t('components_Forms_ServicesDelivered_ServicesDeliveredTable_save') }}
+                {{
+                  $t(
+                    "components_Forms_ServicesDelivered_ServicesDeliveredTable_save"
+                  )
+                }}
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -156,10 +172,10 @@
         {{ item.totalHours }}
       </v-container>
     </template>
-    
+
     <template v-slot:item.group="{ item }">
       <v-container flat :class="getColor(item.errors, 'group')">
-        {{ item.group == "1" ? $t('yes') : $t('no') }}
+        {{ item.group == "1" ? $t("yes") : $t("no") }}
       </v-container>
     </template>
 
@@ -196,7 +212,7 @@
 </template>
 
 <script>
-  import i18n from '@/plugins/i18n';
+  import i18n from "@/plugins/i18n";
   import FormField from "@/components/Forms/FormField";
   import fieldPropsFile from "@/components/Forms/ServicesDelivered/ServicesDeliveredTableFields.json";
   import rules from "@/components/Utility/FormRules.js";
@@ -204,7 +220,7 @@
   import {
     subtractTime,
     milliToFormat,
-    isValid
+    isValid,
   } from "@/components/Utility/TimeFunctions.js";
   
   var moment = require("moment");
@@ -214,42 +230,42 @@
   export default {
     name: "ServicesDeliveredTable",
     components: {
-      FormField
+      FormField,
     },
     props: {
       // A .json file that is a section from the parsed uploaded IDD timesheet data
       value: {
         type: Array,
-        default: null
+        default: null,
       },
       cols: {
         type: Array,
-        default: null
+        default: null,
       },
       disabled: {
         type: Boolean,
-        default: false
+        default: false,
       },
       modified: {
         type: Boolean,
-        default: true
+        default: true,
       },
       parsed: {
         type: Boolean,
-        default: false
+        default: false,
       },
       parsed_value: {
         type: Array,
-        default: null
+        default: null,
       },
       // Reset to default props or no
       reset: {
         type: Boolean,
-        default: false
+        default: false,
       },
       totalHours: {
         type: String,
-        default: "00:00"
+        default: "00:00",
       },
       willResign: {
         type: Boolean,
@@ -264,7 +280,7 @@
         default: 0 
       },
     },
-    data: function() {
+    data: function () {
       return {
         // Specify rules and hints for adding a new row to the table
         colValidation: JSON.parse(
@@ -297,7 +313,7 @@
           group: "0",
           disabled: false,
           parsed: false,
-          errors: {}
+          errors: {},
         },
 
         // Helper object for holding changes to a row in the table before
@@ -310,28 +326,55 @@
           group: "0",
           disabled: false,
           parsed: false,
-          errors: {}
+          errors: {},
         },
 
         // The last focused element before a dialog/popup appears
         // This allows for resuming tabbing after the dialog/popup closes
-        focusedElement: null
+        focusedElement: null,
       };
     },
 
     computed: {
       // Column headers and associated values for the table
-      headers: function() {
+      headers: function () {
         return [
-          { "text": i18n.t('ServicesDeliveredTable_date_label'), "align": "start", "value": "date", "sortable": false }, 
-          { "text": i18n.t('ServicesDeliveredTable_starttime_label'), "value": "starttime", "sortable": false },
-          { "text": i18n.t('ServicesDeliveredTable_endtime_label'), "value": "endtime", "sortable": false },
-          { "text": i18n.t('ServicesDelivered_totalHours_label'), "value": "totalHours", "sortable": false },
-          { "text": i18n.t('components_Forms_ServicesDelivered_ServicesDeliveredTable_group'), "value": "group", "sortable": false },
-          { "text": i18n.t('MileageTable_actions'), "value": "actions", "sortable": false }
-        ]
+          {
+            text: i18n.t("ServicesDeliveredTable_date_label"),
+            align: "start",
+            value: "date",
+            sortable: false,
+          },
+          {
+            text: i18n.t("ServicesDeliveredTable_starttime_label"),
+            value: "starttime",
+            sortable: false,
+          },
+          {
+            text: i18n.t("ServicesDeliveredTable_endtime_label"),
+            value: "endtime",
+            sortable: false,
+          },
+          {
+            text: i18n.t("ServicesDelivered_totalHours_label"),
+            value: "totalHours",
+            sortable: false,
+          },
+          {
+            text: i18n.t(
+              "components_Forms_ServicesDelivered_ServicesDeliveredTable_group"
+            ),
+            value: "group",
+            sortable: false,
+          },
+          {
+            text: i18n.t("MileageTable_actions"),
+            value: "actions",
+            sortable: false,
+          },
+        ];
       },
-      editedItemTotalHours: function() {
+      editedItemTotalHours: function () {
         var start = this.editedItem["starttime"];
         var end = this.editedItem["endtime"];
         var timeDiff = subtractTime(start, end, TIME.TIME_12);
@@ -339,6 +382,7 @@
         this.$set(this.editedItem, "totalHours", formatTimeDiff);
         return formatTimeDiff;
       },
+      
       ...mapFields(["newForm"]),
     },
 
@@ -347,17 +391,17 @@
       reset() {
         this.initialize();
         this.validate();
-      }
+      },
     },
 
-    created: function() {
+    created: function () {
       // Bind validation rules to each field that has a 'rules' string
       // specified
       Object.entries(this.colValidation).forEach(([key, value]) => {
         if ("rules" in value) {
           const _rules = value.rules;
           let _transRules = [];
-          _rules.forEach(fieldRule => {
+          _rules.forEach((fieldRule) => {
             if (typeof fieldRule === "string") {
               _transRules.push(rules[fieldRule]());
               this.colValidation[key].rules.push(rules[fieldRule]());
@@ -394,7 +438,7 @@
         // For each parsed entry from props, create a new table row
         if (this.parsed_value !== null) {
           // For each timesheet table entry, create a new set 'obj'
-          this.parsed_value.forEach(row => {
+          this.parsed_value.forEach((row) => {
             let obj = {};
 
             // Only add attributes that fit an existing column header
@@ -468,7 +512,7 @@
       // Delete a single row of the table
       deleteItem(item) {
         const index = this.allEntries.indexOf(item);
-        if (confirm(i18n.t('components_Forms_Mileage_delete'))) {
+        if (confirm(i18n.t("components_Forms_Mileage_delete"))) {
           this.allEntries.splice(index, 1);
           this.validate();
           this.$emit("input", this.allEntries);
@@ -605,29 +649,31 @@
         // The columns to check for validation (ex. exclude action, group)
 
         // First check that each field has a valid value
-        this.allEntries.forEach(entry => {
-          this.cols.forEach(col => {
+        this.allEntries.forEach((entry) => {
+          this.cols.forEach((col) => {
             // Reset the list of validation errors for this field for this row
             entry["errors"][col] = [];
 
             // Run the validation functions associated w/ this field
             if ("rules" in this.colValidation[col]) {
               var wasInvalid = false;
-              this.colValidation[col]["rules"].forEach(rule => {
+              this.colValidation[col]["rules"].forEach((rule) => {
                 // If the validation function fails, add an error to field
                 if (rule(entry[col]) !== true) {
                   wasInvalid = true;
                 }
               });
               if (wasInvalid === true) {
-                entry["errors"][col].push(i18n.t('components_Forms_ServicesDelivered_err0'));
+                entry["errors"][col].push(
+                  i18n.t("components_Forms_ServicesDelivered_err0")
+                );
               }
             }
           });
         });
 
         // Next, check that the end time is after the start time
-        this.allEntries.forEach(entry => {
+        this.allEntries.forEach((entry) => {
           // If the start and end times are valid, begin parsing
           if (
             entry["errors"]["starttime"].length === 0 &&
@@ -636,16 +682,22 @@
             var start = entry["starttime"];
             var end = entry["endtime"];
             var timeDiff = subtractTime(start, end, TIME.TIME_12);
-            if (timeDiff <= 0) { 
-              entry["errors"]["starttime"].push(i18n.t('components_Forms_ServicesDelivered_err2'));
-              entry["errors"]["endtime"].push(i18n.t('components_Forms_ServicesDelivered_err2'));
+            if (timeDiff <= 0) {
+              entry["errors"]["starttime"].push(
+                i18n.t("components_Forms_ServicesDelivered_err2")
+              );
+              entry["errors"]["endtime"].push(
+                i18n.t("components_Forms_ServicesDelivered_err2")
+              );
             }
 
             var formatTimeDiff = moment
               .duration({ minutes: timeDiff })
               .format(TIME.TIME_24);
             if (formatTimeDiff.localeCompare(entry["totalHours"]) === 0) {
-              entry["errors"]["totalHours"].push(i18n.t('components_forms_servicesdelivered_err3'));
+              entry["errors"]["totalHours"].push(
+                i18n.t("components_forms_servicesdelivered_err3")
+              );
             }
           }
         });
@@ -691,14 +743,20 @@
           var end = entry["date"] + " " + entry["endtime"];
 
           if (index !== 0) {
-            if (isValid(prev_end, TIME.FULL_DATE) &&
-              isValid(start, TIME.FULL_DATE)) {
+            if (
+              isValid(prev_end, TIME.FULL_DATE) &&
+              isValid(start, TIME.FULL_DATE)
+            ) {
               // If the start is before the end of the prev's end, there is an overlap
               var timeDiff = subtractTime(prev_end, start, TIME.FULL_DATE);
               if (timeDiff <= 0) {
                 ret += 1;
-                entry["errors"]["starttime"].push(i18n.t('components_Forms_ServicesDelivered_err4'));
-                entry["errors"]["endtime"].push(i18n.t('components_Forms_ServicesDelivered_err4'));
+                entry["errors"]["starttime"].push(
+                  i18n.t("components_Forms_ServicesDelivered_err4")
+                );
+                entry["errors"]["endtime"].push(
+                  i18n.t("components_Forms_ServicesDelivered_err4")
+                );
               }
             }
           }
@@ -729,7 +787,14 @@
           // For each error col in an entry, check the amount of errors
           Object.entries(entry["errors"]).forEach(([col, errors]) => {
             if (errors.length > 0) {
-              console.log(i18n.t('components_forms_servicesdelivered_row'), index, "[", col, "]: ", errors);
+              console.log(
+                i18n.t("components_forms_servicesdelivered_row"),
+                index,
+                "[",
+                col,
+                "]: ",
+                errors
+              );
             }
           });
         });
@@ -745,6 +810,7 @@
         }
         return ret;
       },
+
       // Re-bind data to the proper fields from parent's props
       rebind() {
         if (process.env.NODE_ENV === 'development' && this.amountEdited === 0) {

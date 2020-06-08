@@ -18,13 +18,13 @@ const mutations = {
   resetState(state) {
     // acquire initial state
     const s = initialState();
-    state['totalEdited'] = s['totalEdited'];
-    state['willResign'] = s['willResign'];
-    Object.keys(s['formFields']).forEach((key) => {
+    state["totalEdited"] = s["totalEdited"];
+    state["willResign"] = s["willResign"];
+    Object.keys(s["formFields"]).forEach((key) => {
       Vue.set(
-        state['formFields'],
+        state["formFields"],
         key,
-        JSON.parse(JSON.stringify(s['formFields'][key]))
+        JSON.parse(JSON.stringify(s["formFields"][key]))
       );
     });
   },

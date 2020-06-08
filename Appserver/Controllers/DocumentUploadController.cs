@@ -144,7 +144,10 @@ namespace Appserver.Controllers
             {
                 if (!string.IsNullOrEmpty(uriString))
                     uriString += ',';
-                var blockBlob = container.GetBlockBlobReference(DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fffffff") + "_" + f.FileName);
+
+                // Replace commas in uploaded filenames
+                var filename = f.FileName.Replace(',', '_');
+                var blockBlob = container.GetBlockBlobReference(DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fffffff") + "_" + filename);
                 uriString += blockBlob.Uri.AbsoluteUri;
                 await blockBlob.UploadFromStreamAsync(f.OpenReadStream());
             }

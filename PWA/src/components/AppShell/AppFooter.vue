@@ -36,7 +36,8 @@ export default {
       links: {
         0: "https://multco.us/multnomah-county/about-multnomah-county",
         1: "https://multco.us/jobs",
-        2: "https://multco.us/diversity-equity/ada-policy-notice-and-disability-complaint-process"
+        2: "https://multco.us/diversity-equity/ada-policy-notice-and-disability-complaint-process",
+        3: "https://www.youtube.com/watch?v=krLqp89Sf5U"
       }
     };
   },
@@ -45,6 +46,7 @@ export default {
       if (id == 0) return i18n.t('components_AppShell_AppFooter_about');
       else if (id == 1) return i18n.t('components_AppShell_AppFooter_opportunities');
       else if (id == 2) return i18n.t('components_AppShell_AppFooter_access');
+      else if (id == 3) return i18n.t('components_AppShell_AppFooter_howtouse');
       return i18n.t('translate_error');
     },
   },

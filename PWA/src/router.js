@@ -6,6 +6,9 @@ Vue.use(VueRouter);
 
 export default new VueRouter({
   mode: "history",
+  scrollBehavior() {
+    return { x: 0, y: 0 };
+  },
   routes: [
     { path: "/", name: "home", component: Home, props: true },
     {

@@ -39,7 +39,7 @@ namespace Common.Models
 
 
         /*
-         *  Creates a PDF representation of the Timesheet
+         *  Creates a PDF representation of the Submission
          *  No Parameters
          *  Returns a PDF
          */
@@ -50,8 +50,8 @@ namespace Common.Models
             var document = new PdfDocument();
 
             var pdfString = "eXPRS Plan of Care - Services Delivered Report Form\n\n" +
-                               "Timesheet ID: " + Id + "\n" +
-                               "Status of Timesheet: " + Status + "\n" +
+                               "Submission ID: " + Id + "\n" +
+                               "Status of Submission: " + Status + "\n" +
                                "Customer Name: " + ClientName + "\n" +
                                "Prime: " + ClientPrime + "\n" +
                                "Provider Name: " + ProviderName + "\n" +

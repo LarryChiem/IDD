@@ -8,14 +8,6 @@ If Common doesn't show up in your solution window, right Solution 'AdminUI' -> '
 
 By default, this creates a local SQL db that you can test on. To change this, alter the connection string in appsettings.json
 
-In the Package Manager Console, run the following commands:
-
-```
-	Update-Database -Context AdminUIUserContext
-	Update-Database -Context SubmissionContext
-	Update-Database -Context PayPeriodContext
-```
-
 If you see an error along the lines of "Database xxx already exists, pick a different name",
 then go to view -> SQL Server Object Explorer -> (localdb)\MSSQL.... -> Databases -> Right Click AzureDB -> Delete.
 Now re-run the commands and it should work.
@@ -24,7 +16,6 @@ When modifying any model associated with a database, be sure to run a migration 
 
 ```
 	Add-Migration MigrationName -Context ContextName
-	Update-Database -Context ContextName
 ```
 
 The first time you run, it will initialize the database with a bunch of mock data to play around with. If you don't want this to happen, just comment out MockData.Initialize in startup.cs

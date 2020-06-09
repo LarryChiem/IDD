@@ -7,14 +7,11 @@ here: [Azure Storage Emulator](https://docs.microsoft.com/en-us/azure/storage/co
 
 ## Setting up Databases
 
-### Prerequisite Updating AdminUI Database
+Due to a particular migration for synchronizing the `Submission` and `Staging` `Id` it is required that one
+first setup the Appserver database below before setting up the AdminUI database.
 
-The `SubmissionContext` lives in the AdminUI assembly and will need to be updated from there. Load the
-AdminUI solution and run these commands from the Package Manager Console to setup the `SubmissionContext`:
-
-```
-Update-Database -Context SubmissionContext
-```
+The Appserver itself will run migrations upon startup, or can be done via the Package Manager Console in
+Visual Studios following the instructions below.
 
 ### Updating Appserver Database
 

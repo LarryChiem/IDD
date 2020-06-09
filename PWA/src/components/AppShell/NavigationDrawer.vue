@@ -31,7 +31,7 @@
       </v-list-item>
 
       <!-- Link to the about page -->
-      <v-list-item link to="/about">
+      <v-list-item link to="/about" @click.native="$scrollToTop">
         <v-list-item-action>
           <v-icon>mdi-information-outline</v-icon>
         </v-list-item-action>

@@ -30,17 +30,26 @@
 <script>
   import i18n from "@/plugins/i18n";
 
-  export default {
-    name: "AppFooter",
-    data: function () {
-      return {
-        // A list of links for more info about the company
-        links: {
-          0: process.env.VUE_APP_ABOUT_US,
-          1: process.env.VUE_APP_OPPORTUNITIES,
-          2: process.env.VUE_APP_ACCESS,
-        },
-      };
+export default {
+  name: "AppFooter",
+  data: function() {
+    return {
+      // A list of links for more info about the company
+      links: {
+        0: process.env.VUE_APP_ABOUT_US,
+        1: process.env.VUE_APP_OPPORTUNITIES,
+        2: process.env.VUE_APP_ACCESS,
+        3: "https://www.youtube.com/watch?v=krLqp89Sf5U"
+      }
+    };
+  },
+  methods: {
+    text_title(id) {
+      if (id == 0) return i18n.t('components_AppShell_AppFooter_about');
+      else if (id == 1) return i18n.t('components_AppShell_AppFooter_opportunities');
+      else if (id == 2) return i18n.t('components_AppShell_AppFooter_access');
+      else if (id == 3) return i18n.t('components_AppShell_AppFooter_howtouse');
+      return i18n.t('translate_error');
     },
     methods: {
       text_title(id) {
@@ -51,5 +60,6 @@
         return i18n.t("translate_error");
       },
     },
-  };
+  }
+}
 </script>

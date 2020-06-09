@@ -1,5 +1,5 @@
 <template>
-    <!-- Prompt Upon Detecting Form Draft -->
+  <!-- Prompt Upon Detecting Form Draft -->
   <v-container :fill-height="askContinue" :class="continueColor" fluid>
     <!-- If there is already parsed form data, ask if the user wants to continue -->
     <template v-if="askContinue">
@@ -12,7 +12,6 @@
               </v-card-title>
               <v-card-text class="text-center subtitle-1 mt-3">
                 {{ $t("views_Timesheet_continue_desc0") }}
-                <strong>{{ formChoice }}</strong>
                 <br />
                 {{ $t("views_Timesheet_continue_desc1") }}
               </v-card-text>
@@ -275,7 +274,7 @@
       setWillContinue() {
         this.willContinue = true;
         this.fileStatus = FILE.SUCCESS;
-        console.log("parsedFileData from Timesheet:236", this.parsedFileData);
+        console.log("parsedFileData from Timesheet", this.parsedFileData);
       },
     },
   };

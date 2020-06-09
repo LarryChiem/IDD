@@ -98,23 +98,20 @@
                     <i class="fa fa-stop" aria-hidden="true"></i>
                     {{ $t("components_Forms_FileUploader_stopupload") }}
                   </button>
-                </div>
-                <!-- END File Upload Buttons -->
-              
-              </div>
-              <div v-else>
-                <div class="text-center">
-                  <v-btn
-                    class="white--text"
-                    color="red"
+                  
+                  <button
+                    type="button"
+                    class="mx-5 btn btn-danger"
                     ref="files"
                     @click="reset"
                   >
                     {{ $t("components_Forms_FileUploader_resetfiles") }}
-                  </v-btn>
+                  </button>
                 </div>
               </div>
-              
+              <!-- END File Upload Buttons -->
+
+
               <!-- List of Files and their details -->
               <div v-if="files.length">
                 <ul class="file-list">
@@ -170,6 +167,15 @@
                     {{ $t("components_Forms_FileUploader_continue") }}
                     <v-icon right dark>mdi-cloud-upload</v-icon>
                   </v-btn>
+
+                  <button
+                    type="button"
+                    class="mx-5 btn btn-danger"
+                    ref="files"
+                    @click="reset"
+                  >
+                    {{ $t("components_Forms_FileUploader_resetfiles") }}
+                  </button>
               </v-col>
             </v-row>
           </div>
@@ -319,13 +325,15 @@
         ),
       };
     },
+
     computed: {
       ...mapFields(["formChoice", "formId", "guid", "onlineStatus"]),
     },
+
     methods: {
       // Upload the files to the server (no parsing yet!) 
       uploadToServer() {
-        let formData = new FormData();
+                let formData = new FormData();
         for (let i = 0; i < this.files.length; i++) {
           let file = this.files[i].file;
           formData.append("files[" + i + "]", file);
@@ -339,19 +347,34 @@
             },
           })
           .then(function (response) {
-            console.log("Response from Appserver, FileUploader:293", response);
-            for (let i = 0; i < self.files.length; i++) {
-              self.files[i].active = false;
-              self.files[i].success = true;
+            console.log("Response from Appserver, FileUploader", response);
+            if (response["data"]["response"] == "too blurry") {
+              for (let i = 0; i < self.files.length; i++) {
+                self.files[i].active = false;
+                self.files[i].success = false;
+                self.files[i].error = true;
+              }
+              self.$emit("success", response["data"]);
+            } else {
+              for (let i = 0; i < self.files.length; i++) {
+                self.files[i].active = false;
+                self.files[i].success = true;
+              }
+              self.files.active = false;
+              self.files.success = true;
+              self.formId = response["data"]["id"];
+              self.guid = response["data"]["guid"];
+              self.submitted = true;
             }
-            self.files.active = false;
-            self.files.success = true;
-            self.formId = response["data"]["id"];
-            self.guid = response["data"]["guid"];
-            self.submitted = true;
           })
           .catch(function (error) {
-            console.log(error);
+            console.log("FileUploader", error);
+            for (let i = 0; i < self.files.length; i++) {
+              self.files[i].active = false;
+              self.files[i].success = false;
+              self.files[i].error = true;
+            }
+            self.$emit("error", error);
           });
         return;
       },
@@ -376,7 +399,12 @@
               self.$emit("success", response["data"]);
             })
             .catch(function (error) {
-              console.log(error);
+              console.log("FileUploader", error);
+              for (let i = 0; i < self.files.length; i++) {
+                self.files[i].active = false;
+                self.files[i].success = false;
+                self.files[i].error = true;
+              }
               self.$emit("error", error);
             });
         }
@@ -428,5 +456,5 @@
         }
       },
     },
-  };
+   };
 </script>

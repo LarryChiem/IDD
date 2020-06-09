@@ -10,6 +10,8 @@ using Appserver.Models;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.Extensions.Primitives;
+using ImageMagick;
+using OpenCvSharp;
 
 namespace Appserver.Controllers
 {
@@ -72,8 +74,36 @@ namespace Appserver.Controllers
             {
                 "image/jpeg",
                 "image/png",
+                "image/heic",
                 "application/pdf",
+                "application/octet-stream"
             };
+            // Detect blur for each image
+            double threshold = double.Parse(Environment.GetEnvironmentVariable("BLUR_THRESHOLD"));
+                
+            foreach (var file in files)
+            {
+                if (file.Length == 0)
+                {
+                    skipped_files.Add("File name " + file.Name + "is empty");
+                    continue;
+                }
+                if (accepted_types.Contains(file.ContentType) && file.ContentType != "application/pdf")
+                {
+                    double variance = detect_blur(file);
+
+                    if (variance < threshold)
+                    { //too blurry
+                        return Json(new
+                        {
+                            response = "too blurry"
+
+                        }
+                        );
+                    }
+
+                }
+            }
 
             // Iterate of collection of file and send to Textract
             foreach (var file in files)
@@ -128,6 +158,42 @@ namespace Appserver.Controllers
             }
             );
         }
+        // Method to find the focus measure or how "blurry" an image is.
+        // This is accomplished by taking the variance of the Laplacian
+        // of an image.
+        public static double detect_blur(IFormFile file)
+        {
+            Mat src = new Mat();
+            MagickImage image;
+            MagickReadSettings settings;
+            switch (file.ContentType)
+            {
+                case "image/heic":
+                case "application/octet-stream":
+                    settings = new MagickReadSettings { Format = MagickFormat.Heic, ColorSpace = ColorSpace.Gray };
+                    break;
+                case "image/jpeg":
+                    settings = new MagickReadSettings { Format = MagickFormat.Jpeg, ColorSpace = ColorSpace.Gray };
+                    break;
+                case "image/png":
+                    settings = new MagickReadSettings { Format = MagickFormat.Png, ColorSpace = ColorSpace.Gray };
+                    break;
+                default:
+                    throw new ArgumentException();
+            }
+            var data = file.OpenReadStream();
+            image = new MagickImage(data, settings)
+            {
+                Format = MagickFormat.Jpeg
+            };
+            byte[] byteData = image.ToByteArray();
+
+            src = Cv2.ImDecode(byteData, ImreadModes.Grayscale);
+            var laplacian = new Mat();
+            Cv2.Laplacian(src, laplacian, MatType.CV_64FC1);
+            Cv2.MeanStdDev(laplacian, out var mean, out var stddev);
+            return stddev.Val0 * stddev.Val0;
+        }
 
 
         // Store user submissions in Azure and get back the file's bucket handle.
@@ -141,7 +207,7 @@ namespace Appserver.Controllers
             await container.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Container });
 
             // Upload images to container and save UriStrings
-            var uriString ="";
+            var uriString = "";
             foreach (var f in files)
             {
                 if (!string.IsNullOrEmpty(uriString))
@@ -187,6 +253,5 @@ namespace Appserver.Controllers
         {
             return new TextractHandler().HandlePDFasync(file);
         }
-
     }
 }

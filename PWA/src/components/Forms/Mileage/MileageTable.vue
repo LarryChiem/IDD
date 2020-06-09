@@ -271,8 +271,8 @@
         default: 0 
       },
     },
-    
-    data: function() {
+
+    data: function () {
       return {
         // Specify rules and hints for adding a new row to the table
         colValidation: JSON.parse(
